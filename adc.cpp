@@ -19,9 +19,6 @@
   Boston, MA  02111-1307  USA
 */
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/sleep.h>
 #include "adc.h"
 
 /*

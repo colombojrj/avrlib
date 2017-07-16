@@ -15,7 +15,7 @@
 #include "adc.h"
 #include "logic_operations.h"
 #include "drivers/Encoder.h"
-
+#include "general_config.h"
 
 
 #endif /* AVRLIB_H_ */

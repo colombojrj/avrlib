@@ -26,32 +26,7 @@
 #include <stdlib.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
-//////////////////////////////////
-// Operation mode configuration //
-//////////////////////////////////
-#define TIMER0_CONFIG			PWM_AB		// TIMER0 operation mode
-#define TIMER0_CLOCK 			CLK_8		// configure TIMER0 clock source
-#define TIMER0A_POLATIRY		NORMAL		// can be NORMAL or INVERTED
-#define TIMER0A_INITIAL_OCR		0			// Initial duty cycle
-#define TIMER0B_POLATIRY		NORMAL		// can be NORMAL or INVERTED
-#define TIMER0B_INITIAL_OCR		0			// Initial duty cycle
-
-#define TIMER1_CONFIG			PWM_AB		// TIMER1 operation mode
-#define TIMER1_CLOCK 			CLK_8		// configure TIMER1 clock source
-#define TIMER1_RESOLUTION   	8          	// in bits
-#define TIMER1_PWM_TOP			0xFFFF		// if using up to 16 bit resolution
-#define TIMER1A_POLATIRY		NORMAL		// can be NORMAL or INVERTED
-#define TIMER1A_INITIAL_OCR		0			// Initial duty cycle
-#define TIMER1B_POLATIRY		NORMAL		// can be NORMAL or INVERTED
-#define TIMER1B_INITIAL_OCR		0			// Initial duty cycle
-
-#define TIMER2_CONFIG			CTC			// TIMER2 operation mode
-#define TIMER2_CLOCK 			CLK_128		// configure TIMER2 clock source
-#define TIMER2A_POLATIRY		NORMAL		// can be NORMAL or INVERTED
-#define TIMER2A_INITIAL_OCR		0x9B		// Initial duty cycle
-#define TIMER2B_POLATIRY		NORMAL		// can be NORMAL or INVERTED
-#define TIMER2B_INITIAL_OCR		0			// Initial duty cycle
+#include "general_config.h"
 
 // Useful defines
 #define OFF				0 // TIMER without configuration

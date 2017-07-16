@@ -22,73 +22,30 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-
-/*
- * Choose the A/D operation mode listed from below:
- *
- * SINGLE
- * NOISE_REDUCTION
- * FREE_RUNNING
- */
-#define OPERATION_MODE SINGLE
-
-
-/*
- * Defina qual como será gerada a tensão de
- * referência do circuito. Os possíveis valores são:
- *
- * EXTERNA
- * INTERNA
- * VCC
- */
-#define ADC_REFERENCE REF_INTERN
-
-/*
- * Define the reference voltage and the analog circuit vcc supply voltage
- */
-#define ADC_REFERENCE_VOLTAGE	1.1
-#define ADC_SUPPLY_VOLTAGE		5.0
-
-
-/* É também preciso informar qual o fator de
- * divisão da frequência da CPU. Os possíveis
- * valores são:
- *
- * DIV_BY_2
- * DIV_BY_4
- * DIV_BY_8
- * DIV_BY_16
- * DIV_BY_32
- * DIV_BY_64
- * DIV_BY_128
- */
-#define PREESCALE DIV_BY_32
-
-/* Data alignment:
- *
- * LEFT
- * RIGHT
- */
-#define DATA_ALIGN RIGHT
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/sleep.h>
+#include "general_config.h"
 
 //
 // Internal defines (do not change them!)
 //
-#define SINGLE				1
-#define NOISE_REDUCTION		2
-#define FREE_RUNNING		3
-#define REF_EXTERN			0
-#define REF_INTERN			((1 << REFS1) | (1 << REFS0))
-#define REF_VCC				(1 << REFS0)
-#define DIV_BY_2			1
-#define DIV_BY_4			2
-#define DIV_BY_8			3
-#define DIV_BY_16			4
-#define DIV_BY_32			5
-#define DIV_BY_64			6
-#define DIV_BY_128			7
-#define LEFT				(1 << ADLAR)
-#define RIGHT				0
+#define ADC_OFF                 0
+#define ADC_SINGLE_CONVERSION   1
+#define ADC_NOISE_REDUCTION	    2
+#define ADC_FREE_RUNNING        3
+#define ADC_REF_EXT             0
+#define ADC_REF_INT             ((1 << REFS1) | (1 << REFS0))
+#define ADC_REF_VCC				(1 << REFS0)
+#define ADC_DIV_BY_2			1
+#define ADC_DIV_BY_4			2
+#define ADC_DIV_BY_8			3
+#define ADC_DIV_BY_16			4
+#define ADC_DIV_BY_32			5
+#define ADC_DIV_BY_64			6
+#define ADC_DIV_BY_128			7
+#define ADC_LEFT				(1 << ADLAR)
+#define ADC_RIGHT				0
 
 // Available functions
 extern void INIT_ADC(uint8_t pin);
