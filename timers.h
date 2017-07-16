@@ -41,9 +41,9 @@
 #define TIMER0A             0
 #define TIMER0B             1
 #define TIMER1A             2
-#define TIMER1B			    3
-#define TIMER2A			    4
-#define TIMER2B			    5
+#define TIMER1B             3
+#define TIMER2A             4
+#define TIMER2B             5
 
 // Clock division
 #define NO_CLOCK            0
