@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "HAL.h"
+#include "HAL/HAL.h"
 
 class gpio {
 private:

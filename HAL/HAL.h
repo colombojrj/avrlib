@@ -8,10 +8,10 @@
 #ifndef AVRLIB_HAL_H_
 #define AVRLIB_HAL_H_
 
-#include "HAL/defines.h"
-#include "HAL/timers.h"
-#include "HAL/uart.h"
-#include "HAL/adc.h"
+#include "defines.h"
+#include "timers.h"
+#include "uart.h"
+#include "adc.h"
 
 
 

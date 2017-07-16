@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <avr/io.h>
 #include "../avrlib.h"
-#include "../HAL.h"
+#include "../HAL/HAL.h"
 
 // Interrupt types
 #define EXT_INT		0

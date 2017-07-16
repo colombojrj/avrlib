@@ -11,7 +11,7 @@
 #include <util/delay.h>
 
 #include "config.h"
-#include "HAL.h"
+#include "HAL/HAL.h"
 #include "logic_operations.h"
 #include "gpio.h"
 #include "drivers/Encoder.h"
