@@ -198,31 +198,61 @@ void INIT_TIMER1 () {
 	#endif
 #endif
 
-/*
- * TIMER1 MODULE
- */
+//
+///////////////////
+// TIMER1 MODULE //
+///////////////////
+//
+
 #if TIMER1_CONFIG == OFF
 	void INIT_TIMER1A (uint8_t auxiliary_call) {}
 	void INIT_TIMER1B (uint8_t auxiliary_call) {}
 	void TIMER1A_SET_OCR (uint16_t OCR) {}
 	void TIMER1B_SET_OCR (uint16_t OCR) {}
+	void SET_INPUT_CAPTURE_EDGE(uint8_t type) {}
 	void TIMER1_OFF() {}
 #endif
 
-#if TIMER1_CONFIG == NORMAL
-	void INIT_TIMER1A (uint8_t auxiliary_call)
-	{
-		TCCR1A = 0;
-		TCCR1B = TIMER1_CLOCK;
-		TIMSK1 = (1 << TOIE1);
-	}
+#if TIMER1_CONFIG == NORMAL || TIMER1_CONFIG == NORMAL_WITH_IN_CAP
+    void INIT_TIMER1A (uint8_t auxiliary_call)
+    {
+        TCCR1A = 0;
+        #if TIMER1_CONFIG == NORMAL
+            TCCR1B = TIMER1_CLOCK;
+            TIMSK1 = (1 << TOIE1);
+        #elif TIMER1_CONFIG == NORMAL_WITH_IN_CAP
+            TCCR1B = TIMER1_CLOCK | (1 << ICNC1);
+            TIMSK1 = (1 << TOIE1) | (1 << ICIE1);
+
+            // Configure Input Capture Pin as input without pull-up resistor
+            DDRB = DDRB & ~(1 << PB0);
+            PORTB = PORTB & ~(1 << PB0);
+        #endif
+
+    }
 
 	void INIT_TIMER1B (uint8_t auxiliary_call)
 	{
 		INIT_TIMER1A ();
 	}
+
 	void TIMER1A_SET_OCR (uint16_t OCR) {}
 	void TIMER1B_SET_OCR (uint16_t OCR) {}
+    #if TIMER1_CONFIG == NORMAL
+	    void SET_INPUT_CAPTURE_EDGE(uint8_t type) {}
+    #elif TIMER1_CONFIG == NORMAL_WITH_IN_CAP
+	    void SET_INPUT_CAPTURE_EDGE(uint8_t type)
+        {
+            if (type == RISING_EDGE)
+            {
+                TCCR1B = TCCR1B | (1 << ICES1);
+            }
+            else
+            {
+                TCCR1B = TCCR1B & ~(1 << ICES1);
+            }
+        }
+    #endif
 #endif
 
 #if TIMER1_CONFIG == CTC
