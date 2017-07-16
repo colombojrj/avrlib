@@ -8,7 +8,9 @@
 #ifndef AVRLIB_HAL_DEFINES_H_
 #define AVRLIB_HAL_DEFINES_H_
 
-// Useful defines
+////////////
+// TIMERS //
+////////////
 #define OFF                 0 // TIMER turned off
 #define NORMAL              1
 #define CTC                 2
@@ -57,24 +59,40 @@
 #define OUTPUT          2
 #define ANALOG_INPUT    3   // TODO: add support
 #define PWM             4   // adding support
-#define PWM_8           PWM //  8 bit PWM
-#define PWM_9           5   //  9 bit PWM
-#define PWM_10          6   // 10 bit PWM
-#define PWM_11          7   // 11 bit PWM
-#define PWM_12          8   // 12 bit PWM
-#define PWM_13          9   // 13 bit PWM
-#define PWM_14          10  // 14 bit PWM
-#define PWM_15          11  // 15 bit PWM
-#define PWM_16          12  // 16 bit PWM
+#define PWM_8_BITS      PWM //  8 bit PWM
+#define PWM_9_BITS      5   //  9 bit PWM
+#define PWM_10_BITS     6   // 10 bit PWM
+#define PWM_11_BITS     7   // 11 bit PWM
+#define PWM_12_BITS     8   // 12 bit PWM
+#define PWM_13_BITS     9   // 13 bit PWM
+#define PWM_14_BITS     10  // 14 bit PWM
+#define PWM_15_BITS     11  // 15 bit PWM
+#define PWM_16_BITS     12  // 16 bit PWM
 #define LOW_LEVEL       13  // low level triggers external interrupt
 #define ANY_CHANGE      14  // any logical change trigger external interrupt
-//#define RISING_EDGE     15  // rising edge triggers external interrupt
-//#define FALLING_EDGE    16  // falling edge triggers external interrupt
 
 #define LOW             0
 #define HIGH            1
 
 
-
+/////////////////////////////////
+// ANALOG TO DIGITAL CONVERTER //
+/////////////////////////////////
+#define ADC_OFF                 0
+#define ADC_SINGLE_CONVERSION   1
+#define ADC_NOISE_REDUCTION     2
+#define ADC_FREE_RUNNING        3
+#define ADC_REF_EXT             0
+#define ADC_REF_INT             ((1 << REFS1) | (1 << REFS0))
+#define ADC_REF_VCC             (1 << REFS0)
+#define ADC_DIV_BY_2            1
+#define ADC_DIV_BY_4            2
+#define ADC_DIV_BY_8            3
+#define ADC_DIV_BY_16           4
+#define ADC_DIV_BY_32           5
+#define ADC_DIV_BY_64           6
+#define ADC_DIV_BY_128          7
+#define ADC_LEFT                (1 << ADLAR)
+#define ADC_RIGHT               0
 
 #endif /* AVRLIB_HAL_DEFINES_H_ */

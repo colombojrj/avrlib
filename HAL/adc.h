@@ -28,26 +28,6 @@
 #include "defines.h"
 #include "../config.h"
 
-//
-// Internal defines (do not change them!)
-//
-#define ADC_OFF                 0
-#define ADC_SINGLE_CONVERSION   1
-#define ADC_NOISE_REDUCTION	    2
-#define ADC_FREE_RUNNING        3
-#define ADC_REF_EXT             0
-#define ADC_REF_INT             ((1 << REFS1) | (1 << REFS0))
-#define ADC_REF_VCC				(1 << REFS0)
-#define ADC_DIV_BY_2			1
-#define ADC_DIV_BY_4			2
-#define ADC_DIV_BY_8			3
-#define ADC_DIV_BY_16			4
-#define ADC_DIV_BY_32			5
-#define ADC_DIV_BY_64			6
-#define ADC_DIV_BY_128			7
-#define ADC_LEFT				(1 << ADLAR)
-#define ADC_RIGHT				0
-
 // Available functions
 extern void INIT_ADC(uint8_t pin);
 extern uint16_t ANALOG_READ(uint8_t pin);
