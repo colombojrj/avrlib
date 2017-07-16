@@ -51,9 +51,11 @@ public:
 	gpio(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
 
 	// Set pin mode
-	void set_pin_mode(uint8_t mode, uint8_t state);
+	void set_pin_mode(uint8_t mode, uint8_t state = LOW);
 
 	// Writing functions
+	void write_high();
+	void write_low();
 	void write(uint8_t state);
 	void toggle();
 

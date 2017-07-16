@@ -31,14 +31,14 @@
 // Operation mode configuration //
 //////////////////////////////////
 #define TIMER0_CONFIG			PWM_AB		// TIMER0 operation mode
-#define TIMER0_CLOCK 			CLK_64		// configure TIMER0 clock source
+#define TIMER0_CLOCK 			CLK_8		// configure TIMER0 clock source
 #define TIMER0A_POLATIRY		NORMAL		// can be NORMAL or INVERTED
 #define TIMER0A_INITIAL_OCR		0			// Initial duty cycle
 #define TIMER0B_POLATIRY		NORMAL		// can be NORMAL or INVERTED
 #define TIMER0B_INITIAL_OCR		0			// Initial duty cycle
 
 #define TIMER1_CONFIG			PWM_AB		// TIMER1 operation mode
-#define TIMER1_CLOCK 			CLK_64		// configure TIMER1 clock source
+#define TIMER1_CLOCK 			CLK_8		// configure TIMER1 clock source
 #define TIMER1_RESOLUTION   	8          	// in bits
 #define TIMER1_PWM_TOP			0xFFFF		// if using up to 16 bit resolution
 #define TIMER1A_POLATIRY		NORMAL		// can be NORMAL or INVERTED

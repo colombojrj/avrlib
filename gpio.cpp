@@ -76,15 +76,25 @@ void gpio::set_pin_mode(uint8_t mode, uint8_t state)
 	}
 }
 
+void gpio::write_high()
+{
+	*_port = *_port | (1 << _pin);
+}
+
+void gpio::write_low()
+{
+	*_port = *_port & ~(1 << _pin);
+}
+
 void gpio::write(uint8_t state)
 {
 	if (state == HIGH)
 	{
-		*_port = *_port | (1 << _pin);
+		write_high();
 	}
 	else
 	{
-		*_port = *_port & ~(1 << _pin);
+		write_low();
 	}
 }
 

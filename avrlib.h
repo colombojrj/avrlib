@@ -8,6 +8,7 @@
 #ifndef AVRLIB_H_
 #define AVRLIB_H_
 
+#include <util/delay.h>
 #include "gpio.h"
 #include "timers.h"
 #include "uart.h"
