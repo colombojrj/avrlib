@@ -15,6 +15,8 @@
 #define HIGH                    1
 #define RISING_EDGE             1
 #define FALLING_EDGE            0
+#define TRUE                    1
+#define FALSE                   0
 
 ////////////
 // TIMERS //
@@ -40,7 +42,10 @@
 ///////////
 #define NO_CLOCK                0
 #define NO_PREESCALE            1
+#define CLK_2                   8
+#define CLK_4                   9
 #define CLK_8                   2
+#define CLK_16                  10
 #define CLK_32                  8 // only for TIMER2
 #define CLK_64                  3
 #define CLK_128                 9 // only for TIMER2
@@ -91,5 +96,13 @@
 #define ADC_DIV_BY_128          7
 #define ADC_LEFT                (1 << ADLAR)
 #define ADC_RIGHT               0
+
+/////////
+// SPI //
+/////////
+#define SLAVE                   0
+#define MASTER                  1
+#define MSB_FIRST               0
+#define LSB_FIRST               1
 
 #endif /* AVRLIB_HAL_DEFINES_H_ */

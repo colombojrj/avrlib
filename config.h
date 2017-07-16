@@ -36,6 +36,17 @@
 #define TIMER2B_POLATIRY        NORMAL       // can be NORMAL or INVERTED
 #define TIMER2B_INITIAL_OCR     0            // Initial duty cycle
 
+
+/////////
+// SPI //
+/////////
+#define SPI_MODE                MASTER
+#define SPI_CLK                 CLK_2
+#define SPI_USE_INTERRUPT       FALSE
+#define SPI_DATA_ORDER          MSB_FIRST
+
+
+
 /////////////////////////////////
 // ANALOG TO DIGITAL CONVERTER //
 /////////////////////////////////
