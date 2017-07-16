@@ -25,7 +25,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
-#include "general_config.h"
+#include "defines.h"
+#include "../config.h"
 
 //
 // Internal defines (do not change them!)

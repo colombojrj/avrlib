@@ -26,40 +26,8 @@
 #include <stdlib.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "general_config.h"
-
-// Useful defines
-#define OFF                 0 // TIMER turned off
-#define NORMAL              1
-#define CTC                 2
-#define PWM_A               3 // only channel A (example OCR0A, OCR1A, ...) works as fast-PWM
-#define PWM_B               4 // only channel B (example OCR0B, OCR1B, ...) works as fast-PWM
-#define PWM_AB              5 // both channels work as fast-PWM
-#define PHASE_CORRECT       6
-#define NORMAL_WITH_IN_CAP  7 // only for TIMER1
-#define INVERTED            7
-#define TIMER0A             0
-#define TIMER0B             1
-#define TIMER1A             2
-#define TIMER1B             3
-#define TIMER2A             4
-#define TIMER2B             5
-
-// Clock division
-#define NO_CLOCK            0
-#define NO_PREESCALE        1
-#define CLK_8               2
-#define CLK_32              8 // only for TIMER2
-#define CLK_64              3
-#define CLK_128             9 // only for TIMER2
-#define CLK_256             4
-#define CLK_1024            5
-#define T0_FALLING          6
-#define T0_RISING           7
-
-// Input capture
-#define RISING_EDGE         1
-#define FALLING_EDGE        0
+#include "defines.h"
+#include "../config.h"
 
 /*
  * FUNCTIONS TO HANDLE THE TIMER0 MODULE

@@ -11,34 +11,7 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "timers.h"
-#include "adc.h"
-
-// This does not work for ATmega64 or higher
-#define DDR(x) (*(&x - 1))
-#define PIN(x) (*(&x - 2))
-
-#define INPUT			0
-#define INPUT_PULLUP	1
-#define OUTPUT			2
-#define ANALOG_INPUT	3	// TODO: add support
-#define PWM				4	// adding support
-#define PWM_8			PWM	//  8 bit PWM
-#define PWM_9			5	//  9 bit PWM
-#define PWM_10			6	// 10 bit PWM
-#define PWM_11			7	// 11 bit PWM
-#define PWM_12			8	// 12 bit PWM
-#define PWM_13			9	// 13 bit PWM
-#define PWM_14			10	// 14 bit PWM
-#define PWM_15			11	// 15 bit PWM
-#define PWM_16			12	// 16 bit PWM
-#define LOW_LEVEL		13	// low level triggers external interrupt
-#define ANY_CHANGE		14	// any logical change trigger external interrupt
-#define RISING_EDGE		15	// rising edge triggers external interrupt
-#define FALLING_EDGE	16	// falling edge triggers external interrupt
-
-#define LOW				0
-#define	HIGH			1
+#include "HAL.h"
 
 class gpio {
 private:

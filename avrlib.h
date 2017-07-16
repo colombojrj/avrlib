@@ -9,13 +9,12 @@
 #define AVRLIB_H_
 
 #include <util/delay.h>
-#include "gpio.h"
-#include "timers.h"
-#include "uart.h"
-#include "adc.h"
+
+#include "config.h"
+#include "HAL.h"
 #include "logic_operations.h"
+#include "gpio.h"
 #include "drivers/Encoder.h"
-#include "general_config.h"
 
 
 #endif /* AVRLIB_H_ */

@@ -5,8 +5,8 @@
  *      Author: junior
  */
 
-#ifndef AVRLIB_GENERAL_CONFIG_H_
-#define AVRLIB_GENERAL_CONFIG_H_
+#ifndef AVRLIB_CONFIG_H_
+#define AVRLIB_CONFIG_H_
 
 // Use this file to configure the micro-controller peripherals
 
@@ -89,4 +89,4 @@
  */
 #define DATA_ALIGN ADC_RIGHT
 
-#endif /* AVRLIB_GENERAL_CONFIG_H_ */
+#endif /* AVRLIB_CONFIG_H_ */

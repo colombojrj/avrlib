@@ -11,9 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/io.h>
-#include "../gpio.h"
-#include "../timers.h"
-#include "../logic_operations.h"
+#include "../avrlib.h"
+#include "../HAL.h"
 
 // Interrupt types
 #define EXT_INT		0
