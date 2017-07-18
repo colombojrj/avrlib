@@ -46,6 +46,11 @@
 #define SPI_DATA_ORDER          MSB_FIRST
 
 
+//////////
+// UART //
+//////////
+#define UART_BAUD_RATE 115200
+
 
 /////////////////////////////////
 // ANALOG TO DIGITAL CONVERTER //
