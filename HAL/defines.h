@@ -43,9 +43,9 @@
 #define NO_CLOCK                0
 #define NO_PREESCALE            1
 #define CLK_2                   8
-#define CLK_4                   9
+#define CLK_4                   10
 #define CLK_8                   2
-#define CLK_16                  10
+#define CLK_16                  11
 #define CLK_32                  8 // only for TIMER2
 #define CLK_64                  3
 #define CLK_128                 9 // only for TIMER2
