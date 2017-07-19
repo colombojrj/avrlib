@@ -80,22 +80,19 @@
 /////////////////////////////////
 // ANALOG TO DIGITAL CONVERTER //
 /////////////////////////////////
-#define ADC_OFF                 0
-#define ADC_SINGLE_CONVERSION   1
-#define ADC_NOISE_REDUCTION     2
-#define ADC_FREE_RUNNING        3
-#define ADC_REF_EXT             0
-#define ADC_REF_INT             ((1 << REFS1) | (1 << REFS0))
-#define ADC_REF_VCC             (1 << REFS0)
-#define ADC_DIV_BY_2            1
-#define ADC_DIV_BY_4            2
-#define ADC_DIV_BY_8            3
-#define ADC_DIV_BY_16           4
-#define ADC_DIV_BY_32           5
-#define ADC_DIV_BY_64           6
-#define ADC_DIV_BY_128          7
-#define ADC_LEFT                (1 << ADLAR)
-#define ADC_RIGHT               0
+#define SINGLE_CONVERSION   1
+#define NOISE_REDUCTION     2
+#define FREE_RUNNING        3
+#define EXTERN              0
+#define INTERN              ((1 << REFS1) | (1 << REFS0))
+#define REF_VCC             (1 << REFS0)
+#define LEFT                (1 << ADLAR)
+#define RIGHT               0
+
+///* Configure the micro-controller reference voltage
+#if defined (__AVR_ATmega328P__)
+    #define ADC_REFERENCE_VOLTAGE   1.1
+#endif
 
 /////////
 // SPI //

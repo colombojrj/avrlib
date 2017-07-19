@@ -8,6 +8,11 @@
 #ifndef AVRLIB_HAL_H_
 #define AVRLIB_HAL_H_
 
+/**
+ * @defgroup hal_group HAL (Hardware Abstraction Layer)
+ *
+ */
+
 #include "defines.h"
 #include "timers.h"
 #include "uart.h"

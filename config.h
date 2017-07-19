@@ -7,7 +7,8 @@
 
 /**
  * \file config.h
- * Configure the peripherals of the micro-controller
+ * Configure the peripherals of the micro-controller. All the possible
+ * configuration defines are available in \ref defines.h
  */
 
 /*!
@@ -90,7 +91,8 @@
  *                            <a href="http://kevin.rosenberg.net/">here</a>
  *
  * @param TIMER1_RESOLUTION Timer1 is a 16 bit timer. This configuration is required for some
- *                          operation modes (16 bit PWM, for example)
+ *                          operation modes (16 bit PWM, for example) <b>(however there isn't support
+ *                          for it right now)
  *
  * @param TIMER1_PWM_TOP Timer1 top value (it may be required for some operation modes)
  *
@@ -164,12 +166,12 @@
 /**
  * Choose the A/D operation mode listed from below:
  *
- * ADC_OFF
- * ADC_SINGLE_CONVERSION
- * ADC_NOISE_REDUCTION
- * ADC_FREE_RUNNING
+ * OFF
+ * SINGLE_CONVERSION
+ * NOISE_REDUCTION
+ * FREE_RUNNING
  */
-#define OPERATION_MODE ADC_OFF
+#define ADC_OPERATION_MODE OFF
 
 
 /**
@@ -181,12 +183,11 @@
  * ADC_VCC
  *
  */
-#define ADC_REFERENCE ADC_REF_INT
+#define ADC_REFERENCE INTERN
 
 /**
  * Define the reference voltage and the analog circuit vcc supply voltage
  */
-#define ADC_REFERENCE_VOLTAGE   1.1
 #define ADC_SUPPLY_VOLTAGE      5.0
 
 
@@ -194,21 +195,21 @@
  * divisão da frequência da CPU. Os possíveis
  * valores são:
  *
- * ADC_DIV_BY_2
- * ADC_DIV_BY_4
- * ADC_DIV_BY_8
- * ADC_DIV_BY_16
- * ADC_DIV_BY_32
- * ADC_DIV_BY_64
- * ADC_DIV_BY_128
+ * CLK_2
+ * CLK_4
+ * CLK_8
+ * CLK_16
+ * CLK_32
+ * CLK_64
+ * CLK_128
  */
-#define PREESCALE ADC_DIV_BY_32
+#define PREESCALE CLK_32
 
 /* Data alignment:
  *
  * ADC_LEFT
  * ADC_RIGHT
  */
-#define DATA_ALIGN ADC_RIGHT
+#define DATA_ALIGN RIGHT
 
 #endif /* AVRLIB_CONFIG_H_ */

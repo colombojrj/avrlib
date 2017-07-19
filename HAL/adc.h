@@ -1,7 +1,7 @@
 /*
-  adc.h - A/D converter library
+  adc.h - Library to handle the ADC module of AVR micro-controllers
 
-  Copyright (c) 2012 - José Roberto Colombo Junior (colombojrj [at] gmail [dot] com)
+  Copyright (c) 2013 - José Roberto Colombo Junior
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,34 @@
 #ifndef ADC_H_
 #define ADC_H_
 
+/**
+ * @defgroup hal_adc ADC Library
+ *
+ * @code #include <adc.h> @endcode
+ *
+ * A library to handle the ADC module of AVR micro-controllers
+ *
+ * The supported modes of operation are:
+ * * OFF
+ * * SINGLE_CONVERSION
+ * * NOISE_REDUCTION (to do)
+ * * FREE_RUNNING (to do)
+ *
+ * In the FREE_RUNNING mode, when a conversion is ready an interruption
+ * is triggered. Make sure to declare the ISR(ADC_vect). Here is an example:
+ *
+ * \code
+ * volatile uint16_t voltage;
+ * ISR(ADC_vect) {
+ *     voltage = ADC;
+ * }
+ * \endcode
+ *
+ * @author José Roberto Colombo Junior
+ */
+
+/**@{*/
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
@@ -29,12 +57,61 @@
 #include "../config.h"
 
 // Available functions
+
+/**
+ * @brief  This function is employed to initialize the ADC module as configured in \ref config.h
+ *
+ * In OFF mode this function start energy saving.
+ *
+ * @param  uint8_t pin: the ADC pin number (ex: PA0)
+ * @return none
+ */
 extern void INIT_ADC(uint8_t pin);
+
+/**
+ * @brief  This function start an analog conversion. It will block
+ *         the code execution until not finished.
+ *
+ * @param  uint8_t pin: the ADC pin number (ex: PA0)
+ * @return uint16_t converted value (12 bits)
+ */
 extern uint16_t ANALOG_READ(uint8_t pin);
+
+/**
+ * @brief  This function is employed to change the analog channel in
+ *         \ref FREE_RUNING mode.
+ *
+ * @param  uint8_t pin: the ADC pin number (ex: PA0)
+ * @return none
+ */
 extern void CHANGE_ADMUX(uint8_t pin);
+
+/**
+ * @brief  This function set the reference voltage source.
+ *
+ * The possible values are:
+ * * INTERNAL (verify the micro-controller manual to verify the value in volts)
+ * * EXTERNAL (extern value connected through pin)
+ * * VCC      (micro-controller VCC voltage)
+ *
+ *
+ * @param  uint8_t source
+ * @return none
+ */
 extern void SET_REFERENCE_VOLTAGE(uint8_t source);
-#if defined (__AVR_ATmega328P__)
-	extern int16_t READ_TEMPERATURE();
-#endif
+
+/**
+ * @brief  This function read the temperature sensor available in some
+ *         micro-controllers.
+ *
+ * Known micro-controllers that possesses this hardware:
+ * * ATmega328P
+ *
+ * @param  none
+ * @return none
+ */
+extern int16_t READ_TEMPERATURE();
+
+/**@}*/
 
 #endif /* ADC_H_ */
