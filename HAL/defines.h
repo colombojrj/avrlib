@@ -42,7 +42,7 @@
 ///////////
 #define NO_CLOCK                0
 #define NO_PREESCALE            1
-#define CLK_2                   8
+#define CLK_2                   12
 #define CLK_4                   10
 #define CLK_8                   2
 #define CLK_16                  11
