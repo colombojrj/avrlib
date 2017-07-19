@@ -69,12 +69,15 @@ void INIT_ADC(uint8_t pin) {
     SET_ADC_REF_VOLTAGE(ADC_REFERENCE);
     SET_ADC_DATA_ALIGN(ADC_DATA_ALIGN);
 
-	// Disable input digital buffer (saves power)
-	#if defined (__AVR_ATmega328P__)
-		DIDR0 = (1 << pin);
-	#endif
+    // Disable input digital buffer (saves power)
+    #if defined (__AVR_ATmega328P__)
+        DIDR0 = (1 << pin);
+    #endif
 
-	// TODO: add support to the free running mode
+    // TODO: add support to these operation modes
+    #if ADC_OPERATION_MODE == NOISE_REDUCTION
+    #elif ADC_OPERATION_MODE == FREE_RUNNING
+    #endif
 }
 
 uint16_t ANALOG_READ(uint8_t pin) {
