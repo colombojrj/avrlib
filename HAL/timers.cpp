@@ -233,7 +233,7 @@ void INIT_TIMER1 () {
 
 	void INIT_TIMER1B (uint8_t auxiliary_call)
 	{
-		INIT_TIMER1A ();
+		INIT_TIMER1A (0);
 	}
 
 	void TIMER1A_SET_OCR (uint16_t OCR) {}
