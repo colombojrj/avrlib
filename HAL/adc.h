@@ -69,6 +69,30 @@
 extern void INIT_ADC(uint8_t pin);
 
 /**
+ * @brief  This function is employed to configure the ADC clock source configured in \ref config.h
+ *
+ * @param  none
+ * @return none
+ */
+extern void SET_ADC_CLK();
+
+/**
+ * @brief  This function is employed to configure the ADC reference voltage configured in \ref config.h
+ *
+ * @param  none
+ * @return none
+ */
+extern void SET_ADC_REF_VOLTAGE(uint8_t config);
+
+/**
+ * @brief  This function is employed to configure the ADC data alignment configured in \ref config.h
+ *
+ * @param  none
+ * @return none
+ */
+extern void SET_ADC_DATA_ALIGN(uint8_t config);
+
+/**
  * @brief  This function start an analog conversion. It will block
  *         the code execution until not finished.
  *

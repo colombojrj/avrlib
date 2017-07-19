@@ -106,11 +106,30 @@
  *
  *
  * @subsection conf_adc Analog to Digital Converter (ADC)
- * \todo
- * * renomear as definições do ADC
  *
+ * Configure here the ADC module of the micro-controller.
  *
+ * @param ADC_OPERATION_MODE the operation mode of the ADC. Possible choices are:
+ * * OFF
+ * * SINGLE_CONVERSION
+ * * NOISE_REDUCTION
+ * * FREE_RUNNING
  *
+ * @param ADC_REFERENCE
+ *
+ * @param ADC_SUPPLY_VOLTAGE
+ *
+ * @param ADC_PREESCALE The ADC clock signal is provided by the CPU clock signal
+ *                      through a preescaler hardware, which may be configured with:
+ * * CLK_2: divide the CPU clock by a factor of 2x
+ * * CLK_4: divide the CPU clock by a factor of 4x
+ * * CLK_8: divide the CPU clock by a factor of 8x
+ * * CLK_16: divide the CPU clock by a factor of 16x
+ * * CLK_32: divide the CPU clock by a factor of 32x
+ * * CLK_64: divide the CPU clock by a factor of 64x
+ * * CLK_128: divide the CPU clock by a factor of 128x
+ *
+ * @param ADC_DATA_ALIGN
  *
  */
 
@@ -162,54 +181,10 @@
 /////////////////////////////////
 // ANALOG TO DIGITAL CONVERTER //
 /////////////////////////////////
-
-/**
- * Choose the A/D operation mode listed from below:
- *
- * OFF
- * SINGLE_CONVERSION
- * NOISE_REDUCTION
- * FREE_RUNNING
- */
-#define ADC_OPERATION_MODE OFF
-
-
-/**
- * Defina qual como será gerada a tensão de
- * referência do circuito. Os possíveis valores são:
- *
- * ADC_EXT
- * ADC_INT
- * ADC_VCC
- *
- */
-#define ADC_REFERENCE INTERN
-
-/**
- * Define the reference voltage and the analog circuit vcc supply voltage
- */
+#define ADC_OPERATION_MODE      SINGLE_CONVERSION
+#define ADC_REFERENCE           INTERN
 #define ADC_SUPPLY_VOLTAGE      5.0
-
-
-/* É também preciso informar qual o fator de
- * divisão da frequência da CPU. Os possíveis
- * valores são:
- *
- * CLK_2
- * CLK_4
- * CLK_8
- * CLK_16
- * CLK_32
- * CLK_64
- * CLK_128
- */
-#define PREESCALE CLK_32
-
-/* Data alignment:
- *
- * ADC_LEFT
- * ADC_RIGHT
- */
-#define DATA_ALIGN RIGHT
+#define ADC_PREESCALE           CLK_32
+#define ADC_DATA_ALIGN          RIGHT
 
 #endif /* AVRLIB_CONFIG_H_ */

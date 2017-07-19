@@ -84,10 +84,10 @@
 #define NOISE_REDUCTION     2
 #define FREE_RUNNING        3
 #define EXTERN              0
-#define INTERN              ((1 << REFS1) | (1 << REFS0))
-#define REF_VCC             (1 << REFS0)
-#define LEFT                (1 << ADLAR)
-#define RIGHT               0
+#define INTERN              1
+#define REF_VCC             2
+#define LEFT                0
+#define RIGHT               1
 
 ///* Configure the micro-controller reference voltage
 #if defined (__AVR_ATmega328P__)

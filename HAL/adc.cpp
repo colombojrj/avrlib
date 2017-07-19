@@ -21,10 +21,53 @@
 
 #include "adc.h"
 
+void SET_ADC_CLK()
+{
+    #if ADC_PREESCALE == CLK_2
+    #elif ADC_PREESCALE == CLK_4
+        ADCSRA = ADCSRA | (1 << ADPS1);
+    #elif ADC_PREESCALE == CLK_8
+        ADCSRA = ADCSRA | (1 << ADPS1) | (1 << ADPS0);
+    #elif ADC_PREESCALE == CLK_16
+        ADCSRA = ADCSRA | (1 << ADPS2);
+    #elif ADC_PREESCALE == CLK_32
+        ADCSRA = ADCSRA | (1 << ADPS2) | (1 << ADPS0);
+    #elif ADC_PREESCALE == CLK_64
+        ADCSRA = ADCSRA | (1 << ADPS2) | (1 << ADPS1);
+    #elif ADC_PREESCALE == CLK_128
+        ADCSRA = ADCSRA | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+    #endif
+}
+
+void SET_ADC_REF_VOLTAGE(uint8_t config)
+{
+    ADMUX = ADMUX & ~((1 << REFS1) | (1 << REFS0));
+    if (config == INTERN)
+    {
+        ADMUX = ADMUX | (1 << REFS1) | (1 << REFS0);
+    }
+    else if (config == REF_VCC)
+    {
+        ADMUX = ADMUX | (1 << REFS0);
+    }
+}
+
+void SET_ADC_DATA_ALIGN(uint8_t config)
+{
+    ADMUX = ADMUX & ~(1 << ADLAR);
+    if (config == LEFT)
+    {
+        ADMUX = ADMUX | (1 << ADLAR);
+    }
+}
+
 void INIT_ADC(uint8_t pin) {
 	// Enable the A/D converter
-	ADCSRA = (1 << ADEN) | PREESCALE;
-	ADMUX = ADC_REFERENCE | DATA_ALIGN;
+    ADCSRA = (1 << ADEN);
+    SET_ADC_CLK();
+    ADMUX = 0;
+    SET_ADC_REF_VOLTAGE(ADC_REFERENCE);
+    SET_ADC_DATA_ALIGN(ADC_DATA_ALIGN);
 
 	// Disable input digital buffer (saves power)
 	#if defined (__AVR_ATmega328P__)
@@ -40,7 +83,7 @@ uint16_t ANALOG_READ(uint8_t pin) {
 
 	#if ADC_OPERATION_MODE == OFF
 	    return 0;
-    #elif ADC_OPERATION_MODE == SINGLE
+    #elif ADC_OPERATION_MODE == SINGLE_CONVERSION
 		ADCSRA |= (1 << ADSC);
 		while (ADCSRA & (1 << ADSC)) {};
 		CHANGE_ADMUX (0);
@@ -70,12 +113,13 @@ uint16_t ANALOG_READ(uint8_t pin) {
 	#endif
 }
 
-void CHANGE_ADMUX (uint8_t pino) {
+void CHANGE_ADMUX (uint8_t pin) {
 	ADMUX &= 0b11110000;
-	ADMUX |= (pino & 0b00001111);
+	ADMUX |= (pin & 0b00001111);
 }
 
 void SET_REFERENCE_VOLTAGE(uint8_t source)
 {
 	ADMUX = source;
 }
+
