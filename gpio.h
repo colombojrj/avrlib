@@ -8,6 +8,15 @@
 #ifndef GPIO_H_
 #define GPIO_H_
 
+/**
+ * This the high level gpio abstraction layer available in avrlib.
+ *
+ * Each instance of gpio handles a single pin of the microcontroller.
+ * If the pin is PWM capable, it is only necessary to configure the
+ * respective timer in config.h and then instantiate a gpio object
+ * for the pin. The same logic is applicable for ADC pins.
+ */
+
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
