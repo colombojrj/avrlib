@@ -45,6 +45,11 @@ void SPI_INIT()
     // Turn off power saving
     PRR = PRR & ~(1 << PRSPI);
 
+    // Configure SPI pins as output
+    #if defined (__AVR_ATmega328P__)
+        DDRB = DDRB | (1 << PB3) | (1 << PB4) | (1 << PB5);
+    #endif
+
     // Reset configuration
     SPCR = 0;
 

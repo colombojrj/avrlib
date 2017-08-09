@@ -17,7 +17,7 @@
 #include "timers.h"
 #include "uart.h"
 #include "adc.h"
-
+#include "spi.h"
 
 
 #endif /* AVRLIB_HAL_H_ */
