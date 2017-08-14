@@ -29,6 +29,8 @@
 
 #include <util/delay.h>
 
+#define AVRLIB
+
 #include "config.h"
 #include "HAL/HAL.h"
 #include "logic_operations.h"

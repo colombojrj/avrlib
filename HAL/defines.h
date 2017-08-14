@@ -1,10 +1,3 @@
-/*
- * defines.h
- *
- *  Created on: 16/07/2017
- *      Author: junior
- */
-
 #ifndef AVRLIB_HAL_DEFINES_H_
 #define AVRLIB_HAL_DEFINES_H_
 

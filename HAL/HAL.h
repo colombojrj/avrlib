@@ -1,10 +1,3 @@
-/*
- * HAL.h
- *
- *  Created on: 16/07/2017
- *      Author: junior
- */
-
 #ifndef AVRLIB_HAL_H_
 #define AVRLIB_HAL_H_
 
@@ -17,6 +10,7 @@
 #include "timers.h"
 #include "uart.h"
 #include "adc.h"
+#include "spi.h"
 
 /**
  * This function has the purpose of configuring the micro-controllers
