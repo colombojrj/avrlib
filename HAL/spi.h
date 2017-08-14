@@ -13,6 +13,21 @@
  * * MASTER
  * * SLAVE (not supported yet)
  *
+ * In MASTER mode, the SPI pins are automatically configured as:
+ * * MOSI: OUTPUT
+ * * MISO: INPUT
+ * * SCK: OUTPUT
+ *
+ * The SS pin must be configured by the user of this library manually.
+ * The intention behind this is to allow the library to become more
+ * flexible.
+ *
+ * In SLAVE mode, the SPI pins are automatically configured as:
+ * * MOSI: INPUT
+ * * MISO: OUTPUT
+ * * SCK: INPUT
+ * * SS: INPUT
+ *
  * @author José Roberto Colombo Junior
  */
 
