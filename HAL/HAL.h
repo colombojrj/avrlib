@@ -18,6 +18,13 @@
 #include "uart.h"
 #include "adc.h"
 
+/**
+ * This function has the purpose of configuring the micro-controllers
+ * peripherals, as configured in the \ref config.h file.
+
+ * Make sure to run this function in the main program.
+ */
+extern void HAL_init();
 
 
 #endif /* AVRLIB_HAL_H_ */
