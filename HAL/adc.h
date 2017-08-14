@@ -27,7 +27,7 @@
  *
  * @code #include <adc.h> @endcode
  *
- * A library to handle the ADC module of AVR micro-controllers
+ * A library to handle the ADC module of AVR microcontrollers
  *
  * The supported modes of operation are:
  * * OFF
