@@ -2,7 +2,7 @@
 #define AVRLIB_HAL_SPI_H_
 
 /**
- * @defgroup hal_adc ADC Library
+ * @defgroup hal_spi SPI Library
  *
  * @code #include <spi.h> @endcode
  *
@@ -51,8 +51,6 @@ extern void SPI_SET_CLK();
  * There are no input or output parameters for this function.
  *
  * @param  none
- *
- * There are no output parameters
  * @return none
  */
 extern void SPI_INIT();
@@ -76,7 +74,6 @@ extern void SPI_MASTER_SEND(uint8_t data);
  * The input parameter is:
  * @param uint8_t data
  *
- * There are no output parameters
  * @return uint8_t received data
  */
 extern uint8_t SPI_MASTER_TRANCEIVER(uint8_t data);
