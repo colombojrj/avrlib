@@ -15,7 +15,7 @@ void HAL_init()
 
 
     // Initialize the SPI
-
+    SPI_INIT();
 }
 
 
