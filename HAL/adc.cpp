@@ -69,9 +69,12 @@ void INIT_ADC(uint8_t pin) {
     SET_ADC_REF_VOLTAGE(ADC_REFERENCE);
     SET_ADC_DATA_ALIGN(ADC_DATA_ALIGN);
 
-    // Disable input digital buffer (saves power)
     #if defined (__AVR_ATmega328P__)
+        // Disable input digital buffer (saves power)
         DIDR0 = (1 << pin);
+
+        // Disable power reduction
+        PRR = PRR & ~(1 << PRADC);
     #endif
 
     // TODO: add support to these operation modes
@@ -124,5 +127,14 @@ void CHANGE_ADMUX (uint8_t pin) {
 void SET_REFERENCE_VOLTAGE(uint8_t source)
 {
 	ADMUX = source;
+}
+
+int16_t READ_TEMPERATURE()
+{
+    #if defined (__AVR_ATmega328P__)
+        return ANALOG_READ(8);
+    #else
+        return 0;
+    #endif
 }
 
