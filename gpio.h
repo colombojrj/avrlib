@@ -22,6 +22,74 @@
 #include <avr/interrupt.h>
 #include "HAL/HAL.h"
 
+class pin {
+private:
+    // Variables with pin information
+    volatile uint8_t *_port;
+    uint8_t _pin;
+};
+
+class analogPin {
+private:
+    // Variables with pin information
+    volatile uint8_t *_port;
+    uint8_t _pin;
+
+public:
+    // Constructors
+    analogPin(volatile uint8_t *port, uint8_t pin);
+
+    // Reading function
+    uint16_t rawRead();  // return raw analog pin voltage
+    float read();        // return analog pin voltage
+};
+
+class digitalPin {
+private:
+    // Variables with pin information
+    volatile uint8_t *_port;
+    uint8_t _pin, _mode;
+
+public:
+    // Constructors
+    digitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
+
+    // Set pin mode
+    void setPinMode(uint8_t mode, uint8_t state = LOW);
+
+    // Writing functions
+    void writeHigh();
+    void writeLow();
+    void write(uint8_t state);
+    void toggle();
+
+    // Reading function
+    uint8_t read();
+
+    // Functions to deal with PCINT interrupt
+    void attach_pcint_interrupt();
+    void detach_pcint_interrupt();
+
+    // Functions to deal with EXT_INT interrupt (usually INT0 and INT1)
+    void attach_ext_int(uint8_t sensible_edge = RISING_EDGE);
+    void detach_ext_int();
+};
+
+class pwmPin {
+private:
+    // Variables with pin information
+    volatile uint8_t *_port;
+    uint8_t _pin;
+
+public:
+    // Constructors
+    pwmPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
+
+    // Function to PWM mode (only for PWM capable pins)
+    void setDuty(uint16_t duty);
+};
+
+/// Old class, kept by compatibility issues (it will be removed soon)
 class gpio {
 private:
 	// Variables with pin information
