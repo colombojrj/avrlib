@@ -23,6 +23,8 @@ protected:
 
 public:
     Pin(uint8_t *port, uint8_t pin);
+    void setAsOutput();
+    void setAsInput();
 };
 
 class AnalogPin : private Pin {
@@ -61,8 +63,8 @@ public:
     void disablePCINT();
 
     // Functions to deal with EXT_INT interrupt (usually INT0 and INT1)
-    void attach_ext_int(uint8_t sensible_edge = RISING_EDGE);
-    void detach_ext_int();
+    void enableINT(uint8_t sensible_edge = RISING_EDGE);
+    void disableINT();
 };
 
 class pwmPin {

@@ -7,6 +7,7 @@
  */
 
 #include "defines.h"
+#include "gpio.h"
 #include "timers.h"
 #include "uart.h"
 #include "adc.h"

@@ -4,6 +4,16 @@
 Pin::Pin(uint8_t *port, uint8_t pin) :
         _port(port), _pin(pin) {}
 
+void Pin::setAsOutput()
+{
+    DDR(*_port) = DDR(*_port) | (1 << _pin);
+}
+
+void Pin::setAsInput()
+{
+    DDR(*_port) = DDR(*_port) & ~(1 << _pin);
+}
+
 // AnalogPin constructor
 AnalogPin::AnalogPin(uint8_t *port, uint8_t pin) :
         Pin(port, pin) {}
@@ -21,35 +31,35 @@ void DigitalPin::setPinMode(uint8_t mode, uint8_t state)
     // Pin configuration
     if (_mode == OUTPUT)
     {
-        DDR(*_port) = DDR(*_port) | (1 << _pin);
-        write(state);
+        gpioAsOutput(_port, _pin);
+        gpioWrite(_port, _pin, state);
     }
     else // i.e., INPUT or INPUT_PULLUP
     {
-        DDR(*_port) = DDR(*_port) & ~(1 << _pin);
+        setAsInput();
         if (_mode == INPUT_PULLUP)
-            *_port = *_port | (1 << _pin);
+            gpioWriteHigh(_port, _pin);
         else
-            *_port = *_port &~(1 << _pin);
+            gpioWriteLow(_port, _pin);
     }
 }
 
 void DigitalPin::writeHigh()
 {
-    *_port = *_port | (1 << _pin);
+    gpioWriteHigh(_port, _pin);
 }
 
 void DigitalPin::writeLow()
 {
-    *_port = *_port & ~(1 << _pin);
+    gpioWriteLow(_port, _pin);
 }
 
 void DigitalPin::write(uint8_t state)
 {
     if (state == HIGH)
-        writeHigh();
+        gpioWriteHigh(_port, _pin);
     else
-        writeLow();
+        gpioWriteLow(_port, _pin);
 }
 
 /*
@@ -58,7 +68,7 @@ void DigitalPin::write(uint8_t state)
  */
 void DigitalPin::toggle()
 {
-    *_port = *_port ^ (1 << _pin);
+    gpioToggle(_port, _pin);
 }
 
 /*
@@ -68,11 +78,7 @@ void DigitalPin::toggle()
  */
 uint8_t DigitalPin::read()
 {
-    if ((PIN(*_port) & (1 << _pin)) > 0)
-        return 1;
-    else
-        return 0;
-    //return (uint8_t) ((PIN(*_port) & (1 << _pin)) >> _pin);
+    return gpioRead(_port, _pin);
 }
 
 gpio::gpio(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state)
@@ -310,7 +316,10 @@ void gpio::attach_ext_int(uint8_t sensible_edge)
 }
 void gpio::detach_ext_int()
 {
-
+    if (_pin == PD2)
+        EIMSK = EIMSK & ~(1 << INT0);
+    else
+        EIMSK = EIMSK & ~(1 << INT1);
 }
 
 // TODO: fix extreme values of PWM on PORTD (as done in PORTB)
