@@ -1,11 +1,79 @@
-/*
- * gpio.cpp
- *
- *  Created on: 10/06/2017
- *      Author: junior
- */
-
 #include "gpio.h"
+
+// Pin class constructor
+Pin::Pin(uint8_t *port, uint8_t pin) :
+        _port(port), _pin(pin) {}
+
+// AnalogPin constructor
+AnalogPin::AnalogPin(uint8_t *port, uint8_t pin) :
+        Pin(port, pin) {}
+
+// DigitalPin constructor
+DigitalPin::DigitalPin(uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state) :
+        Pin(port, pin), _mode(mode)
+{
+    // Configure the pin
+    setPinMode(mode, state);
+}
+
+void DigitalPin::setPinMode(uint8_t mode, uint8_t state)
+{
+    // Pin configuration
+    if (_mode == OUTPUT)
+    {
+        DDR(*_port) = DDR(*_port) | (1 << _pin);
+        write(state);
+    }
+    else // i.e., INPUT or INPUT_PULLUP
+    {
+        DDR(*_port) = DDR(*_port) & ~(1 << _pin);
+        if (_mode == INPUT_PULLUP)
+            *_port = *_port | (1 << _pin);
+        else
+            *_port = *_port &~(1 << _pin);
+    }
+}
+
+void DigitalPin::writeHigh()
+{
+    *_port = *_port | (1 << _pin);
+}
+
+void DigitalPin::writeLow()
+{
+    *_port = *_port & ~(1 << _pin);
+}
+
+void DigitalPin::write(uint8_t state)
+{
+    if (state == HIGH)
+        writeHigh();
+    else
+        writeLow();
+}
+
+/*
+ * Function to toggle the state of an output pin
+ *
+ */
+void DigitalPin::toggle()
+{
+    *_port = *_port ^ (1 << _pin);
+}
+
+/*
+ * Function to read a pin
+ *
+ * Returns logic state of the pin (HIGH or LOW)
+ */
+uint8_t DigitalPin::read()
+{
+    if ((PIN(*_port) & (1 << _pin)) > 0)
+        return 1;
+    else
+        return 0;
+    //return (uint8_t) ((PIN(*_port) & (1 << _pin)) >> _pin);
+}
 
 gpio::gpio(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state)
 {

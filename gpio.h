@@ -1,10 +1,3 @@
-/*
- * gpio.h
- *
- *  Created on: 10/06/2017
- *      Author: junior
- */
-
 #ifndef GPIO_H_
 #define GPIO_H_
 
@@ -22,37 +15,34 @@
 #include <avr/interrupt.h>
 #include "HAL/HAL.h"
 
-class pin {
-private:
+class Pin {
+protected:
     // Variables with pin information
-    volatile uint8_t *_port;
-    uint8_t _pin;
-};
-
-class analogPin {
-private:
-    // Variables with pin information
-    volatile uint8_t *_port;
+    uint8_t *_port;
     uint8_t _pin;
 
 public:
+    Pin(uint8_t *port, uint8_t pin);
+};
+
+class AnalogPin : private Pin {
+public:
     // Constructors
-    analogPin(volatile uint8_t *port, uint8_t pin);
+    AnalogPin(uint8_t *port, uint8_t pin);
 
     // Reading function
     uint16_t rawRead();  // return raw analog pin voltage
     float read();        // return analog pin voltage
 };
 
-class digitalPin {
+class DigitalPin : private Pin {
 private:
-    // Variables with pin information
-    volatile uint8_t *_port;
-    uint8_t _pin, _mode;
+    // Mode information
+    uint8_t _mode;
 
 public:
     // Constructors
-    digitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
+    DigitalPin(uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
 
     // Set pin mode
     void setPinMode(uint8_t mode, uint8_t state = LOW);
@@ -67,8 +57,8 @@ public:
     uint8_t read();
 
     // Functions to deal with PCINT interrupt
-    void attach_pcint_interrupt();
-    void detach_pcint_interrupt();
+    void enablePCINT();
+    void disablePCINT();
 
     // Functions to deal with EXT_INT interrupt (usually INT0 and INT1)
     void attach_ext_int(uint8_t sensible_edge = RISING_EDGE);
