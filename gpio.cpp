@@ -248,7 +248,7 @@ void gpio::detach_pcint_interrupt()
 {
 	if (*_port == PORTB)
 	{
-		PCMSK0 = PCMSK0 | (1 << _pin);
+		PCMSK0 = PCMSK0 & ~(1 << _pin);
 	}
 	else if (*_port == PORTC)
 	{
