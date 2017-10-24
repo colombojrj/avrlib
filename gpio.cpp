@@ -336,6 +336,10 @@ void gpio::set_duty(uint16_t duty)
 			{
 				TIMER0B_SET_OCR(duty & 0x00FF);
 			}
+			else // i.e., PD3 (OC2B)
+            {
+                TIMER2B_SET_OCR(duty & 0x00FF);
+            }
 
 		}
 		else if (*_port == PORTB)
@@ -392,6 +396,11 @@ void gpio::set_duty(uint16_t duty)
 					TIMER1B_SET_OCR(duty);
 				}
 			}
+			else // i.e., PB3 (OC2A)
+            {
+                TCCR2A = TCCR2A | (1 << COM2B1);
+                TIMER2A_SET_OCR(duty & 0x00FF);
+            }
 		}
 	#endif
 }
