@@ -67,7 +67,7 @@ public:
     void disableINT();
 };
 
-class pwmPin {
+class pwmPin : private DigitalPin {
 private:
     // Variables with pin information
     volatile uint8_t *_port;
