@@ -329,17 +329,11 @@ void gpio::set_duty(uint16_t duty)
 		if (*_port == PORTD)
 		{
 			if (_pin == PD6)
-			{
 				TIMER0A_SET_OCR(duty & 0x00FF);
-			}
 			else if (_pin == PD5)
-			{
 				TIMER0B_SET_OCR(duty & 0x00FF);
-			}
 			else // i.e., PD3 (OC2B)
-            {
                 TIMER2B_SET_OCR(duty & 0x00FF);
-            }
 
 		}
 		else if (*_port == PORTB)
