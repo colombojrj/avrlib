@@ -1,16 +1,16 @@
 #include "gpio.h"
 
-void gpioAsOutput(uint8_t *port, uint8_t pin)
+void gpioAsOutput(volatile uint8_t *port, uint8_t pin)
 {
     DDR(*port) = DDR(*port) | (1 << pin);
 }
 
-void gpioAsInput(uint8_t *port, uint8_t pin)
+void gpioAsInput(volatile uint8_t *port, uint8_t pin)
 {
     DDR(*port) = DDR(*port) & ~(1 << pin);
 }
 
-void gpioDirection(uint8_t *port, uint8_t pin, uint8_t dir)
+void gpioDirection(volatile uint8_t *port, uint8_t pin, uint8_t dir)
 {
     if (dir == OUTPUT)
         gpioAsOutput(port, pin);
@@ -18,17 +18,17 @@ void gpioDirection(uint8_t *port, uint8_t pin, uint8_t dir)
         gpioAsInput(port, pin);
 }
 
-void gpioWriteHigh(uint8_t *port, uint8_t pin)
+void gpioWriteHigh(volatile uint8_t *port, uint8_t pin)
 {
     *port = *port | (1 << pin);
 }
 
-void gpioWriteLow(uint8_t *port, uint8_t pin)
+void gpioWriteLow(volatile uint8_t *port, uint8_t pin)
 {
     *port = *port & ~(1 << pin);
 }
 
-void gpioWrite(uint8_t *port, uint8_t pin, uint8_t state)
+void gpioWrite(volatile uint8_t *port, uint8_t pin, uint8_t state)
 {
     if (state == HIGH)
         gpioWriteHigh(port, pin);
@@ -36,17 +36,17 @@ void gpioWrite(uint8_t *port, uint8_t pin, uint8_t state)
         gpioWriteLow(port, pin);
 }
 
-void gpioToggle(uint8_t *port, uint8_t pin)
+void gpioToggle(volatile uint8_t *port, uint8_t pin)
 {
     *port = *port ^ (1 << pin);
 }
 
-uint8_t gpioFastRead(uint8_t *port, uint8_t pin)
+uint8_t gpioFastRead(volatile uint8_t *port, uint8_t pin)
 {
     return (PIN(*port) & (1 << pin));
 }
 
-uint8_t gpioRead(uint8_t *port, uint8_t pin)
+uint8_t gpioRead(volatile uint8_t *port, uint8_t pin)
 {
     if (gpioFastRead(port, pin))
         return 1;
@@ -54,7 +54,7 @@ uint8_t gpioRead(uint8_t *port, uint8_t pin)
         return 0;
 }
 
-void enablePCINT(uint8_t *port, uint8_t pin)
+void enablePCINT(volatile uint8_t *port, uint8_t pin)
 {
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
@@ -76,7 +76,7 @@ void enablePCINT(uint8_t *port, uint8_t pin)
     #endif
 }
 
-void disablePCINT(uint8_t *port, uint8_t pin)
+void disablePCINT(volatile uint8_t *port, uint8_t pin)
 {
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
@@ -95,9 +95,8 @@ void disablePCINT(uint8_t *port, uint8_t pin)
     #endif
 }
 
-void enableINT(uint8_t *port, uint8_t pin, uint8_t edge)
+void enableINT(volatile uint8_t *port, uint8_t pin, uint8_t edge)
 {
-
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
         if (pin == PD2) // i.e., INT0
@@ -147,7 +146,7 @@ void enableINT(uint8_t *port, uint8_t pin, uint8_t edge)
     #endif
 }
 
-void disableINT(uint8_t *port, uint8_t pin)
+void disableINT(volatile uint8_t *port, uint8_t pin)
 {
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
@@ -155,5 +154,29 @@ void disableINT(uint8_t *port, uint8_t pin)
             EIMSK = EIMSK & ~(1 << INT0);
         else
             EIMSK = EIMSK & ~(1 << INT1);
+    #endif
+}
+
+void setDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
+{
+    #if defined (__AVR_ATmega328P__)
+        if (*port == PORTD)
+        {
+            if (pin == PD6)      // OC0A
+                TIMER0A_SET_OCR((uint8_t) (duty & 0x00FF));
+            else if (pin == PD5) // OC0B
+                TIMER0B_SET_OCR((uint8_t) (duty & 0x00FF));
+            else                 // i.e., PD3 (OC2B)
+                TIMER2B_SET_OCR((uint8_t) (duty & 0x00FF));
+        }
+        else // i.e., *port == PORTB
+        {
+            if (pin == PB1)      // OC1A
+                TIMER1A_SET_OCR(duty);
+            else if (pin == PB2) // OC1B
+                TIMER1B_SET_OCR(duty);
+            else                 // i.e., PB3 (OC2A)
+                TIMER2A_SET_OCR((uint8_t) (duty & 0x00FF));
+        }
     #endif
 }
