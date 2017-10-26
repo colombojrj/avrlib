@@ -28,6 +28,7 @@
 #include <avr/interrupt.h>
 #include "defines.h"
 #include "../config.h"
+#include "gpio.h"
 
 /*
  * FUNCTIONS TO HANDLE THE TIMER0 MODULE
@@ -53,6 +54,7 @@ extern void TIMER1_OFF();
  */
 extern void INIT_TIMER2A (uint8_t auxiliary_call = 0);
 extern void INIT_TIMER2B (uint8_t auxiliary_call = 0);
+extern void TIMER2_SET_CLK(uint8_t config);
 extern void TIMER2A_SET_OCR (uint8_t OCR);
 extern void TIMER2B_SET_OCR (uint8_t OCR);
 extern void TIMER2_OFF();

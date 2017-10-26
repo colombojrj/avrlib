@@ -88,6 +88,7 @@ void INIT_TIMER1 () {
 	{
 		OCR0A = OCR;
 	}
+
 	/*
 	 * Function: INIT_TIMER0A ()
 	 * Purpose:  start TIMER0 channel A as FAST PWM
@@ -285,93 +286,144 @@ void INIT_TIMER1 () {
 		}
 	#endif
 #endif
+
 #if TIMER1_CONFIG == PWM_A || TIMER1_CONFIG == PWM_AB
-	void TIMER1A_SET_OCR (uint16_t OCR) {
-		OCR1A = OCR;
+	void TIMER1A_SET_OCR (uint16_t OCR)
+	{
+	    if (OCR >= 255)
+        {
+            TCCR1A = TCCR1A & ~(1 << COM1A1);
+            #if TIMER1A_POLATIRY == NORMAL
+                gpioWriteHigh(&PORTB, PB1);
+            #else
+                gpioWriteLow(&PORTB, PB1);
+            #endif
+        }
+        else if (OCR <= 0)
+        {
+            TCCR1A = TCCR1A & ~(1 << COM1A1);
+            #if TIMER1A_POLATIRY == NORMAL
+                gpioWriteLow(&PORTB, PB1);
+            #else
+                gpioWriteHigh(&PORTB, PB1);
+            #endif
+        }
+        else
+        {
+            TCCR1A = TCCR1A | (1 << COM1A1);
+            OCR1A = OCR;
+        }
+
 	}
 	#if defined (__AVR_ATmega328P__)
-		void INIT_TIMER1A (uint8_t auxiliary_call) {
-			// Clear TIMER0 configuration registers
-			TCCR1A = 0;
-			TCCR1B = 0;
+        void INIT_TIMER1A (uint8_t auxiliary_call)
+        {
+            // Clear TIMER0 configuration registers
+            TCCR1A = 0;
+            TCCR1B = 0;
 
-			// If using both channels, make sure the other channel was configured
-			#if TIMER1_CONFIG == PWM_AB
-				if (auxiliary_call == 0) INIT_TIMER1B(1);
-			#endif
+            // If using both channels, make sure the other channel was configured
+            #if TIMER1_CONFIG == PWM_AB
+                if (auxiliary_call == 0) INIT_TIMER1B(1);
+            #endif
 
-			#if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM10);
-				TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == INVERTED
-				TCCR1A = TCCR1A | (1 << COM1A1) | (1 << COM1A0) | (1 << WGM10);
-				TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
+            #if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
+                TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM10);
+                TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
+            #elif TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == INVERTED
+                TCCR1A = TCCR1A | (1 << COM1A1) | (1 << COM1A0) | (1 << WGM10);
+                TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
 
-			// TODO add support for the other resolutions
-			#elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM11);
-				TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == INVERTED
-			#elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM10) | (1 << WGM11);
-				TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == INVERTED
-			#elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM11);
-				TCCR1B = TCCR1B | (1 << WGM13) | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == INVERTED
-			#endif
-			TCNT1 = 0;
-			TIMER1A_SET_OCR (TIMER1A_INITIAL_OCR);
-		}
+            // TODO add support for the other resolutions
+            #elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == NORMAL
+                TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM11);
+                TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
+            #elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == INVERTED
+            #elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == NORMAL
+                TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM10) | (1 << WGM11);
+                TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
+            #elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == INVERTED
+            #elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == NORMAL
+                TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM11);
+                TCCR1B = TCCR1B | (1 << WGM13) | (1 << WGM12) | TIMER1_CLOCK;
+            #elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == INVERTED
+            #endif
+            TCNT1 = 0;
+            TIMER1A_SET_OCR (TIMER1A_INITIAL_OCR);
+        }
 	#endif
-		// If configured only channel A, the gpio.h needs the INIT_TIMER0B() function
-		#if TIMER1_CONFIG == PWM_A
-			void INIT_TIMER1B(uint8_t auxiliary_call) {}
-			void TIMER1B_SET_OCR (uint16_t OCR) {}
-		#endif
+
+    // If configured only channel A, the gpio.h needs the INIT_TIMER0B() function
+    #if TIMER1_CONFIG == PWM_A
+        void INIT_TIMER1B(uint8_t auxiliary_call) {}
+        void TIMER1B_SET_OCR (uint16_t OCR) {}
+    #endif
 #endif
 
 #if TIMER1_CONFIG == PWM_B || TIMER1_CONFIG == PWM_AB
-	void TIMER1B_SET_OCR (uint16_t OCR) {
-			OCR1B = OCR;
-		}
-		void INIT_TIMER1B (uint8_t auxiliary_call) {
-			// Clear TIMER0 configuration registers
-			TCCR1A = 0;
-			TCCR1B = 0;
+	void TIMER1B_SET_OCR (uint16_t OCR)
+	{
+	    if (OCR >= 255)
+        {
+            TCCR1A = TCCR1A & ~(1 << COM1B1);
+            #if TIMER1B_POLATIRY == NORMAL
+                gpioWriteHigh(&PORTB, PB2);
+            #else
+                gpioWriteLow(&PORTB, PB2);
+            #endif
+        }
+        else if (OCR <= 0)
+        {
+            TCCR1A = TCCR1A & ~(1 << COM1B1);
+            #if TIMER1B_POLATIRY == NORMAL
+                gpioWriteLow(&PORTB, PB2);
+            #else
+                gpioWriteHigh(&PORTB, PB2);
+            #endif
+        }
+        else
+        {
+            TCCR1A = TCCR1A | (1 << COM1B1);
+            OCR1B = OCR;
+        }
+	}
+	void INIT_TIMER1B (uint8_t auxiliary_call)
+	{
+		// Clear TIMER0 configuration registers
+        TCCR1A = 0;
+        TCCR1B = 0;
 
-			// If using both channels, make sure the other channel was configured
-			#if TIMER0_CONFIG == PWM_AB
-				if (auxiliary_call == 0) INIT_TIMER1A(1);
-			#endif
+        // If using both channels, make sure the other channel was configured
+        #if TIMER0_CONFIG == PWM_AB
+            if (auxiliary_call == 0) INIT_TIMER1A(1);
+        #endif
 
-			#if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM10);
-				TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == INVERTED
-			#elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM11);
-				TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == INVERTED
-			#elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM10) | (1 << WGM11);
-				TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == INVERTED
-			#elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == NORMAL
-				TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM11);
-				TCCR1B = TCCR1B | (1 << WGM13) | (1 << WGM12) | TIMER1_CLOCK;
-			#elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == INVERTED
-			#endif
-			TCNT1 = 0;
-			TIMER1B_SET_OCR (TIMER1B_INITIAL_OCR);
-		}
+        #if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
+            TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM10);
+            TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
+        #elif TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == INVERTED
+        #elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == NORMAL
+            TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM11);
+            TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
+        #elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == INVERTED
+        #elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == NORMAL
+            TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM10) | (1 << WGM11);
+            TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
+        #elif TIMER1_RESOLUTION == 10 && TIMER1A_POLATIRY == INVERTED
+        #elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == NORMAL
+            TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM11);
+            TCCR1B = TCCR1B | (1 << WGM13) | (1 << WGM12) | TIMER1_CLOCK;
+        #elif TIMER1_RESOLUTION > 10 && TIMER1A_POLATIRY == INVERTED
+        #endif
+        TCNT1 = 0;
+        TIMER1B_SET_OCR (TIMER1B_INITIAL_OCR);
+    }
 
-		// If configured only channel B, the gpio.h needs the functions relating TIMER1A
-		#if TIMER1_CONFIG == PWM_B
-			void INIT_TIMER1A(uint8_t auxiliary_call) {}
-			void TIMER1A_SET_OCR(uint16_t OCR) {}
-		#endif
+    // If configured only channel B, the gpio.h needs the functions relating TIMER1A
+    #if TIMER1_CONFIG == PWM_B
+        void INIT_TIMER1A(uint8_t auxiliary_call) {}
+        void TIMER1A_SET_OCR(uint16_t OCR) {}
+    #endif
 #endif
 
 #if TIMER1_CONFIG == PHASE_CORRECT
@@ -406,6 +458,22 @@ void INIT_TIMER1 () {
  * TIMER2 MODULE
  */
 
+void TIMER2_SET_CLK(uint8_t config)
+{
+    if (TIMER2_CLOCK <= CLK_8)
+        TCCR2B = TIMER2_CLOCK;
+    else if (TIMER2_CLOCK == CLK_32)
+        TCCR2B = 3;
+    else if (TIMER2_CLOCK == CLK_64)
+        TCCR2B = 4;
+    else if (TIMER2_CLOCK == CLK_128)
+        TCCR2B = 5;
+    else if (TIMER2_CLOCK == CLK_256)
+        TCCR2B = 6;
+    else
+        TCCR2B = 7;
+}
+
 #if TIMER2_CONFIG == OFF
 	void INIT_TIMER2A (uint8_t auxiliary_call) {}
 	void INIT_TIMER2B (uint8_t auxiliary_call) {}
@@ -425,19 +493,7 @@ void INIT_TIMER1 () {
 			#else
 				TCCR2A = (1 << COM2A1) | (1 << COM2A0) | (1 << WGM21);
 			#endif
-			#if TIMER2_CLOCK <= CLK_8
-				TCCR2B = TIMER2_CLOCK;
-			#elif TIMER2_CLOCK == CLK_32
-				TCCR2B = 3;
-			#elif TIMER2_CLOCK == CLK_64
-				TCCR2B = 4;
-			#elif TIMER2_CLOCK == CLK_128
-				TCCR2B = 5;
-			#elif TIMER2_CLOCK == CLK_256
-				TCCR2B = 6;
-			#else
-				TCCR2B = 7;
-			#endif
+			TIMER2_SET_CLK(TIMER2_CLOCK);
 			TCNT2 = 0;
 			OCR2A = TIMER2A_INITIAL_OCR;
 			sei();
@@ -448,6 +504,134 @@ void INIT_TIMER1 () {
 		void TIMER2A_SET_OCR (uint8_t OCR) {}
 		void TIMER2B_SET_OCR (uint8_t OCR) {}
 	#endif
+#endif
+
+#if TIMER2_CONFIG == PWM_A || TIMER2_CONFIG == PWM_AB
+    void TIMER2A_SET_OCR (uint16_t OCR)
+    {
+        if (OCR >= 255)
+        {
+            // Turn off PWM
+            TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
+            #if TIMER2A_POLATIRY == NORMAL
+                gpioWriteHigh(&PORTB, PB1);
+            #else
+                gpioWriteLow(&PORTB, PB1);
+            #endif
+        }
+        else if (OCR <= 0)
+        {
+            TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
+            #if TIMER2A_POLATIRY == NORMAL
+                gpioWriteLow(&PORTB, PB1);
+            #else
+                gpioWriteHigh(&PORTB, PB1);
+            #endif
+        }
+        else
+        {
+            #if TIMER2A_POLATIRY == NORMAL
+                TCCR2A = TCCR2A | (1 << COM2A1);
+            #else
+                TCCR2A = TCCR2A | (1 << COM2A1) | (1 << COM2A0);
+            #endif
+            OCR2A = OCR;
+        }
+    }
+
+    #if defined (__AVR_ATmega328P__)
+        void INIT_TIMER2A (uint8_t auxiliary_call)
+        {
+            // Clear TIMER2 configuration registers
+            TCCR2A = 0;
+            TCCR2B = 0;
+
+            // If using both channels, make sure the other channel was configured
+            #if TIMER2_CONFIG == PWM_AB
+                if (auxiliary_call == 0) INIT_TIMER2B(1);
+            #endif
+
+            #if TIMER2A_POLATIRY == NORMAL
+                TCCR2A = TCCR2A | (1 << COM2A1) | (1 << WGM21) | (1 << WGM20);
+                TCCR2B = TCCR2B | (1 << WGM12);
+            #else // i.e., TIMER2A_POLATIRY == INVERTED
+                TCCR2A = TCCR2A | (1 << COM2A1) | (1 << COM2A0) | (1 << WGM21) | (1 << WGM20);
+            #endif
+            TIMER2_SET_CLK(TIMER2_CLOCK);
+            TCNT2 = 0;
+            TIMER2A_SET_OCR (TIMER2A_INITIAL_OCR);
+        }
+    #endif
+
+    // If configured only channel A, the gpio.h needs the INIT_TIMER2B() function
+    #if TIMER2_CONFIG == PWM_A
+        void INIT_TIMER2B(uint8_t auxiliary_call) {}
+        void TIMER2B_SET_OCR (uint16_t OCR) {}
+    #endif
+#endif
+
+#if TIMER2_CONFIG == PWM_B || TIMER2_CONFIG == PWM_AB
+    void TIMER2B_SET_OCR (uint16_t OCR)
+    {
+        if (OCR >= 255)
+        {
+            TCCR2B = TCCR2B & ~((1 << COM2B1) | (1 << COM2B0));
+            #if TIMER2B_POLATIRY == NORMAL
+                gpioWriteHigh(&PORTD, PD3);
+            #else
+                gpioWriteLow(&PORTD, PD3);
+            #endif
+        }
+        else if (OCR <= 0)
+        {
+            TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
+            #if TIMER2B_POLATIRY == NORMAL
+                gpioWriteLow(&PORTD, PD3);
+            #else
+                gpioWriteHigh(&PORTD, PD3);
+            #endif
+        }
+        else
+        {
+            #if TIMER2B_POLATIRY == NORMAL
+                TCCR2B = TCCR2B | (1 << COM2B1);
+            #else
+                TCCR2B = TCCR2B | (1 << COM2B1) | (1 << COM2B0);
+            #endif
+            OCR2B = OCR;
+        }
+    }
+
+    void INIT_TIMER2B (uint8_t auxiliary_call)
+    {
+        // Clear TIMER2 configuration registers
+        TCCR2A = 0;
+        TCCR2B = 0;
+
+        // If using both channels, make sure the other channel was configured
+        #if TIMER2_CONFIG == PWM_AB
+            if (auxiliary_call == 0) INIT_TIMER2A(1);
+        #endif
+
+        #if TIMER2B_POLATIRY == NORMAL
+            TCCR2A = TCCR2A | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
+            TCCR2B = TCCR2B | (1 << WGM12);
+        #else // i.e., TIMER2B_POLATIRY == INVERTED
+            TCCR2A = TCCR2A | (1 << COM2B1) | (1 << COM2B0) | (1 << WGM21) | (1 << WGM20);
+        #endif
+        TIMER2_SET_CLK(TIMER2_CLOCK);
+        TCNT2 = 0;
+        TIMER2B_SET_OCR(TIMER2B_INITIAL_OCR);
+    }
+
+    // If configured only channel B, the gpio.h needs the functions relating TIMER1A
+    #if TIMER2_CONFIG == PWM_B
+        void INIT_TIMER2A(uint8_t auxiliary_call) {}
+        void TIMER2A_SET_OCR(uint16_t OCR) {}
+    #endif
+#endif
+
+#if TIMER2_CONFIG == PHASE_CORRECT
 #endif
 
 
