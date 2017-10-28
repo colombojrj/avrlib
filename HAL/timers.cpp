@@ -86,7 +86,40 @@ void INIT_TIMER1 () {
 #if TIMER0_CONFIG == PWM_A || TIMER0_CONFIG == PWM_AB
 	void TIMER0A_SET_OCR(uint8_t OCR)
 	{
-		OCR0A = OCR;
+	    if (OCR >= 255)
+	    {
+	        // Disable compare match
+	        TCCR0A = TCCR0A & ~((1 << COM0A1) | (1 << COM0A0));
+
+            #if TIMER0A_POLATIRY == NORMAL
+	            gpioWriteHigh(&PORTD, PD6);
+            #else
+	            gpioWriteLow(&PORTD, PD6);
+            #endif
+	    }
+	    else if (OCR <= 0)
+	    {
+	        // Disable compare match
+	        TCCR0A = TCCR0A & ~((1 << COM0A1) | (1 << COM0A0));
+
+            #if TIMER0A_POLATIRY == NORMAL
+	            gpioWriteLow(&PORTD, PD6);
+            #else
+                gpioWriteHigh(&PORTD, PD6);
+            #endif
+	    }
+	    else
+	    {
+	        // Enable compare match
+            #if TIMER0A_POLATIRY == NORMAL
+	            TCCR0A = TCCR0A | (1 << COM0A1);
+            #else
+	            TCCR0A = TCCR0A | (1 << COM0A1) | (1 << COM0A0);
+            #endif
+
+	        // Set the output compare register
+	        OCR0A = OCR;
+	    }
 	}
 
 	/*
@@ -110,7 +143,6 @@ void INIT_TIMER1 () {
 			#else
 				TCCR0A = TCCR0A | (1 << COM0A1) | (1 << COM0A0) | (1 << WGM01) | (1 << WGM00);
 			#endif
-			//TCCR0A = (1 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
 			TCCR0B = TIMER0_CLOCK;
 			TCNT0 = 0;
 
@@ -129,12 +161,45 @@ void INIT_TIMER1 () {
 #if TIMER0_CONFIG == PWM_B || TIMER0_CONFIG == PWM_AB
 	void TIMER0B_SET_OCR (uint8_t OCR)
 	{
-		OCR0B = OCR;
+	    if (OCR >= 255)
+	    {
+	        // Disable compare match
+	        TCCR0B = TCCR0B & ~((1 << COM0B1) | (1 << COM0B0));
+
+	        #if TIMER0B_POLATIRY == NORMAL
+                gpioWriteHigh(&PORTD, PD5);
+            #else
+                gpioWriteLow(&PORTD, PD5);
+            #endif
+	    }
+	    else if (OCR <= 0)
+	    {
+	        // Disable compare match
+	        TCCR0B = TCCR0B & ~((1 << COM0B1) | (1 << COM0B0));
+
+	        #if TIMER0B_POLATIRY == NORMAL
+                gpioWriteHigh(&PORTD, PD5);
+            #else
+                gpioWriteLow(&PORTD, PD5);
+            #endif
+	    }
+	    else
+	    {
+	        // Enable compare match
+            #if TIMER0B_POLATIRY == NORMAL
+	            TCCR0B = TCCR0B | (1 << COM0B1);
+            #else
+	            TCCR0B = TCCR0B | (1 << COM0B1) | (1 << COM0B0);
+            #endif
+
+	        // Set output compare register
+	        OCR0B = OCR;
+	    }
 	}
 
 	/*
-	 * Function: INIT_TIMER0A ()
-	 * Purpose:  start TIMER0 channel A as FAST PWM
+	 * Function: INIT_TIMER0B ()
+	 * Purpose:  start TIMER0 channel B as FAST PWM
 	 * Receives: 0
 	 * Returns:  nothing
 	 */
@@ -292,7 +357,9 @@ void INIT_TIMER1 () {
 	{
 	    if (OCR >= 255)
         {
-            TCCR1A = TCCR1A & ~(1 << COM1A1);
+	        // Disable compare match
+            TCCR1A = TCCR1A & ~((1 << COM1A1) | (1 << COM1A0));
+
             #if TIMER1A_POLATIRY == NORMAL
                 gpioWriteHigh(&PORTB, PB1);
             #else
@@ -301,7 +368,9 @@ void INIT_TIMER1 () {
         }
         else if (OCR <= 0)
         {
-            TCCR1A = TCCR1A & ~(1 << COM1A1);
+            // Disable compare match
+            TCCR1A = TCCR1A & ~((1 << COM1A1) | (1 << COM1A0));
+
             #if TIMER1A_POLATIRY == NORMAL
                 gpioWriteLow(&PORTB, PB1);
             #else
@@ -310,10 +379,16 @@ void INIT_TIMER1 () {
         }
         else
         {
-            TCCR1A = TCCR1A | (1 << COM1A1);
+            // Enable compare match
+            #if TIMER1A_POLATIRY == NORMAL
+                TCCR1A = TCCR1A | (1 << COM1A1);
+            #else
+                TCCR1A = TCCR1A | (1 << COM1A1) | (1 << COM1A0);
+            #endif
+
+            // Set output compare register
             OCR1A = OCR;
         }
-
 	}
 	#if defined (__AVR_ATmega328P__)
         void INIT_TIMER1A (uint8_t auxiliary_call)
@@ -365,7 +440,9 @@ void INIT_TIMER1 () {
 	{
 	    if (OCR >= 255)
         {
-            TCCR1A = TCCR1A & ~(1 << COM1B1);
+	        // Disable compare match
+            TCCR1B = TCCR1B & ~((1 << COM1B1) | (1 << COM1B0));
+
             #if TIMER1B_POLATIRY == NORMAL
                 gpioWriteHigh(&PORTB, PB2);
             #else
@@ -374,7 +451,9 @@ void INIT_TIMER1 () {
         }
         else if (OCR <= 0)
         {
-            TCCR1A = TCCR1A & ~(1 << COM1B1);
+            // Disable compare match
+            TCCR1B = TCCR1B & ~((1 << COM1B1) | (1 << COM1B0));
+
             #if TIMER1B_POLATIRY == NORMAL
                 gpioWriteLow(&PORTB, PB2);
             #else
@@ -383,7 +462,14 @@ void INIT_TIMER1 () {
         }
         else
         {
-            TCCR1A = TCCR1A | (1 << COM1B1);
+            // Enable compare match
+            #if TIMER1B_POLATIRY == NORMAL
+                TCCR1B = TCCR1B | (1 << COM1B1);
+            #else
+                TCCR1B = TCCR1B | (1 << COM1B1) | (1 << COM1B0);
+            #endif
+
+            // Set output compare register
             OCR1B = OCR;
         }
 	}
@@ -402,6 +488,8 @@ void INIT_TIMER1 () {
             TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM10);
             TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
         #elif TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == INVERTED
+            TCCR1A = TCCR1A | (1 << COM1B1) | (1 << COM1B0) | (1 << WGM10);
+            TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
         #elif TIMER1_RESOLUTION == 9 && TIMER1A_POLATIRY == NORMAL
             TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM11);
             TCCR1B = TCCR1B | (1 << WGM12) | TIMER1_CLOCK;
@@ -460,15 +548,15 @@ void INIT_TIMER1 () {
 
 void TIMER2_SET_CLK(uint8_t config)
 {
-    if (TIMER2_CLOCK <= CLK_8)
-        TCCR2B = TIMER2_CLOCK;
-    else if (TIMER2_CLOCK == CLK_32)
+    if (config <= CLK_8)
+        TCCR2B = config;
+    else if (config == CLK_32)
         TCCR2B = 3;
-    else if (TIMER2_CLOCK == CLK_64)
+    else if (config == CLK_64)
         TCCR2B = 4;
-    else if (TIMER2_CLOCK == CLK_128)
+    else if (config == CLK_128)
         TCCR2B = 5;
-    else if (TIMER2_CLOCK == CLK_256)
+    else if (config == CLK_256)
         TCCR2B = 6;
     else
         TCCR2B = 7;
@@ -511,8 +599,9 @@ void TIMER2_SET_CLK(uint8_t config)
     {
         if (OCR >= 255)
         {
-            // Turn off PWM
+            // Disable compare match
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
+
             #if TIMER2A_POLATIRY == NORMAL
                 gpioWriteHigh(&PORTB, PB1);
             #else
@@ -521,7 +610,9 @@ void TIMER2_SET_CLK(uint8_t config)
         }
         else if (OCR <= 0)
         {
+            // Disable compare match
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
+
             #if TIMER2A_POLATIRY == NORMAL
                 gpioWriteLow(&PORTB, PB1);
             #else
@@ -530,11 +621,14 @@ void TIMER2_SET_CLK(uint8_t config)
         }
         else
         {
+            // Enable compare match
             #if TIMER2A_POLATIRY == NORMAL
                 TCCR2A = TCCR2A | (1 << COM2A1);
             #else
                 TCCR2A = TCCR2A | (1 << COM2A1) | (1 << COM2A0);
             #endif
+
+            // Set output compare register
             OCR2A = OCR;
         }
     }
@@ -575,7 +669,9 @@ void TIMER2_SET_CLK(uint8_t config)
     {
         if (OCR >= 255)
         {
+            // Disable compare match
             TCCR2B = TCCR2B & ~((1 << COM2B1) | (1 << COM2B0));
+
             #if TIMER2B_POLATIRY == NORMAL
                 gpioWriteHigh(&PORTD, PD3);
             #else
@@ -584,7 +680,9 @@ void TIMER2_SET_CLK(uint8_t config)
         }
         else if (OCR <= 0)
         {
+            // Disable compare match
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
+
             #if TIMER2B_POLATIRY == NORMAL
                 gpioWriteLow(&PORTD, PD3);
             #else
@@ -593,11 +691,14 @@ void TIMER2_SET_CLK(uint8_t config)
         }
         else
         {
+            // Enable compare match
             #if TIMER2B_POLATIRY == NORMAL
                 TCCR2B = TCCR2B | (1 << COM2B1);
             #else
                 TCCR2B = TCCR2B | (1 << COM2B1) | (1 << COM2B0);
             #endif
+
+            // Set output compare register
             OCR2B = OCR;
         }
     }
