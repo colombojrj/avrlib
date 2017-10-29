@@ -1,7 +1,7 @@
 #include "gpio.h"
 
 // Pin class constructor
-Pin::Pin(uint8_t *port, uint8_t pin) :
+Pin::Pin(volatile uint8_t *port, uint8_t pin) :
         _port(port), _pin(pin) {}
 
 void Pin::setAsOutput()
@@ -19,7 +19,7 @@ AnalogPin::AnalogPin(uint8_t *port, uint8_t pin) :
         Pin(port, pin) {}
 
 // DigitalPin constructor
-DigitalPin::DigitalPin(uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state) :
+DigitalPin::DigitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state) :
         Pin(port, pin), _mode(mode)
 {
     // Configure the pin
