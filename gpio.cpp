@@ -15,7 +15,7 @@ void Pin::setAsInput()
 }
 
 // AnalogPin constructor
-AnalogPin::AnalogPin(uint8_t *port, uint8_t pin) :
+AnalogPin::AnalogPin(volatile uint8_t *port, uint8_t pin) :
         Pin(port, pin) {}
 
 // DigitalPin constructor
