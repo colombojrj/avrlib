@@ -12,8 +12,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "defines.h"
-#include "../config.h"
+//#include "../config.h"
 #include "timers.h"
+
+namespace HAL {
 
 // Functions relating pin direction (INPUT or OUTPUT)
 void gpioAsOutput(volatile uint8_t *port, uint8_t pin);
@@ -41,5 +43,6 @@ void disableINT(volatile uint8_t *port, uint8_t pin);
 // PWM relating functions
 void setDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty);
 
+} // namespace HAL
 
 #endif /* HAL_GPIO_H_ */

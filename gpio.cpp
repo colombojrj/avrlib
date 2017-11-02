@@ -6,12 +6,12 @@ Pin::Pin(uint8_t *port, uint8_t pin) :
 
 void Pin::setAsOutput()
 {
-    DDR(*_port) = DDR(*_port) | (1 << _pin);
+    HAL::gpioAsOutput(_port, _pin);
 }
 
 void Pin::setAsInput()
 {
-    DDR(*_port) = DDR(*_port) & ~(1 << _pin);
+    HAL::gpioAsInput(_port, _pin);
 }
 
 // AnalogPin constructor
@@ -31,35 +31,35 @@ void DigitalPin::setPinMode(uint8_t mode, uint8_t state)
     // Pin configuration
     if (_mode == OUTPUT)
     {
-        gpioAsOutput(_port, _pin);
-        gpioWrite(_port, _pin, state);
+        HAL::gpioAsOutput(_port, _pin);
+        HAL::gpioWrite(_port, _pin, state);
     }
     else // i.e., INPUT or INPUT_PULLUP
     {
         setAsInput();
         if (_mode == INPUT_PULLUP)
-            gpioWriteHigh(_port, _pin);
+            HAL::gpioWriteHigh(_port, _pin);
         else
-            gpioWriteLow(_port, _pin);
+            HAL::gpioWriteLow(_port, _pin);
     }
 }
 
 void DigitalPin::writeHigh()
 {
-    gpioWriteHigh(_port, _pin);
+    HAL::gpioWriteHigh(_port, _pin);
 }
 
 void DigitalPin::writeLow()
 {
-    gpioWriteLow(_port, _pin);
+    HAL::gpioWriteLow(_port, _pin);
 }
 
 void DigitalPin::write(uint8_t state)
 {
     if (state == HIGH)
-        gpioWriteHigh(_port, _pin);
+        HAL::gpioWriteHigh(_port, _pin);
     else
-        gpioWriteLow(_port, _pin);
+        HAL::gpioWriteLow(_port, _pin);
 }
 
 /*
@@ -68,7 +68,7 @@ void DigitalPin::write(uint8_t state)
  */
 void DigitalPin::toggle()
 {
-    gpioToggle(_port, _pin);
+    HAL::gpioToggle(_port, _pin);
 }
 
 /*
@@ -78,8 +78,30 @@ void DigitalPin::toggle()
  */
 uint8_t DigitalPin::read()
 {
-    return gpioRead(_port, _pin);
+    return HAL::gpioRead(_port, _pin);
 }
+
+void DigitalPin::enablePCINT()
+{
+    HAL::enablePCINT(_port, _pin);
+    sei();
+}
+
+void DigitalPin::disablePCINT()
+{
+    HAL::disablePCINT(_port, _pin);
+}
+
+void DigitalPin::enableINT(uint8_t sensible_edge)
+{
+    HAL::enableINT(_port, _pin, sensible_edge);
+}
+
+void DigitalPin::disableINT()
+{
+    HAL::disableINT(_port, _pin);
+}
+
 
 gpio::gpio(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state)
 {

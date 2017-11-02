@@ -92,9 +92,9 @@ void INIT_TIMER1 () {
 	        TCCR0A = TCCR0A & ~((1 << COM0A1) | (1 << COM0A0));
 
             #if TIMER0A_POLATIRY == NORMAL
-	            gpioWriteHigh(&PORTD, PD6);
+	            HAL::gpioWriteHigh(&PORTD, PD6);
             #else
-	            gpioWriteLow(&PORTD, PD6);
+	            HAL::gpioWriteLow(&PORTD, PD6);
             #endif
 	    }
 	    else if (OCR <= 0)
@@ -103,9 +103,9 @@ void INIT_TIMER1 () {
 	        TCCR0A = TCCR0A & ~((1 << COM0A1) | (1 << COM0A0));
 
             #if TIMER0A_POLATIRY == NORMAL
-	            gpioWriteLow(&PORTD, PD6);
+	            HAL::gpioWriteLow(&PORTD, PD6);
             #else
-                gpioWriteHigh(&PORTD, PD6);
+	            HAL::gpioWriteHigh(&PORTD, PD6);
             #endif
 	    }
 	    else
@@ -167,9 +167,9 @@ void INIT_TIMER1 () {
 	        TCCR0B = TCCR0B & ~((1 << COM0B1) | (1 << COM0B0));
 
 	        #if TIMER0B_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTD, PD5);
+	            HAL::gpioWriteHigh(&PORTD, PD5);
             #else
-                gpioWriteLow(&PORTD, PD5);
+                HAL::gpioWriteLow(&PORTD, PD5);
             #endif
 	    }
 	    else if (OCR <= 0)
@@ -178,9 +178,9 @@ void INIT_TIMER1 () {
 	        TCCR0B = TCCR0B & ~((1 << COM0B1) | (1 << COM0B0));
 
 	        #if TIMER0B_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTD, PD5);
+	            HAL::gpioWriteHigh(&PORTD, PD5);
             #else
-                gpioWriteLow(&PORTD, PD5);
+                HAL::gpioWriteLow(&PORTD, PD5);
             #endif
 	    }
 	    else
@@ -361,9 +361,9 @@ void INIT_TIMER1 () {
             TCCR1A = TCCR1A & ~((1 << COM1A1) | (1 << COM1A0));
 
             #if TIMER1A_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTB, PB1);
+                HAL::gpioWriteHigh(&PORTB, PB1);
             #else
-                gpioWriteLow(&PORTB, PB1);
+                HAL::gpioWriteLow(&PORTB, PB1);
             #endif
         }
         else if (OCR <= 0)
@@ -372,9 +372,9 @@ void INIT_TIMER1 () {
             TCCR1A = TCCR1A & ~((1 << COM1A1) | (1 << COM1A0));
 
             #if TIMER1A_POLATIRY == NORMAL
-                gpioWriteLow(&PORTB, PB1);
+                HAL::gpioWriteLow(&PORTB, PB1);
             #else
-                gpioWriteHigh(&PORTB, PB1);
+                HAL::gpioWriteHigh(&PORTB, PB1);
             #endif
         }
         else
@@ -444,9 +444,9 @@ void INIT_TIMER1 () {
             TCCR1B = TCCR1B & ~((1 << COM1B1) | (1 << COM1B0));
 
             #if TIMER1B_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTB, PB2);
+                HAL::gpioWriteHigh(&PORTB, PB2);
             #else
-                gpioWriteLow(&PORTB, PB2);
+                HAL::gpioWriteLow(&PORTB, PB2);
             #endif
         }
         else if (OCR <= 0)
@@ -455,9 +455,9 @@ void INIT_TIMER1 () {
             TCCR1B = TCCR1B & ~((1 << COM1B1) | (1 << COM1B0));
 
             #if TIMER1B_POLATIRY == NORMAL
-                gpioWriteLow(&PORTB, PB2);
+                HAL::gpioWriteLow(&PORTB, PB2);
             #else
-                gpioWriteHigh(&PORTB, PB2);
+                HAL::gpioWriteHigh(&PORTB, PB2);
             #endif
         }
         else
