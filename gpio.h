@@ -18,11 +18,11 @@
 class Pin {
 protected:
     // Variables with pin information
-    uint8_t *_port;
+    volatile uint8_t *_port;
     uint8_t _pin;
 
 public:
-    Pin(uint8_t *port, uint8_t pin);
+    Pin(volatile uint8_t *port, uint8_t pin);
     void setAsOutput();
     void setAsInput();
 };
@@ -30,7 +30,7 @@ public:
 class AnalogPin : private Pin {
 public:
     // Constructors
-    AnalogPin(uint8_t *port, uint8_t pin);
+    AnalogPin(volatile uint8_t *port, uint8_t pin);
 
     // Reading function
     uint16_t rawRead();  // return raw analog pin voltage
@@ -44,7 +44,7 @@ private:
 
 public:
     // Constructors
-    DigitalPin(uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
+    DigitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
 
     // Set pin mode
     void setPinMode(uint8_t mode, uint8_t state = LOW);
