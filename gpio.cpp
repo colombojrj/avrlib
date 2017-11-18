@@ -16,7 +16,11 @@ void Pin::setAsInput()
 
 // AnalogPin constructor
 AnalogPin::AnalogPin(volatile uint8_t *port, uint8_t pin) :
-        Pin(port, pin) {}
+        Pin(port, pin)
+{
+	// Set pin as input
+	HAL::gpioAsADC(port, pin);
+}
 
 // DigitalPin constructor
 DigitalPin::DigitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state) :

@@ -10,9 +10,13 @@
  * for the pin. The same logic is applicable for ADC pins.
  */
 
-#include <stdio.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
+extern "C"
+{
+	#include <stdio.h>
+	#include <avr/io.h>
+	#include <avr/interrupt.h>
+}
+
 #include "HAL/HAL.h"
 
 class Pin {
