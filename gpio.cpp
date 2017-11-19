@@ -22,6 +22,17 @@ AnalogPin::AnalogPin(volatile uint8_t *port, uint8_t pin) :
 	HAL::gpioAsADC(port, pin);
 }
 
+uint16_t AnalogPin::rawRead()
+{
+	return ANALOG_READ(_pin);
+}
+
+float AnalogPin::read()
+{
+	float reading = ANALOG_READ(_pin);
+	return (ADC_REFERENCE_VOLTAGE*reading)/1023.;
+}
+
 // DigitalPin constructor
 DigitalPin::DigitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state) :
         Pin(port, pin), _mode(mode)
