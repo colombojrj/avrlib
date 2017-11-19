@@ -2,7 +2,7 @@
 
 namespace HAL {
 
-void gpioAsOutput(volatile uint8_t *port, const uint8_t pin)
+void gpioAsOutput(volatile uint8_t *port, uint8_t pin)
 {
     DDR(*port) = DDR(*port) | (1 << pin);
 }
@@ -16,6 +16,33 @@ void gpioAsADC(volatile uint8_t *port, uint8_t pin)
 {
 	gpioAsInput(port, pin);
 	INIT_ADC(pin);
+}
+
+void gpioAsPWM(volatile uint8_t *port, uint8_t pin)
+{
+	gpioAsOutput(port, pin);
+
+	#if defined (__AVR_ATmega8__)
+    #elif defined (__AVR_ATmega328P__)
+		if (*port == PORTD)
+		{
+			if (pin == PD6)
+				INIT_TIMER0A();
+			else if (pin == PD5)
+				INIT_TIMER0B();
+			else if (pin == PD3)
+				INIT_TIMER2B();
+		}
+		else if (*port == PORTB)
+		{
+			if (pin == PB1)
+				INIT_TIMER1A();
+			else if (pin == PB2)
+				INIT_TIMER1B();
+			else if (pin == PB3)
+				INIT_TIMER2A();
+		}
+	#endif
 }
 
 void gpioDirection(volatile uint8_t *port, uint8_t pin, uint8_t dir)
@@ -56,7 +83,7 @@ uint8_t gpioFastRead(volatile uint8_t *port, uint8_t pin)
 
 uint8_t gpioRead(volatile uint8_t *port, uint8_t pin)
 {
-    if (gpioFastRead(port, pin))
+    if (gpioFastRead(port, pin) > 0)
         return 1;
     else
         return 0;

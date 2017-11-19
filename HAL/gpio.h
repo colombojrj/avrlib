@@ -24,6 +24,7 @@ void gpioAsOutput(volatile uint8_t *port, uint8_t pin);
 void gpioAsInput(volatile uint8_t *port, uint8_t pin);
 void gpioDirection(volatile uint8_t *port, uint8_t pin, uint8_t dir);
 void gpioAsADC(volatile uint8_t *port, uint8_t pin);
+void gpioAsPWM(volatile uint8_t *port, uint8_t pin);
 
 /// Functions to write on pin
 void gpioWriteHigh(volatile uint8_t *port, uint8_t pin);
@@ -45,8 +46,6 @@ void disableINT(volatile uint8_t *port, uint8_t pin);
 
 // PWM relating functions
 void setDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty);
-
-// ADC relating functions
 
 
 } // namespace HAL
