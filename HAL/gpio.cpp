@@ -2,12 +2,12 @@
 
 namespace HAL {
 
-void gpioAsOutput(volatile uint8_t *port, uint8_t pin)
+void gpioAsOutput(volatile uint8_t *port, const uint8_t pin)
 {
     DDR(*port) = DDR(*port) | (1 << pin);
 }
 
-void gpioAsInput(volatile uint8_t *port, uint8_t pin)
+void gpioAsInput(volatile uint8_t *port, const uint8_t pin)
 {
     DDR(*port) = DDR(*port) & ~(1 << pin);
 }
@@ -45,7 +45,7 @@ void gpioAsPWM(volatile uint8_t *port, uint8_t pin)
 	#endif
 }
 
-void gpioDirection(volatile uint8_t *port, uint8_t pin, uint8_t dir)
+void gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir)
 {
     if (dir == OUTPUT)
         gpioAsOutput(port, pin);
@@ -53,17 +53,17 @@ void gpioDirection(volatile uint8_t *port, uint8_t pin, uint8_t dir)
         gpioAsInput(port, pin);
 }
 
-void gpioWriteHigh(volatile uint8_t *port, uint8_t pin)
+void gpioWriteHigh(volatile uint8_t *port, const uint8_t pin)
 {
     *port = *port | (1 << pin);
 }
 
-void gpioWriteLow(volatile uint8_t *port, uint8_t pin)
+void gpioWriteLow(volatile uint8_t *port, const uint8_t pin)
 {
     *port = *port & ~(1 << pin);
 }
 
-void gpioWrite(volatile uint8_t *port, uint8_t pin, uint8_t state)
+void gpioWrite(volatile uint8_t *port, const uint8_t pin, const uint8_t state)
 {
     if (state == HIGH)
         gpioWriteHigh(port, pin);
@@ -71,7 +71,7 @@ void gpioWrite(volatile uint8_t *port, uint8_t pin, uint8_t state)
         gpioWriteLow(port, pin);
 }
 
-void gpioToggle(volatile uint8_t *port, uint8_t pin)
+void gpioToggle(volatile uint8_t *port, const uint8_t pin)
 {
     *port = *port ^ (1 << pin);
 }
