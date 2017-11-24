@@ -33,7 +33,6 @@
 
 #include "config.h"
 #include "HAL/HAL.h"
-#include "logic_operations.h"
 #include "gpio.h"
 
 

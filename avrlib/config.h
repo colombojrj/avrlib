@@ -138,14 +138,14 @@
 
 // Use this file to configure the micro-controller peripherals
 
-#define TIMER0_CONFIG           PWM_B        ///< TIMER0 operation mode. For more information see \ref conf_timers
+#define TIMER0_CONFIG           PWM_AB       ///< TIMER0 operation mode. For more information see \ref conf_timers
 #define TIMER0_CLOCK            NO_PREESCALE ///< configure TIMER0 clock source. For more information see \ref conf_timers
 #define TIMER0A_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
 #define TIMER0A_INITIAL_OCR     0            ///< Initial duty cycle. For more information see \ref conf_timers
 #define TIMER0B_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
 #define TIMER0B_INITIAL_OCR     0            ///< Initial duty cycle. For more information see \ref conf_timers
 
-#define TIMER1_CONFIG           NORMAL       ///< TIMER1 operation mode. For more information see \ref conf_timers
+#define TIMER1_CONFIG           PWM_AB       ///< TIMER1 operation mode. For more information see \ref conf_timers
 #define TIMER1_CLOCK            CLK_64       ///< configure TIMER1 clock source. For more information see \ref conf_timers
 #define TIMER1_RESOLUTION       16           ///< in bits. For more information see \ref conf_timers
 #define TIMER1_PWM_TOP          0xFFFF       ///< if using up to 16 bit resolution. For more information see \ref conf_timers
@@ -154,7 +154,7 @@
 #define TIMER1B_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
 #define TIMER1B_INITIAL_OCR     0x0000       ///< Initial duty cycle. For more information see \ref conf_timers
 
-#define TIMER2_CONFIG           CTC          ///< TIMER2 operation mode. For more information see \ref conf_timers
+#define TIMER2_CONFIG           PWM_AB       ///< TIMER2 operation mode. For more information see \ref conf_timers
 #define TIMER2_CLOCK            CLK_128      ///< configure TIMER2 clock source. For more information see \ref conf_timers
 #define TIMER2A_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
 #define TIMER2A_INITIAL_OCR     0x7C         ///< Initial duty cycle. For more information see \ref conf_timers
@@ -166,7 +166,7 @@
 /////////
 // SPI //
 /////////
-#define SPI_MODE                MASTER
+#define SPI_MODE                OFF
 #define SPI_CLK                 CLK_2
 #define SPI_USE_INTERRUPT       FALSE
 #define SPI_DATA_ORDER          MSB_FIRST
@@ -181,7 +181,7 @@
 /////////////////////////////////
 // ANALOG TO DIGITAL CONVERTER //
 /////////////////////////////////
-#define ADC_OPERATION_MODE      SINGLE_CONVERSION
+#define ADC_OPERATION_MODE      OFF
 #define ADC_REFERENCE           INTERN
 #define ADC_SUPPLY_VOLTAGE      5.0
 #define ADC_PREESCALE           CLK_32
