@@ -22,10 +22,11 @@
 #ifndef TIMERS_H_
 #define TIMERS_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
+extern "C"
+{
+	#include <avr/io.h>
+	#include <avr/interrupt.h>
+}
 #include "defines.h"
 #include "../config.h"
 #include "gpio.h"
