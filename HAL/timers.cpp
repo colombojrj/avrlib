@@ -131,6 +131,9 @@ void INIT_TIMER1 () {
 	#if defined (__AVR_ATmega328P__)
 		void INIT_TIMER0A(uint8_t auxiliary_call)
 		{
+			// Set pin as output
+			gpioAsOutput(&PORTD, PD6);
+
 			// Clear TIMER0 configuration registers
 			TCCR0A = 0;
 			TCCR0B = 0;
@@ -206,6 +209,9 @@ void INIT_TIMER1 () {
 	#if defined (__AVR_ATmega328P__)
 		void INIT_TIMER0B(uint8_t auxiliary_call)
 		{
+			// Set pin as output
+			gpioAsOutput(&PORTD, PD5);
+
 			// Clear TIMER0 configuration registers
 			TCCR0A = 0;
 			TCCR0B = 0;
@@ -390,9 +396,12 @@ void INIT_TIMER1 () {
             OCR1A = OCR;
         }
 	}
-	#if defined (__AVR_ATmega328P__)
+    #if defined (__AVR_ATmega328P__)
         void INIT_TIMER1A (uint8_t auxiliary_call)
         {
+            // Set pin as output
+            gpioAsOutput(&PORTB, PB1);
+
             // Clear TIMER0 configuration registers
             TCCR1A = 0;
             TCCR1B = 0;
@@ -475,6 +484,9 @@ void INIT_TIMER1 () {
 	}
 	void INIT_TIMER1B (uint8_t auxiliary_call)
 	{
+		// Set pin as output
+		gpioAsOutput(&PORTB, PB2);
+
 		// Clear TIMER0 configuration registers
         TCCR1A = 0;
         TCCR1B = 0;
@@ -636,6 +648,9 @@ void TIMER2_SET_CLK(uint8_t config)
     #if defined (__AVR_ATmega328P__)
         void INIT_TIMER2A (uint8_t auxiliary_call)
         {
+            // Set pin as output
+            gpioAsOutput(&PORTB, PB3);
+
             // Clear TIMER2 configuration registers
             TCCR2A = 0;
             TCCR2B = 0;
@@ -705,6 +720,9 @@ void TIMER2_SET_CLK(uint8_t config)
 
     void INIT_TIMER2B (uint8_t auxiliary_call)
     {
+        // Set pin as output
+        gpioAsOutput(&PORTD, PD3);
+
         // Clear TIMER2 configuration registers
         TCCR2A = 0;
         TCCR2B = 0;
