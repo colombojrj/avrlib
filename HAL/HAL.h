@@ -6,6 +6,9 @@
  *
  */
 
+//namespace HAL
+//{
+
 #include "defines.h"
 #include "gpio.h"
 #include "timers.h"
@@ -21,5 +24,6 @@
  */
 extern void HAL_init();
 
+//} // namespace HAL
 
 #endif /* AVRLIB_HAL_H_ */

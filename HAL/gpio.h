@@ -16,8 +16,6 @@
 #include "timers.h"
 #include "adc.h"
 
-namespace HAL {
-
 /// To configure pin alternative functions (example: INPUT, OUTPUT, ADC)
 extern void gpioAsOutput(volatile uint8_t *port, const uint8_t pin);
 extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin);
@@ -44,9 +42,6 @@ extern void enableINT(volatile uint8_t *port, const uint8_t pin, const uint8_t e
 extern void disableINT(volatile uint8_t *port, const uint8_t pin);
 
 // PWM relating functions
-extern void setDuty(volatile uint8_t *port, const uint8_t pin, const uint16_t duty);
-
-
-} // namespace HAL
+extern void gpioSetDuty(volatile uint8_t *port, const uint8_t pin, const uint16_t duty);
 
 #endif /* HAL_GPIO_H_ */

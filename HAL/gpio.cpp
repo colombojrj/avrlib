@@ -1,7 +1,5 @@
 #include "gpio.h"
 
-namespace HAL {
-
 void gpioAsOutput(volatile uint8_t *port, const uint8_t pin)
 {
     DDR(*port) = DDR(*port) | (1 << pin);
@@ -215,5 +213,3 @@ void setDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
         }
     #endif
 }
-
-} // namespace HAL

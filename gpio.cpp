@@ -6,12 +6,12 @@ Pin::Pin(volatile uint8_t *port, uint8_t pin) :
 
 void Pin::setAsOutput()
 {
-    HAL::gpioAsOutput(_port, _pin);
+    gpioAsOutput(_port, _pin);
 }
 
 void Pin::setAsInput()
 {
-    HAL::gpioAsInput(_port, _pin);
+    gpioAsInput(_port, _pin);
 }
 
 // AnalogPin constructor
@@ -19,7 +19,7 @@ AnalogPin::AnalogPin(volatile uint8_t *port, uint8_t pin) :
         Pin(port, pin)
 {
 	// Set pin as input
-	HAL::gpioAsADC(port, pin);
+	gpioAsAdc(port, pin);
 }
 
 uint16_t AnalogPin::rawRead()
@@ -46,35 +46,35 @@ void DigitalPin::setPinMode(uint8_t mode, uint8_t state)
     // Pin configuration
     if (_mode == OUTPUT)
     {
-        HAL::gpioAsOutput(_port, _pin);
-        HAL::gpioWrite(_port, _pin, state);
+        setAsOutput();
+        gpioWrite(_port, _pin, state);
     }
     else // i.e., INPUT or INPUT_PULLUP
     {
         setAsInput();
         if (_mode == INPUT_PULLUP)
-            HAL::gpioWriteHigh(_port, _pin);
+            gpioWriteHigh(_port, _pin);
         else
-            HAL::gpioWriteLow(_port, _pin);
+            gpioWriteLow(_port, _pin);
     }
 }
 
 void DigitalPin::writeHigh()
 {
-    HAL::gpioWriteHigh(_port, _pin);
+    gpioWriteHigh(_port, _pin);
 }
 
 void DigitalPin::writeLow()
 {
-    HAL::gpioWriteLow(_port, _pin);
+    gpioWriteLow(_port, _pin);
 }
 
 void DigitalPin::write(uint8_t state)
 {
     if (state == HIGH)
-        HAL::gpioWriteHigh(_port, _pin);
+        gpioWriteHigh(_port, _pin);
     else
-        HAL::gpioWriteLow(_port, _pin);
+        gpioWriteLow(_port, _pin);
 }
 
 /*
@@ -83,7 +83,7 @@ void DigitalPin::write(uint8_t state)
  */
 void DigitalPin::toggle()
 {
-    HAL::gpioToggle(_port, _pin);
+    gpioToggle(_port, _pin);
 }
 
 /*
@@ -93,28 +93,28 @@ void DigitalPin::toggle()
  */
 uint8_t DigitalPin::read()
 {
-    return HAL::gpioRead(_port, _pin);
+    return gpioRead(_port, _pin);
 }
 
 void DigitalPin::enablePCINT()
 {
-    HAL::enablePCINT(_port, _pin);
+    gpioEnablePCINT(_port, _pin);
     sei();
 }
 
 void DigitalPin::disablePCINT()
 {
-    HAL::disablePCINT(_port, _pin);
+    gpioDisablePCINT(_port, _pin);
 }
 
 void DigitalPin::enableINT(uint8_t sensible_edge)
 {
-    HAL::enableINT(_port, _pin, sensible_edge);
+    gpioEnableINT(_port, _pin, sensible_edge);
 }
 
 void DigitalPin::disableINT()
 {
-    HAL::disableINT(_port, _pin);
+    gpioDisableINT(_port, _pin);
 }
 
 
