@@ -5,18 +5,20 @@ void gpioAsOutput(volatile uint8_t *port, const uint8_t pin)
     DDR(*port) = DDR(*port) | (1 << pin);
 }
 
-void gpioAsInput(volatile uint8_t *port, const uint8_t pin)
+void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp)
 {
     DDR(*port) = DDR(*port) & ~(1 << pin);
+    if (pullUp > 0)
+        gpioWriteHigh(port, pin);
 }
 
-void gpioAsAdc(volatile uint8_t *port, uint8_t pin)
+void gpioAsAdc(volatile uint8_t *port, const uint8_t pin)
 {
-	gpioAsInput(port, pin);
+	gpioAsInput(port, pin, 0);
 	INIT_ADC(pin);
 }
 
-void gpioAsPwm(volatile uint8_t *port, uint8_t pin)
+void gpioAsPwm(volatile uint8_t *port, const uint8_t pin)
 {
 	gpioAsOutput(port, pin);
 }
@@ -26,7 +28,7 @@ void gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir)
     if (dir == OUTPUT)
         gpioAsOutput(port, pin);
     else
-        gpioAsInput(port, pin);
+        gpioAsInput(port, pin, dir);
 }
 
 void gpioWriteHigh(volatile uint8_t *port, const uint8_t pin)

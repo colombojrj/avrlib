@@ -1,7 +1,7 @@
 #include "HAL.h"
 #include "../config.h"
 
-void HAL_init()
+void initHAL()
 {
     // Initialize the TIMERs
     TIMER0_OFF();

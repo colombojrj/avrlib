@@ -33,42 +33,39 @@ void SPI_SET_CLK()
     #endif
 }
 
-void SPI_INIT()
+// TODO update this code to use the gpio low level library
+void SPI_INIT(uint8_t mode)
 {
-    #if SPI_MODE == MASTER || SPI_MODE == SLAVE
-        // Turn off power saving
-        PRR = PRR & ~(1 << PRSPI);
+    // Turn off power saving
+    PRR = PRR & ~(1 << PRSPI);
 
-        // Reset configuration
-        SPCR = 0;
+    // Reset configuration
+    SPCR = (1 << SPE) | (1 << SPR0);
 
-        #if SPI_MODE == MASTER
-            SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+    if (mode == MASTER)
+    {
+        SPCR = (1 << MSTR);
 
-            // Configure SPI pins as output
-            _DDR_SPI = _DDR_SPI | (1 << _PIN_MOSI) | (1 << _PIN_SCK);
-            _DDR_SPI = _DDR_SPI & ~(1 << _PIN_MISO);
-        #else
-            SPCR = (1 << SPE) | (1 << SPR0);
+        // Configure SPI pins as output
+        _DDR_SPI = _DDR_SPI | (1 << _PIN_MOSI) | (1 << _PIN_SCK);
+        _DDR_SPI = _DDR_SPI & ~(1 << _PIN_MISO);
+    }
+    else
+    {
+        // Configure SPI pins as output
+        _DDR_SPI = _DDR_SPI & ~((1 << _PIN_SS) | (1 << _PIN_MOSI) | (1 << _PIN_SCK));
+        _DDR_SPI = _DDR_SPI | (1 << _PIN_MISO);
+    }
 
-            // Configure SPI pins as output
-            _DDR_SPI = _DDR_SPI & ~((1 << _PIN_SS) | (1 << _PIN_MOSI) | (1 << _PIN_SCK));
-            _DDR_SPI = _DDR_SPI | (1 << _PIN_MISO);
-        #endif
+    SPI_SET_CLK();
 
-        SPI_SET_CLK();
+    #if SPI_USE_INTERRUPT == TRUE
+        SPCR = SPCR | (1 << SPIE);
+        sei();
+    #endif
 
-        #if SPI_USE_INTERRUPT == TRUE
-            SPCR = SPCR | (1 << SPIE);
-            sei();
-        #endif
-
-        #if SPI_DATA_ORDER == LSB_FIRST
-            SPCR = SPCR | (1 << DORD);
-        #endif
-
-    #elif SPI_MODE == OFF
-        SPI_OFF();
+    #if SPI_DATA_ORDER == LSB_FIRST
+        SPCR = SPCR | (1 << DORD);
     #endif
 }
 

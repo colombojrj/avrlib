@@ -9,9 +9,9 @@ void Pin::setAsOutput()
     gpioAsOutput(_port, _pin);
 }
 
-void Pin::setAsInput()
+void Pin::setAsInput(uint8_t withPullUp)
 {
-    gpioAsInput(_port, _pin);
+    gpioAsInput(_port, _pin, withPullUp);
 }
 
 // AnalogPin constructor
@@ -51,11 +51,10 @@ void DigitalPin::setPinMode(uint8_t mode, uint8_t state)
     }
     else // i.e., INPUT or INPUT_PULLUP
     {
-        setAsInput();
         if (_mode == INPUT_PULLUP)
-            gpioWriteHigh(_port, _pin);
+            setAsInput(1);
         else
-            gpioWriteLow(_port, _pin);
+            setAsInput(0);
     }
 }
 

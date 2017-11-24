@@ -31,8 +31,33 @@ extern "C"
 #include "../config.h"
 #include "gpio.h"
 
-/*
- * FUNCTIONS TO HANDLE THE TIMER0 MODULE
+/**
+ * Organizational idea of this library:
+ *
+ * - The file defines.h keeps the definitions of the actual
+ *   microcontroller timers (such as what pin and port the
+ *   PWM is connected to)
+ *
+ * - This library uses those definitions to map the PWM
+ *   pins. If a new microcontroller needs to be added, then
+ *   it remains to add the port definition on defines.h
+ *
+ * - It is assumed that a timer has a single configuration
+ *   during production. With this, defines were inserted
+ *   to allow the compiler to select what configuration is
+ *   needed and then, generate code only for that
+ *   application. The main concern here is to keep the code
+ *   size smallest as possible. If "dynamic" functions were
+ *   used the compiler would have to build all unused code,
+ *   occupying memory of the microcontroller.
+ *
+ * - Main philosophy: use the right microcontroller for the
+ *   application. If it needs more peripherals, then it is
+ *   not the right microcontroller for the application.
+ */
+
+/**
+ * Functions to handle the TIMER0 module
  */
 extern void INIT_TIMER0A();
 extern void INIT_TIMER0B();
@@ -40,8 +65,8 @@ extern void TIMER0A_SET_OCR(uint8_t OCR);
 extern void TIMER0B_SET_OCR(uint8_t OCR);
 extern void TIMER0_OFF();
 
-/*
- * FUNCTIONS TO HANDLE THE TIMER1 MODULE
+/**
+ * Functions to handle the TIMER1 module
  */
 extern void INIT_TIMER1A ();
 extern void INIT_TIMER1B ();
@@ -50,8 +75,8 @@ extern void TIMER1B_SET_OCR (uint16_t OCR);
 extern void SET_INPUT_CAPTURE_EDGE(uint8_t type);
 extern void TIMER1_OFF();
 
-/*
- * FUNCTIONS TO HANDLE THE TIMER2 MODULE
+/**
+ * Functions to handle the TIMER2 module
  */
 extern void INIT_TIMER2A ();
 extern void INIT_TIMER2B ();

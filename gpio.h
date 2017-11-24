@@ -29,7 +29,7 @@ protected:
 public:
     Pin(volatile uint8_t *port, uint8_t pin);
     void setAsOutput();
-    void setAsInput();
+    void setAsInput(uint8_t withPullUp);
 };
 
 class AnalogPin : private Pin {
