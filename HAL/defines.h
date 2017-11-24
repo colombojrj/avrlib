@@ -84,9 +84,23 @@
 #define LEFT                0
 #define RIGHT               1
 
-///* Configure the micro-controller reference voltage
-#if defined (__AVR_ATmega328P__)
-    #define ADC_REFERENCE_VOLTAGE   1.1
+///* Configure the microcontroller reference voltage
+#if defined (__AVR_ATmega328__)  || (__AVR_ATmega328P__) || \
+            (__AVR_ATtiny13__)   || (__AVR_ATtiny13A__)  || \
+            (__AVR_ATtiny24__)   || (__AVR_ATtiny24A__)  || \
+            (__AVR_ATtiny44__)   || (__AVR_ATtiny44A__)  || \
+            (__AVR_ATtiny84__)   || (__AVR_ATtiny84A__)
+    #define ADC_INTERNT_REF_VOLTAGE   1.1
+#elif defined (__AVR_ATmega8__) || (__AVR_ATmega8A__)
+
+	#define ADC_INTERNT_REF_VOLTAGE   2.56
+#endif
+
+// Automatic reference voltage selection
+#if ADC_REFERENCE == INTERN
+	#define ADC_REFERENCE_VOLTAGE ADC_INTERNT_REF_VOLTAGE
+#else
+	#define ADC_REFERENCE_VOLTAGE ADC_SUPPLY_VOLTAGE
 #endif
 
 /////////
