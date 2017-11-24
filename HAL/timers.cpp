@@ -607,7 +607,7 @@ void TIMER2_SET_CLK(uint8_t config)
 #endif
 
 #if TIMER2_CONFIG == PWM_A || TIMER2_CONFIG == PWM_AB
-    void TIMER2A_SET_OCR (uint16_t OCR)
+    void TIMER2A_SET_OCR (uint8_t OCR)
     {
         if (OCR >= 255)
         {
@@ -615,9 +615,9 @@ void TIMER2_SET_CLK(uint8_t config)
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
 
             #if TIMER2A_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTB, PB1);
+                gpioWriteHigh(&PORTB, PB3);
             #else
-                gpioWriteLow(&PORTB, PB1);
+                gpioWriteLow(&PORTB, PB3);
             #endif
         }
         else if (OCR <= 0)
@@ -626,9 +626,9 @@ void TIMER2_SET_CLK(uint8_t config)
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
 
             #if TIMER2A_POLATIRY == NORMAL
-                gpioWriteLow(&PORTB, PB1);
+                gpioWriteLow(&PORTB, PB3);
             #else
-                gpioWriteHigh(&PORTB, PB1);
+                gpioWriteHigh(&PORTB, PB3);
             #endif
         }
         else
@@ -680,7 +680,7 @@ void TIMER2_SET_CLK(uint8_t config)
 #endif
 
 #if TIMER2_CONFIG == PWM_B || TIMER2_CONFIG == PWM_AB
-    void TIMER2B_SET_OCR (uint16_t OCR)
+    void TIMER2B_SET_OCR (uint8_t OCR)
     {
         if (OCR >= 255)
         {
