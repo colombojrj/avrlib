@@ -70,9 +70,9 @@
 	        TCCR0A = TCCR0A & ~((1 << COM0A1) | (1 << COM0A0));
 
             #if TIMER0A_POLATIRY == NORMAL
-	            gpioWriteHigh(&PORTD, PD6);
+	            gpioWriteHigh(&OC0A_PORT, OC0A_PIN);
             #else
-	            gpioWriteLow(&PORTD, PD6);
+	            gpioWriteLow(&OC0A_PORT, OC0A_PIN);
             #endif
 	    }
 	    else if (OCR <= 0)
@@ -81,9 +81,9 @@
 	        TCCR0A = TCCR0A & ~((1 << COM0A1) | (1 << COM0A0));
 
             #if TIMER0A_POLATIRY == NORMAL
-	            gpioWriteLow(&PORTD, PD6);
+	        gpioWriteLow(&OC0A_PORT, OC0A_PIN);
             #else
-	            gpioWriteHigh(&PORTD, PD6);
+	            gpioWriteHigh(&OC0A_PORT, OC0A_PIN);
             #endif
 	    }
 	    else
@@ -113,7 +113,7 @@
 		    PRR = PRR & ~(1 << PRTIM0);
 
 			// Set pin as output
-			gpioAsOutput(&PORTD, PD6);
+			gpioAsOutput(&OC0A_PORT, OC0A_PIN);
 
 			#if TIMER0A_POLATIRY == NORMAL
 				TCCR0A = TCCR0A | (1 << COM0A1) | (1 << WGM01) | (1 << WGM00);
@@ -138,9 +138,9 @@
 	        TCCR0B = TCCR0B & ~((1 << COM0B1) | (1 << COM0B0));
 
 	        #if TIMER0B_POLATIRY == NORMAL
-	            gpioWriteHigh(&PORTD, PD5);
+	            gpioWriteHigh(&OC0B_PORT, OC0B_PIN);
             #else
-                gpioWriteLow(&PORTD, PD5);
+                gpioWriteLow(&OC0B_PORT, OC0B_PIN);
             #endif
 	    }
 	    else if (OCR <= 0)
@@ -149,9 +149,9 @@
 	        TCCR0B = TCCR0B & ~((1 << COM0B1) | (1 << COM0B0));
 
 	        #if TIMER0B_POLATIRY == NORMAL
-	            gpioWriteHigh(&PORTD, PD5);
+	            gpioWriteHigh(&OC0B_PORT, OC0B_PIN);
             #else
-                gpioWriteLow(&PORTD, PD5);
+                gpioWriteLow(&OC0B_PORT, OC0B_PIN);
             #endif
 	    }
 	    else
@@ -181,7 +181,7 @@
 		    PRR = PRR & ~(1 << PRTIM0);
 
 			// Set pin as output
-			gpioAsOutput(&PORTD, PD5);
+			gpioAsOutput(&OC0B_PORT, OC0B_PIN);
 
 			#if TIMER0A_POLATIRY == NORMAL
 				TCCR0A = TCCR0A | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
@@ -260,6 +260,7 @@
             TCCR1B = TIMER1_CLOCK | (1 << ICNC1);
             TIMSK1 = (1 << TOIE1) | (1 << ICIE1);
 
+            // TODO migrate this code to new gpio functions
             // Configure Input Capture Pin as input without pull-up resistor
             DDRB = DDRB & ~(1 << PB0);
             PORTB = PORTB & ~(1 << PB0);
@@ -337,9 +338,9 @@
             TCCR1A = TCCR1A & ~((1 << COM1A1) | (1 << COM1A0));
 
             #if TIMER1A_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTB, PB1);
+                gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
             #else
-                gpioWriteLow(&PORTB, PB1);
+                gpioWriteLow(&OC1A_PORT, OC1A_PIN);
             #endif
         }
         else if (OCR <= 0)
@@ -348,9 +349,9 @@
             TCCR1A = TCCR1A & ~((1 << COM1A1) | (1 << COM1A0));
 
             #if TIMER1A_POLATIRY == NORMAL
-                gpioWriteLow(&PORTB, PB1);
+                gpioWriteLow(&OC1A_PORT, OC1A_PIN);
             #else
-                gpioWriteHigh(&PORTB, PB1);
+                gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
             #endif
         }
         else
@@ -373,7 +374,7 @@
             PRR = PRR & ~(1 << PRTIM1);
 
             // Set pin as output
-            gpioAsOutput(&PORTB, PB1);
+            gpioAsOutput(&OC1A_PORT, OC1A_PIN);
 
             #if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
                 TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM10);
@@ -411,9 +412,9 @@
             TCCR1B = TCCR1B & ~((1 << COM1B1) | (1 << COM1B0));
 
             #if TIMER1B_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTB, PB2);
+                gpioWriteHigh(&OC1A_PORT, OC1B_PIN);
             #else
-                gpioWriteLow(&PORTB, PB2);
+                gpioWriteLow(&OC1A_PORT, OC1B_PIN);
             #endif
         }
         else if (OCR <= 0)
@@ -422,9 +423,9 @@
             TCCR1B = TCCR1B & ~((1 << COM1B1) | (1 << COM1B0));
 
             #if TIMER1B_POLATIRY == NORMAL
-                gpioWriteLow(&PORTB, PB2);
+                gpioWriteLow(&OC1A_PORT, OC1B_PIN);
             #else
-                gpioWriteHigh(&PORTB, PB2);
+                gpioWriteHigh(&OC1A_PORT, OC1B_PIN);
             #endif
         }
         else
@@ -446,7 +447,7 @@
 	    PRR = PRR & ~(1 << PRTIM1);
 
 		// Set pin as output
-		gpioAsOutput(&PORTB, PB2);
+		gpioAsOutput(&OC1A_PORT, OC1B_PIN);
 
         #if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
             TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM10);
@@ -562,9 +563,9 @@ void TIMER2_SET_CLK(uint8_t config)
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
 
             #if TIMER2A_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTB, PB3);
+                gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
             #else
-                gpioWriteLow(&PORTB, PB3);
+                gpioWriteLow(&OC2A_PORT, OC2A_PIN);
             #endif
         }
         else if (OCR <= 0)
@@ -573,9 +574,9 @@ void TIMER2_SET_CLK(uint8_t config)
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
 
             #if TIMER2A_POLATIRY == NORMAL
-                gpioWriteLow(&PORTB, PB3);
+                gpioWriteLow(&OC2A_PORT, OC2A_PIN);
             #else
-                gpioWriteHigh(&PORTB, PB3);
+                gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
             #endif
         }
         else
@@ -599,7 +600,7 @@ void TIMER2_SET_CLK(uint8_t config)
             PRR = PRR & ~(1 << PRTIM2);
 
             // Set pin as output
-            gpioAsOutput(&PORTB, PB3);
+            gpioAsOutput(&OC2A_PORT, OC2A_PIN);
 
             #if TIMER2A_POLATIRY == NORMAL
                 TCCR2A = TCCR2A | (1 << COM2A1) | (1 << WGM21) | (1 << WGM20);
@@ -623,9 +624,9 @@ void TIMER2_SET_CLK(uint8_t config)
             TCCR2B = TCCR2B & ~((1 << COM2B1) | (1 << COM2B0));
 
             #if TIMER2B_POLATIRY == NORMAL
-                gpioWriteHigh(&PORTD, PD3);
+                gpioWriteHigh(&OC2B_PORT, OC2B_PIN);
             #else
-                gpioWriteLow(&PORTD, PD3);
+                gpioWriteLow(&OC2B_PORT, OC2B_PIN);
             #endif
         }
         else if (OCR <= 0)
@@ -634,9 +635,9 @@ void TIMER2_SET_CLK(uint8_t config)
             TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
 
             #if TIMER2B_POLATIRY == NORMAL
-                gpioWriteLow(&PORTD, PD3);
+                gpioWriteLow(&OC2B_PORT, OC2B_PIN);
             #else
-                gpioWriteHigh(&PORTD, PD3);
+                gpioWriteHigh(&OC2B_PORT, OC2B_PIN);
             #endif
         }
         else
@@ -659,7 +660,7 @@ void TIMER2_SET_CLK(uint8_t config)
         PRR = PRR & ~(1 << PRTIM2);
 
         // Set pin as output
-        gpioAsOutput(&PORTD, PD3);
+        gpioAsOutput(&OC2B_PORT, OC2B_PIN);
 
         #if TIMER2B_POLATIRY == NORMAL
             TCCR2A = TCCR2A | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
