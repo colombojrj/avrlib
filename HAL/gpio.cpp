@@ -10,13 +10,13 @@ void gpioAsInput(volatile uint8_t *port, const uint8_t pin)
     DDR(*port) = DDR(*port) & ~(1 << pin);
 }
 
-void gpioAsADC(volatile uint8_t *port, uint8_t pin)
+void gpioAsAdc(volatile uint8_t *port, uint8_t pin)
 {
 	gpioAsInput(port, pin);
 	INIT_ADC(pin);
 }
 
-void gpioAsPWM(volatile uint8_t *port, uint8_t pin)
+void gpioAsPwm(volatile uint8_t *port, uint8_t pin)
 {
 	gpioAsOutput(port, pin);
 }
@@ -41,10 +41,10 @@ void gpioWriteLow(volatile uint8_t *port, const uint8_t pin)
 
 void gpioWrite(volatile uint8_t *port, const uint8_t pin, const uint8_t state)
 {
-    if (state == HIGH)
-        gpioWriteHigh(port, pin);
-    else
+    if (state == LOW)
         gpioWriteLow(port, pin);
+    else
+        gpioWriteHigh(port, pin);
 }
 
 void gpioToggle(volatile uint8_t *port, const uint8_t pin)
@@ -65,7 +65,7 @@ uint8_t gpioRead(volatile uint8_t *port, uint8_t pin)
         return 0;
 }
 
-void enablePCINT(volatile uint8_t *port, uint8_t pin)
+void gpioEnablePCINT(volatile uint8_t *port, uint8_t pin)
 {
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
@@ -87,26 +87,20 @@ void enablePCINT(volatile uint8_t *port, uint8_t pin)
     #endif
 }
 
-void disablePCINT(volatile uint8_t *port, uint8_t pin)
+void gpioDisablePCINT(volatile uint8_t *port, uint8_t pin)
 {
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
         if (*port == PORTB)
-        {
             PCMSK0 = PCMSK0 & ~(1 << pin);
-        }
         else if (*port == PORTC)
-        {
             PCMSK1 = PCMSK1 & ~(1 << pin);
-        }
         else // i.e., PORTD
-        {
             PCMSK2 = PCMSK2 & ~(1 << pin);
-        }
     #endif
 }
 
-void enableINT(volatile uint8_t *port, uint8_t pin, uint8_t edge)
+void gpioEnableINT(volatile uint8_t *port, uint8_t pin, uint8_t edge)
 {
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
@@ -157,7 +151,7 @@ void enableINT(volatile uint8_t *port, uint8_t pin, uint8_t edge)
     #endif
 }
 
-void disableINT(volatile uint8_t *port, uint8_t pin)
+void gpioDisableINT(volatile uint8_t *port, uint8_t pin)
 {
     #if defined (__AVR_ATmega8__)
     #elif defined (__AVR_ATmega328P__)
@@ -168,7 +162,7 @@ void disableINT(volatile uint8_t *port, uint8_t pin)
     #endif
 }
 
-void setDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
+void gpioSetDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
 {
     #if defined (__AVR_ATmega328P__)
         if (*port == PORTD)

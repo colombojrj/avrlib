@@ -18,12 +18,13 @@ extern "C"
 }
 
 #include "HAL/HAL.h"
+#include "config.h"
 
 class Pin {
 protected:
     // Variables with pin information
     volatile uint8_t *_port;
-    uint8_t _pin;
+    const uint8_t _pin;
 
 public:
     Pin(volatile uint8_t *port, uint8_t pin);
