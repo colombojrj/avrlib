@@ -33,7 +33,7 @@ Example: blink a LED connected to pin PD5
 ```
 #include <avrlib.h>
 
-gpio led(&PORTD, PD5, OUTPUT, LOW);
+DigitalPin led(&PORTD, PD5, OUTPUT, LOW);
 
 int main(void)
 {
