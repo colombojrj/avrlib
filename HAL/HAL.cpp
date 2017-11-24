@@ -4,12 +4,17 @@
 void HAL_init()
 {
     // Initialize the TIMERs
-    INIT_TIMER0A(0);
-    INIT_TIMER0B(0);
-    INIT_TIMER1A(0);
-    INIT_TIMER1B(0);
-    INIT_TIMER2A(0);
-    INIT_TIMER2B(0);
+    TIMER0_OFF();
+    INIT_TIMER0A();
+    INIT_TIMER0B();
+
+    TIMER1_OFF();
+    INIT_TIMER1A();
+    INIT_TIMER1B();
+
+    TIMER2_OFF();
+    INIT_TIMER2A();
+    INIT_TIMER2B();
 
     // Initialize the ADC
 

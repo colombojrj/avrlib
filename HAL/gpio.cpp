@@ -19,28 +19,6 @@ void gpioAsADC(volatile uint8_t *port, uint8_t pin)
 void gpioAsPWM(volatile uint8_t *port, uint8_t pin)
 {
 	gpioAsOutput(port, pin);
-
-	#if defined (__AVR_ATmega8__)
-    #elif defined (__AVR_ATmega328P__)
-		if (*port == PORTD)
-		{
-			if (pin == PD6)
-				INIT_TIMER0A();
-			else if (pin == PD5)
-				INIT_TIMER0B();
-			else if (pin == PD3)
-				INIT_TIMER2B();
-		}
-		else if (*port == PORTB)
-		{
-			if (pin == PB1)
-				INIT_TIMER1A();
-			else if (pin == PB2)
-				INIT_TIMER1B();
-			else if (pin == PB3)
-				INIT_TIMER2A();
-		}
-	#endif
 }
 
 void gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir)
@@ -199,7 +177,7 @@ void setDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
                 TIMER0A_SET_OCR((uint8_t) (duty & 0x00FF));
             else if (pin == PD5) // OC0B
                 TIMER0B_SET_OCR((uint8_t) (duty & 0x00FF));
-            else                 // i.e., PD3 (OC2B)
+            else if (pin == PD3) // OC2B
                 TIMER2B_SET_OCR((uint8_t) (duty & 0x00FF));
         }
         else // i.e., *port == PORTB
@@ -208,7 +186,7 @@ void setDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
                 TIMER1A_SET_OCR(duty);
             else if (pin == PB2) // OC1B
                 TIMER1B_SET_OCR(duty);
-            else                 // i.e., PB3 (OC2A)
+            else if (pin == PB3) // OC2A
                 TIMER2A_SET_OCR((uint8_t) (duty & 0x00FF));
         }
     #endif

@@ -33,8 +33,8 @@
 /*
  * FUNCTIONS TO HANDLE THE TIMER0 MODULE
  */
-extern void INIT_TIMER0A(uint8_t auxiliary_call = 0);
-extern void INIT_TIMER0B(uint8_t auxiliary_call = 0);
+extern void INIT_TIMER0A();
+extern void INIT_TIMER0B();
 extern void TIMER0A_SET_OCR(uint8_t OCR);
 extern void TIMER0B_SET_OCR(uint8_t OCR);
 extern void TIMER0_OFF();
@@ -42,8 +42,8 @@ extern void TIMER0_OFF();
 /*
  * FUNCTIONS TO HANDLE THE TIMER1 MODULE
  */
-extern void INIT_TIMER1A (uint8_t auxiliary_call = 0);
-extern void INIT_TIMER1B (uint8_t auxiliary_call = 0);
+extern void INIT_TIMER1A ();
+extern void INIT_TIMER1B ();
 extern void TIMER1A_SET_OCR (uint16_t OCR);
 extern void TIMER1B_SET_OCR (uint16_t OCR);
 extern void SET_INPUT_CAPTURE_EDGE(uint8_t type);
@@ -52,8 +52,8 @@ extern void TIMER1_OFF();
 /*
  * FUNCTIONS TO HANDLE THE TIMER2 MODULE
  */
-extern void INIT_TIMER2A (uint8_t auxiliary_call = 0);
-extern void INIT_TIMER2B (uint8_t auxiliary_call = 0);
+extern void INIT_TIMER2A ();
+extern void INIT_TIMER2B ();
 extern void TIMER2_SET_CLK(uint8_t config);
 extern void TIMER2A_SET_OCR (uint8_t OCR);
 extern void TIMER2B_SET_OCR (uint8_t OCR);

@@ -26,15 +26,16 @@
  */
 
 #if TIMER0_CONFIG == OFF
-	void INIT_TIMER0A (uint8_t auxiliary_call) {}
-	void INIT_TIMER0B (uint8_t auxiliary_call) {}
+	void INIT_TIMER0A () {}
+	void INIT_TIMER0B () {}
 	void TIMER0A_SET_OCR (uint8_t OCR) {}
 	void TIMER0B_SET_OCR (uint8_t OCR) {}
 #endif
 
 #if TIMER0_CONFIG == NORMAL
 	#if defined (__AVR_ATmega8__)
-		void INIT_TIMER0 () {
+		void INIT_TIMER0 ()
+		{
 			TIMSK = (1 << TOIE0); // Enable overflow interrupt
 			TCCR0 = TIMER0_CLOCK;
 			TCNT0 = 0;
@@ -45,7 +46,8 @@
 
 #if TIMER0_CONFIG == CTC
 	#if defined (__AVR_ATmega328P__)
-		void INIT_TIMER0 (uint8_t TOP_OCR0A) {
+		void INIT_TIMER0 (uint8_t TOP_OCR0A)
+		{
 			TIMSK0 = (1 << OCIE0A); // Enable output compare interrupt
 			TCCR0A = (1 << WGM01);
 			TCCR0B = TIMER0_CLOCK;
@@ -102,18 +104,11 @@
 	 * Returns:  nothing
 	 */
 	#if defined (__AVR_ATmega328P__)
-		void INIT_TIMER0A(uint8_t auxiliary_call)
+		void INIT_TIMER0A()
 		{
 			// Set pin as output
 			gpioAsOutput(&PORTD, PD6);
 
-			// Clear TIMER0 configuration registers
-			TCCR0A = 0;
-			TCCR0B = 0;
-
-			#if TIMER0_CONFIG == PWM_AB
-				if (auxiliary_call == 0) INIT_TIMER0B(1);
-			#endif
 			#if TIMER0A_POLATIRY == NORMAL
 				TCCR0A = TCCR0A | (1 << COM0A1) | (1 << WGM01) | (1 << WGM00);
 			#else
@@ -125,12 +120,6 @@
 			// Set initial duty cycle
 			TIMER0A_SET_OCR(TIMER0A_INITIAL_OCR);
 		}
-	#endif
-
-	// If configured only channel A, the gpio.h needs the INIT_TIMER0B() function
-	#if TIMER0_CONFIG == PWM_A
-		void INIT_TIMER0B(uint8_t auxiliary_call) {}
-		void TIMER0B_SET_OCR (uint8_t OCR) {}
 	#endif
 #endif
 
@@ -180,19 +169,11 @@
 	 * Returns:  nothing
 	 */
 	#if defined (__AVR_ATmega328P__)
-		void INIT_TIMER0B(uint8_t auxiliary_call)
+		void INIT_TIMER0B()
 		{
 			// Set pin as output
 			gpioAsOutput(&PORTD, PD5);
 
-			// Clear TIMER0 configuration registers
-			TCCR0A = 0;
-			TCCR0B = 0;
-
-			// If using both channels, make sure the other channel was configured
-			#if TIMER0_CONFIG == PWM_AB
-				if (auxiliary_call == 0) INIT_TIMER0A(1);
-			#endif
 			#if TIMER0A_POLATIRY == NORMAL
 				TCCR0A = TCCR0A | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
 			#else
@@ -204,12 +185,6 @@
 			// Set initial duty cycle
 			TIMER0B_SET_OCR(TIMER0B_INITIAL_OCR);
 		}
-	#endif
-
-	// If configured only channel B, the gpio.h needs the INIT_TIMER0A() function
-	#if TIMER0_CONFIG == PWM_B
-		void INIT_TIMER0A(uint8_t auxiliary_call) {}
-		void TIMER0A_SET_OCR (uint8_t OCR) {}
 	#endif
 #endif
 
@@ -223,7 +198,8 @@
  */
 #if TIMER0_CONFIG != OFF
 	#if defined (__AVR_ATmega8__)
-	void TIMER0_OFF() {
+	void TIMER0_OFF()
+	{
 			TCCR0  = 0;
 			TCNT0  = 0;
 			TIMSK &= ~(1 << TOIE0);
@@ -231,14 +207,15 @@
 		}
 	#endif
 	#if defined (__AVR_ATmega328P__)
-		void TIMER0_OFF() {
+		void TIMER0_OFF()
+		{
 			TCCR0A = 0;
 			TCCR0B = 0;
-			TCNT0 = 0;
-			OCR0A = 0;
-			OCR0B = 0;
+			TCNT0  = 0;
+			OCR0A  = 0;
+			OCR0B  = 0;
 			TIMSK0 = 0;
-			TIFR0 = 0;
+			TIFR0  = 0;
 		}
 	#endif
 #endif
@@ -250,8 +227,8 @@
 //
 
 #if TIMER1_CONFIG == OFF
-	void INIT_TIMER1A (uint8_t auxiliary_call) {}
-	void INIT_TIMER1B (uint8_t auxiliary_call) {}
+	void INIT_TIMER1A () {}
+	void INIT_TIMER1B () {}
 	void TIMER1A_SET_OCR (uint16_t OCR) {}
 	void TIMER1B_SET_OCR (uint16_t OCR) {}
 	void SET_INPUT_CAPTURE_EDGE(uint8_t type) {}
@@ -259,7 +236,7 @@
 #endif
 
 #if TIMER1_CONFIG == NORMAL || TIMER1_CONFIG == NORMAL_WITH_IN_CAP
-    void INIT_TIMER1A (uint8_t auxiliary_call)
+    void INIT_TIMER1A ()
     {
         TCCR1A = 0;
         #if TIMER1_CONFIG == NORMAL
@@ -276,9 +253,9 @@
 
     }
 
-	void INIT_TIMER1B (uint8_t auxiliary_call)
+	void INIT_TIMER1B ()
 	{
-		INIT_TIMER1A (0);
+		INIT_TIMER1A ();
 	}
 
 	void TIMER1A_SET_OCR (uint16_t OCR) {}
@@ -312,7 +289,7 @@
 		}
 	#endif
 	#if defined (__AVR_ATmega328P__)
-		void INIT_TIMER1A (uint8_t auxiliary_call) {
+		void INIT_TIMER1A () {
 			TIMSK1 = (1 << OCIE1A);
 			TCCR1A = 0;
 			TCCR1B = (1 << WGM12) | TIMER1_CLOCK;
@@ -320,7 +297,7 @@
 			OCR1A = TIMER1A_INITIAL_OCR;
 			sei();
 		}
-		void INIT_TIMER1B (uint8_t auxiliary_call) {
+		void INIT_TIMER1B () {
 			TIMSK1 = (1 << OCIE1A);
 			TCCR1A = 0;
 			TCCR1B = (1 << WGM12) | TIMER1_CLOCK;
@@ -370,19 +347,10 @@
         }
 	}
     #if defined (__AVR_ATmega328P__)
-        void INIT_TIMER1A (uint8_t auxiliary_call)
+        void INIT_TIMER1A ()
         {
             // Set pin as output
             gpioAsOutput(&PORTB, PB1);
-
-            // Clear TIMER0 configuration registers
-            TCCR1A = 0;
-            TCCR1B = 0;
-
-            // If using both channels, make sure the other channel was configured
-            #if TIMER1_CONFIG == PWM_AB
-                if (auxiliary_call == 0) INIT_TIMER1B(1);
-            #endif
 
             #if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
                 TCCR1A = TCCR1A | (1 << COM1A1) | (1 << WGM10);
@@ -409,12 +377,6 @@
             TIMER1A_SET_OCR (TIMER1A_INITIAL_OCR);
         }
 	#endif
-
-    // If configured only channel A, the gpio.h needs the INIT_TIMER0B() function
-    #if TIMER1_CONFIG == PWM_A
-        void INIT_TIMER1B(uint8_t auxiliary_call) {}
-        void TIMER1B_SET_OCR (uint16_t OCR) {}
-    #endif
 #endif
 
 #if TIMER1_CONFIG == PWM_B || TIMER1_CONFIG == PWM_AB
@@ -455,19 +417,10 @@
             OCR1B = OCR;
         }
 	}
-	void INIT_TIMER1B (uint8_t auxiliary_call)
+	void INIT_TIMER1B ()
 	{
 		// Set pin as output
 		gpioAsOutput(&PORTB, PB2);
-
-		// Clear TIMER0 configuration registers
-        TCCR1A = 0;
-        TCCR1B = 0;
-
-        // If using both channels, make sure the other channel was configured
-        #if TIMER0_CONFIG == PWM_AB
-            if (auxiliary_call == 0) INIT_TIMER1A(1);
-        #endif
 
         #if TIMER1_RESOLUTION == 8 && TIMER1A_POLATIRY == NORMAL
             TCCR1A = TCCR1A | (1 << COM1B1) | (1 << WGM10);
@@ -491,12 +444,6 @@
         TCNT1 = 0;
         TIMER1B_SET_OCR (TIMER1B_INITIAL_OCR);
     }
-
-    // If configured only channel B, the gpio.h needs the functions relating TIMER1A
-    #if TIMER1_CONFIG == PWM_B
-        void INIT_TIMER1A(uint8_t auxiliary_call) {}
-        void TIMER1A_SET_OCR(uint16_t OCR) {}
-    #endif
 #endif
 
 #if TIMER1_CONFIG == PHASE_CORRECT
@@ -517,12 +464,12 @@
 	void TIMER1_OFF() {
 		TCCR1A = 0;
 		TCCR1B = 0;
-		TCNT1 = 0;
-		OCR1A = 0;
-		OCR1B = 0;
+		TCNT1  = 0;
+		OCR1A  = 0;
+		OCR1B  = 0;
 		TIMSK1 = 0;
-		TIFR1 = 0;
-		ICR1 = 0;
+		TIFR1  = 0;
+		ICR1   = 0;
 	}
 	#endif
 #endif
@@ -571,11 +518,6 @@ void TIMER2_SET_CLK(uint8_t config)
 			OCR2A = TIMER2A_INITIAL_OCR;
 			sei();
 		}
-
-		// Functions needed by the gpio.h
-		void INIT_TIMER2B (uint8_t auxiliary_call) {}
-		void TIMER2A_SET_OCR (uint8_t OCR) {}
-		void TIMER2B_SET_OCR (uint8_t OCR) {}
 	#endif
 #endif
 
@@ -619,36 +561,21 @@ void TIMER2_SET_CLK(uint8_t config)
     }
 
     #if defined (__AVR_ATmega328P__)
-        void INIT_TIMER2A (uint8_t auxiliary_call)
+        void INIT_TIMER2A()
         {
             // Set pin as output
             gpioAsOutput(&PORTB, PB3);
 
-            // Clear TIMER2 configuration registers
-            TCCR2A = 0;
-            TCCR2B = 0;
-
-            // If using both channels, make sure the other channel was configured
-            #if TIMER2_CONFIG == PWM_AB
-                if (auxiliary_call == 0) INIT_TIMER2B(1);
-            #endif
-
             #if TIMER2A_POLATIRY == NORMAL
                 TCCR2A = TCCR2A | (1 << COM2A1) | (1 << WGM21) | (1 << WGM20);
-                TCCR2B = TCCR2B | (1 << WGM12);
+                TCCR2B = TCCR2B | (1 << WGM22);
             #else // i.e., TIMER2A_POLATIRY == INVERTED
-                TCCR2A = TCCR2A | (1 << COM2A1) | (1 << COM2A0) | (1 << WGM21) | (1 << WGM20);
+                TCCR2A = TCCR2A | (1 << COM2B1) | (1 << COM2A0) | (1 << WGM21) | (1 << WGM20);
             #endif
             TIMER2_SET_CLK(TIMER2_CLOCK);
             TCNT2 = 0;
             TIMER2A_SET_OCR (TIMER2A_INITIAL_OCR);
         }
-    #endif
-
-    // If configured only channel A, the gpio.h needs the INIT_TIMER2B() function
-    #if TIMER2_CONFIG == PWM_A
-        void INIT_TIMER2B(uint8_t auxiliary_call) {}
-        void TIMER2B_SET_OCR (uint16_t OCR) {}
     #endif
 #endif
 
@@ -691,23 +618,14 @@ void TIMER2_SET_CLK(uint8_t config)
         }
     }
 
-    void INIT_TIMER2B (uint8_t auxiliary_call)
+    void INIT_TIMER2B()
     {
         // Set pin as output
         gpioAsOutput(&PORTD, PD3);
 
-        // Clear TIMER2 configuration registers
-        TCCR2A = 0;
-        TCCR2B = 0;
-
-        // If using both channels, make sure the other channel was configured
-        #if TIMER2_CONFIG == PWM_AB
-            if (auxiliary_call == 0) INIT_TIMER2A(1);
-        #endif
-
         #if TIMER2B_POLATIRY == NORMAL
             TCCR2A = TCCR2A | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-            TCCR2B = TCCR2B | (1 << WGM12);
+            TCCR2B = TCCR2B | (1 << WGM22);
         #else // i.e., TIMER2B_POLATIRY == INVERTED
             TCCR2A = TCCR2A | (1 << COM2B1) | (1 << COM2B0) | (1 << WGM21) | (1 << WGM20);
         #endif
@@ -715,17 +633,23 @@ void TIMER2_SET_CLK(uint8_t config)
         TCNT2 = 0;
         TIMER2B_SET_OCR(TIMER2B_INITIAL_OCR);
     }
-
-    // If configured only channel B, the gpio.h needs the functions relating TIMER1A
-    #if TIMER2_CONFIG == PWM_B
-        void INIT_TIMER2A(uint8_t auxiliary_call) {}
-        void TIMER2A_SET_OCR(uint16_t OCR) {}
-    #endif
 #endif
 
 #if TIMER2_CONFIG == PHASE_CORRECT
 #endif
 
+void TIMER2_OFF()
+{
+	// Clear all TIMER2 configuration registers
 
+	#if defined (__AVR_ATmega328P__)
+		TCCR2A = 0;
+		TCCR2B = 0;
+		TCNT0  = 0;
+		OCR2A  = 0;
+		OCR2B  = 0;
+		TIMSK2 = 0;
+	#endif
+}
 
 
