@@ -48,6 +48,9 @@
 	#if defined (__AVR_ATmega328P__)
 		void INIT_TIMER0 (uint8_t TOP_OCR0A)
 		{
+		    // Disables power save
+		    PRR = PRR & ~(1 << PRTIM0);
+
 			TIMSK0 = (1 << OCIE0A); // Enable output compare interrupt
 			TCCR0A = (1 << WGM01);
 			TCCR0B = TIMER0_CLOCK;
@@ -106,6 +109,9 @@
 	#if defined (__AVR_ATmega328P__)
 		void INIT_TIMER0A()
 		{
+		    // Disables power save
+		    PRR = PRR & ~(1 << PRTIM0);
+
 			// Set pin as output
 			gpioAsOutput(&PORTD, PD6);
 
@@ -171,6 +177,9 @@
 	#if defined (__AVR_ATmega328P__)
 		void INIT_TIMER0B()
 		{
+		    // Disables power save
+		    PRR = PRR & ~(1 << PRTIM0);
+
 			// Set pin as output
 			gpioAsOutput(&PORTD, PD5);
 
@@ -216,6 +225,9 @@
 			OCR0B  = 0;
 			TIMSK0 = 0;
 			TIFR0  = 0;
+
+			// Enables power reduction
+			PRR = PRR | (1 << PRTIM0);
 		}
 	#endif
 #endif
@@ -232,12 +244,14 @@
 	void TIMER1A_SET_OCR (uint16_t OCR) {}
 	void TIMER1B_SET_OCR (uint16_t OCR) {}
 	void SET_INPUT_CAPTURE_EDGE(uint8_t type) {}
-	void TIMER1_OFF() {}
 #endif
 
 #if TIMER1_CONFIG == NORMAL || TIMER1_CONFIG == NORMAL_WITH_IN_CAP
     void INIT_TIMER1A ()
     {
+        // Disables power save
+        PRR = PRR & ~(1 << PRTIM1);
+
         TCCR1A = 0;
         #if TIMER1_CONFIG == NORMAL
             TCCR1B = TIMER1_CLOCK;
@@ -290,6 +304,9 @@
 	#endif
 	#if defined (__AVR_ATmega328P__)
 		void INIT_TIMER1A () {
+		    // Disables power save
+		    PRR = PRR & ~(1 << PRTIM1);
+
 			TIMSK1 = (1 << OCIE1A);
 			TCCR1A = 0;
 			TCCR1B = (1 << WGM12) | TIMER1_CLOCK;
@@ -298,6 +315,9 @@
 			sei();
 		}
 		void INIT_TIMER1B () {
+		    // Disables power save
+		    PRR = PRR & ~(1 << PRTIM1);
+
 			TIMSK1 = (1 << OCIE1A);
 			TCCR1A = 0;
 			TCCR1B = (1 << WGM12) | TIMER1_CLOCK;
@@ -349,6 +369,9 @@
     #if defined (__AVR_ATmega328P__)
         void INIT_TIMER1A ()
         {
+            // Disables power save
+            PRR = PRR & ~(1 << PRTIM1);
+
             // Set pin as output
             gpioAsOutput(&PORTB, PB1);
 
@@ -419,6 +442,9 @@
 	}
 	void INIT_TIMER1B ()
 	{
+	    // Disables power save
+	    PRR = PRR & ~(1 << PRTIM1);
+
 		// Set pin as output
 		gpioAsOutput(&PORTB, PB2);
 
@@ -470,6 +496,9 @@
 		TIMSK1 = 0;
 		TIFR1  = 0;
 		ICR1   = 0;
+
+		// Enables power save
+		PRR = PRR | (1 << PRTIM1);
 	}
 	#endif
 #endif
@@ -507,6 +536,9 @@ void TIMER2_SET_CLK(uint8_t config)
 #if TIMER2_CONFIG == CTC
 	#if defined (__AVR_ATmega328P__)
 		void INIT_TIMER2A (uint8_t auxiliary_call) {
+		    // Disables power save
+		    PRR = PRR & ~(1 << PRTIM2);
+
 			TIMSK2 = (1 << OCIE2A);
 			#if TIMER2A_POLATIRY == NORMAL
 				TCCR2A = (1 << COM2A1) | (1 << WGM21);
@@ -563,6 +595,9 @@ void TIMER2_SET_CLK(uint8_t config)
     #if defined (__AVR_ATmega328P__)
         void INIT_TIMER2A()
         {
+            // Disables power save
+            PRR = PRR & ~(1 << PRTIM2);
+
             // Set pin as output
             gpioAsOutput(&PORTB, PB3);
 
@@ -620,6 +655,9 @@ void TIMER2_SET_CLK(uint8_t config)
 
     void INIT_TIMER2B()
     {
+        // Disables power save
+        PRR = PRR & ~(1 << PRTIM2);
+
         // Set pin as output
         gpioAsOutput(&PORTD, PD3);
 
@@ -640,16 +678,19 @@ void TIMER2_SET_CLK(uint8_t config)
 
 void TIMER2_OFF()
 {
-	// Clear all TIMER2 configuration registers
+    // Clear all TIMER2 configuration registers
 
-	#if defined (__AVR_ATmega328P__)
-		TCCR2A = 0;
-		TCCR2B = 0;
-		TCNT0  = 0;
-		OCR2A  = 0;
-		OCR2B  = 0;
-		TIMSK2 = 0;
-	#endif
+    #if defined (__AVR_ATmega328P__)
+        TCCR2A = 0;
+        TCCR2B = 0;
+        TCNT0  = 0;
+        OCR2A  = 0;
+        OCR2B  = 0;
+        TIMSK2 = 0;
+
+		// Disables power save
+        PRR = PRR | (1 << PRTIM2);
+    #endif
 }
 
 
