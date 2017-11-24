@@ -1,7 +1,7 @@
 /*
   timers.h - Light library to manage the TIMERS of ATMEGA microcontrollers
 
-  Copyright (c) 2015 - José Roberto Colombo Junior (colombojrj@gmail.com)
+  Copyright (c) 2015 - José Roberto Colombo Junior (colombojrj [at] gmail.com)
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

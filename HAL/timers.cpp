@@ -1,7 +1,7 @@
 /*
   timer.cpp - Light library to manage the TIMERS of ATMEGA microcontrollers
 
-  Copyright (c) 2015 - José Roberto Colombo Junior (colombojrj@gmail.com)
+  Copyright (c) 2015 - José Roberto Colombo Junior (colombojrj [at] gmail.com)
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -21,35 +21,8 @@
 
 #include "timers.h"
 
-//
-// TODO: add these other operation modes to the library
-//
-
 /*****************
  * TIMER0 MODULE
- */
-
-/*
-void timer0_init() {
-    // set up timer with external clock source
-    TCCR0 |= (1 << CS02) | (1 << CS01) | (0 << CS00);
-    // initialize counter
-    TCNT0 = 0;
-    // enable overflow interrupt
-    TIMSK |= (1 << TOIE0);
-}
-
-void INIT_TIMER1 () {
-    OCR1A = 0xF423; // 100ms => 0x1869 and 1000ms => 0xF423
-    TCCR1B |= (1 << WGM12);
-    // Mode 4, CTC on OCR1A
-    TIMSK |= (1 << OCIE1A);
-    //Set interrupt on compare match
-    TCCR1B |= (1 << CS12);
-    // set prescaler to 1024 and start the timer
-    sei();
-}
-
  */
 
 #if TIMER0_CONFIG == OFF
