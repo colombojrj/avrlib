@@ -120,6 +120,7 @@ void DigitalPin::disableINT()
 PwmPin::PwmPin(volatile uint8_t *port, uint8_t pin, uint8_t duty) :
 		Pin(port, pin)
 {
+    gpioAsPwm(port, pin);
 }
 
 void PwmPin::setDuty(uint16_t duty)
