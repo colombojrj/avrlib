@@ -112,7 +112,9 @@ void spiOff()
     SPCR = 0;
 
     // Enable power saving
-    PRR = PRR | (1 << PRSPI);
+    #if defined(PRR)
+        PRR = PRR | (1 << PRSPI);
+    #endif
 }
 
 bool spiIsBusy()
