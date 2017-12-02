@@ -22,10 +22,7 @@ void initHAL()
     // Initialize the SPI
     // TODO
     // Make the SPI INIT function adaptable (as in timers lib) to save memory
-    if (SPI_MODE == OFF)
-        SPI_OFF();
-    else
-        SPI_INIT();
+    spiInit();
 }
 
 

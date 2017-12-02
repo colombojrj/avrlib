@@ -33,17 +33,16 @@
 
 /**@{*/
 
-#include <stdlib.h>
-#include <avr/io.h>
+#include "gpio.h"
 #include "defines.h"
 #include "../config.h"
 
 #if defined (__AVR_ATmega328P__)
-    #define _DDR_SPI    DDRB
-    #define _PIN_SS     PB2
-    #define _PIN_MOSI   PB3
-    #define _PIN_MISO   PB4
-    #define _PIN_SCK    PB5
+    #define _SPI_PORT   PORTB
+    #define _SPI_SS     PB2
+    #define _SPI_MOSI   PB3
+    #define _SPI_MISO   PB4
+    #define _SPI_SCK    PB5
 #endif
 
 /**
@@ -55,55 +54,63 @@
  * @param  none
  * @return none
  */
-extern void SPI_SET_CLK();
+extern void spiSetClock();
 
 /**
  * @brief  This function has the purpose of initialize
- *         the SPI micro-controller module. It is called
+ *         the SPI microcontroller module. It is called
  *         automatically during HAL configuration step
- *         @see HAL_INIT.
- *
- * There are no input or output parameters for this function.
+ *         @see initHAL.
  *
  * @param  none
  * @return none
  */
-extern void SPI_INIT();
+extern void spiInit();
 
 /**
  * Function to send data from SPI.
  * This function will block the CPU
  *
- * The input parameter is:
  * @param uint8_t data
  *
- * There are no output parameters
  * @return none
  */
-extern void SPI_MASTER_SEND(uint8_t data);
+extern void spiMasterSend(uint8_t data);
 
 /**
  * Function to send and receive data from SPI.
  * This function will block the CPU.
  *
- * The input parameter is:
  * @param uint8_t data
  *
  * @return uint8_t received data
  */
-extern uint8_t SPI_MASTER_TRANCEIVER(uint8_t data);
+extern uint8_t spiMasterTransceiver(uint8_t data);
 
 /**
  * Function to send data from SPI.
  * This function will block the CPU
  *
- * The input parameter is:
  * @param uint8_t data
  *
- * There are no output parameters
  * @return none
  */
-extern void SPI_OFF();
+extern void spiOff();
+
+/**
+ * spiBusy is a boolean variable informing if the
+ * spi module is busy. This implementation is totally
+ * in software.
+ */
+extern bool spiBusy;
+
+/**
+ * Returns if the microcontroller's SPI module is busy
+ *
+ * @return a bool type, if true then the SPI is busy.
+ *         If false, then the SPI is free.
+ */
+extern bool spiIsBusy();
 
 /**@}*/
 

@@ -127,7 +127,7 @@
 /////////
 // SPI //
 /////////
-#define SLAVE                   0
+#define SLAVE                   2
 #define MASTER                  1
 #define MSB_FIRST               0
 #define LSB_FIRST               1

@@ -1,6 +1,8 @@
 #include "spi.h"
 
-void SPI_SET_CLK()
+bool spiBusy;
+
+void spiSetClock()
 {
     #if SPI_CLK == CLK_2
         SPSR = SPSR | (1 << SPI2X);
@@ -33,68 +35,91 @@ void SPI_SET_CLK()
     #endif
 }
 
-// TODO update this code to use the gpio low level library
-void SPI_INIT(uint8_t mode)
+void spiInit()
 {
-    // Turn off power saving
-    PRR = PRR & ~(1 << PRSPI);
+    // SPI is initializing, then it is busy
+    spiBusy = true;
 
-    // Reset configuration
-    SPCR = (1 << SPE) | (1 << SPR0);
+    #if SPI_MODE == MASTER || SPI_MODE == SLAVE
 
-    if (mode == MASTER)
-    {
-        SPCR = (1 << MSTR);
+        // Turn off power saving
+        PRR = PRR & ~(1 << PRSPI);
 
-        // Configure SPI pins as output
-        _DDR_SPI = _DDR_SPI | (1 << _PIN_MOSI) | (1 << _PIN_SCK);
-        _DDR_SPI = _DDR_SPI & ~(1 << _PIN_MISO);
-    }
-    else
-    {
-        // Configure SPI pins as output
-        _DDR_SPI = _DDR_SPI & ~((1 << _PIN_SS) | (1 << _PIN_MOSI) | (1 << _PIN_SCK));
-        _DDR_SPI = _DDR_SPI | (1 << _PIN_MISO);
-    }
+        // Reset configuration
+        SPCR = (1 << SPE) | (1 << SPR0);
 
-    SPI_SET_CLK();
+        // Pin configuration
+        #if SPI_MODE == MASTER
+            SPCR = (1 << MSTR);
+            gpioAsOutput(&_SPI_PORT, _SPI_MOSI);
+            gpioAsOutput(&_SPI_PORT, _SPI_SCK);
+            gpioAsInput(&_SPI_PORT, _SPI_MISO);
+        #else
+            gpioAsInput(&_SPI_PORT, _SPI_SS);
+            gpioAsInput(&_SPI_PORT, _SPI_SCK);
+            gpioAsInput(&_SPI_PORT, _SPI_MOSI);
+            gpioAsOutput(&_SPI_PORT, _SPI_MISO);
+        #endif
 
-    #if SPI_USE_INTERRUPT == TRUE
-        SPCR = SPCR | (1 << SPIE);
-        sei();
+        spiSetClock();
+
+        #if SPI_USE_INTERRUPT == TRUE
+            SPCR = SPCR | (1 << SPIE);
+            sei();
+        #endif
+
+        #if SPI_DATA_ORDER == LSB_FIRST
+            SPCR = SPCR | (1 << DORD);
+        #endif
+
+    #else // SPI is off
+        spiOff();
     #endif
 
-    #if SPI_DATA_ORDER == LSB_FIRST
-        SPCR = SPCR | (1 << DORD);
-    #endif
+    // SPI is not busy
+    spiBusy = false;
 }
 
 /*
  * This function will block the CPU
  */
-void SPI_MASTER_SEND(uint8_t data)
+void spiMasterSend(uint8_t data)
 {
+    // SPI is getting busy
+    spiBusy = true;
+
     // Lock and load!
     SPDR = data;
 
     // Wait the transmission to be complete
     while (!(SPSR & (1 << SPIF)));
+
+    // Release SPI
+    spiBusy = false;
 }
 
 /*
  * This function will block the CPU
  */
-uint8_t SPI_MASTER_TRANCEIVER(uint8_t data)
+uint8_t spiMasterTransceiver(uint8_t data)
 {
-    SPI_MASTER_SEND(data);
+    spiMasterSend(data);
     return SPDR;
 }
 
-void SPI_OFF()
+void spiOff()
 {
     SPCR = 0;
 
     // Enable power saving
     PRR = PRR | (1 << PRSPI);
 }
+
+bool spiIsBusy()
+{
+    return spiBusy;
+}
+
+// TODO add support to software SPI
+// TODO add support to USI as SPI
 
