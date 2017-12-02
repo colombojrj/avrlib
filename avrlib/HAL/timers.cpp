@@ -205,31 +205,29 @@
  * Receives: nothing
  * Returns:  nothing
  */
-#if TIMER0_CONFIG != OFF
-	#if defined (__AVR_ATmega8__)
-	void TIMER0_OFF()
-	{
-			TCCR0  = 0;
-			TCNT0  = 0;
-			TIMSK &= ~(1 << TOIE0);
-			TIFR  &= ~(1 << TOV0);
-		}
-	#endif
-	#if defined (__AVR_ATmega328P__)
-		void TIMER0_OFF()
-		{
-			TCCR0A = 0;
-			TCCR0B = 0;
-			TCNT0  = 0;
-			OCR0A  = 0;
-			OCR0B  = 0;
-			TIMSK0 = 0;
-			TIFR0  = 0;
+#if defined (__AVR_ATmega8__)
+void TIMER0_OFF()
+{
+        TCCR0  = 0;
+        TCNT0  = 0;
+        TIMSK &= ~(1 << TOIE0);
+        TIFR  &= ~(1 << TOV0);
+    }
+#endif
+#if defined (__AVR_ATmega328P__)
+    void TIMER0_OFF()
+    {
+        TCCR0A = 0;
+        TCCR0B = 0;
+        TCNT0  = 0;
+        OCR0A  = 0;
+        OCR0B  = 0;
+        TIMSK0 = 0;
+        TIFR0  = 0;
 
-			// Enables power reduction
-			PRR = PRR | (1 << PRTIM0);
-		}
-	#endif
+        // Enables power reduction
+        PRR = PRR | (1 << PRTIM0);
+    }
 #endif
 
 //
@@ -476,7 +474,6 @@
 #if TIMER1_CONFIG == PHASE_CORRECT
 #endif
 
-#if TIMER1_CONFIG != OFF
 #if defined (__AVR_ATmega8__)
 	void TIMER1_OFF() {
 		TCCR1A = 0;
@@ -486,22 +483,21 @@
 		OCR1B = 0;
 		ICR1 = 0;
 	}
-	#endif
-	#if defined (__AVR_ATmega328P__)
-	void TIMER1_OFF() {
-		TCCR1A = 0;
-		TCCR1B = 0;
-		TCNT1  = 0;
-		OCR1A  = 0;
-		OCR1B  = 0;
-		TIMSK1 = 0;
-		TIFR1  = 0;
-		ICR1   = 0;
+#endif
+#if defined (__AVR_ATmega328P__)
+    void TIMER1_OFF() {
+        TCCR1A = 0;
+        TCCR1B = 0;
+        TCNT1  = 0;
+        OCR1A  = 0;
+        OCR1B  = 0;
+        TIMSK1 = 0;
+        TIFR1  = 0;
+        ICR1   = 0;
 
-		// Enables power save
-		PRR = PRR | (1 << PRTIM1);
-	}
-	#endif
+        // Enables power save
+        PRR = PRR | (1 << PRTIM1);
+    }
 #endif
 
 /*
@@ -675,6 +671,11 @@ void TIMER2_SET_CLK(uint8_t config)
 #endif
 
 #if TIMER2_CONFIG == PHASE_CORRECT
+#endif
+
+#if TIMER2_CONFIG == OFF
+    void INIT_TIMER2A() {}
+    void INIT_TIMER2B() {}
 #endif
 
 void TIMER2_OFF()

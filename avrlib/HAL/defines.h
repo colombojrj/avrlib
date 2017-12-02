@@ -132,4 +132,10 @@
 #define MSB_FIRST               0
 #define LSB_FIRST               1
 
+//////////
+// UART //
+//////////
+#define UART_NORMAL_SPEED       1
+#define UART_DOUBLE_SPEED       2
+
 #endif /* AVRLIB_HAL_DEFINES_H_ */

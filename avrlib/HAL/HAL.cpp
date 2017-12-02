@@ -23,6 +23,15 @@ void initHAL()
     // TODO
     // Make the SPI INIT function adaptable (as in timers lib) to save memory
     spiInit();
+
+    // Initialize the UART
+    #if UART_MODE == UART_DOUBLE_SPEED
+        uart_init(UART_BAUD_SELECT_DOUBLE_SPEED(115200, F_CPU));
+        sei();
+    #elif UART_MODE == UART_NORMAL_SPEED
+        uart_init(UART_BAUD_SELECT(115200, F_CPU));
+        sei();
+    #endif
 }
 
 
