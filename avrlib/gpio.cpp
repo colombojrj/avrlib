@@ -24,12 +24,12 @@ AnalogPin::AnalogPin(volatile uint8_t *port, uint8_t pin) :
 
 uint16_t AnalogPin::rawRead()
 {
-	return ANALOG_READ(_pin);
+	return adcRead(_pin);
 }
 
 float AnalogPin::read()
 {
-	float reading = ANALOG_READ(_pin);
+	float reading = adcRead(_pin);
 	return (ADC_REFERENCE_VOLTAGE*reading)/1023.;
 }
 

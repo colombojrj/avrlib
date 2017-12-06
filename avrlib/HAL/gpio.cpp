@@ -20,7 +20,7 @@ void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp
 void gpioAsAdc(volatile uint8_t *port, const uint8_t pin)
 {
 	gpioAsInput(port, pin, 0);
-	INIT_ADC(pin);
+	adcInit(pin);
 }
 
 void gpioAsPwm(volatile uint8_t *port, const uint8_t pin)

@@ -45,7 +45,6 @@
  * }
  * \endcode
  *
- * @author José Roberto Colombo Junior
  */
 
 /**@{*/
@@ -63,10 +62,10 @@
  *
  * In OFF mode this function start energy saving.
  *
- * @param  uint8_t pin: the ADC pin number (ex: PA0)
+ * @param  uint8_t pin: the ADC pin number (ex: PC0)
  * @return none
  */
-extern void INIT_ADC(uint8_t pin);
+extern void adcInit(uint8_t pin);
 
 /**
  * @brief  This function is employed to configure the ADC clock source configured in \ref config.h
@@ -74,15 +73,21 @@ extern void INIT_ADC(uint8_t pin);
  * @param  none
  * @return none
  */
-extern void SET_ADC_CLK();
+extern void adcSetClock();
 
 /**
- * @brief  This function is employed to configure the ADC reference voltage configured in \ref config.h
+ * @brief This function set the reference voltage source.
  *
- * @param  uint8_t config: clock configuration (see \ref config.h)
+ * The possible values are:
+ * * INTERNAL (verify the micro-controller manual to verify the value in volts)
+ * * EXTERNAL (extern value connected through pin)
+ * * VCC      (microcontroller VCC voltage)
+ *
+ *
+ * @param  uint8_t source
  * @return none
  */
-extern void SET_ADC_REF_VOLTAGE(uint8_t config);
+extern void adcSetRefVoltage(uint8_t config);
 
 /**
  * @brief  This function is employed to configure the ADC data alignment configured in \ref config.h
@@ -90,39 +95,25 @@ extern void SET_ADC_REF_VOLTAGE(uint8_t config);
  * @param  uint8_t config: data align configuration  (see \ref config.h)
  * @return none
  */
-extern void SET_ADC_DATA_ALIGN(uint8_t config);
+extern void adcSetDataAlign(uint8_t config);
 
 /**
  * @brief  This function start an analog conversion. It will block
  *         the code execution until not finished.
  *
- * @param  uint8_t pin: the ADC pin number (ex: PA0)
+ * @param  uint8_t pin: the ADC pin number (ex: PC0)
  * @return uint16_t converted value (12 bits)
  */
-extern uint16_t ANALOG_READ(uint8_t pin);
+extern uint16_t adcRead(uint8_t pin);
 
 /**
  * @brief  This function is employed to change the analog channel in
  *         \ref FREE_RUNING mode.
  *
- * @param  uint8_t pin: the ADC pin number (ex: PA0)
+ * @param  uint8_t pin: the ADC pin number (ex: PC0)
  * @return none
  */
-extern void CHANGE_ADMUX(uint8_t pin);
-
-/**
- * @brief  This function set the reference voltage source.
- *
- * The possible values are:
- * * INTERNAL (verify the micro-controller manual to verify the value in volts)
- * * EXTERNAL (extern value connected through pin)
- * * VCC      (micro-controller VCC voltage)
- *
- *
- * @param  uint8_t source
- * @return none
- */
-extern void SET_REFERENCE_VOLTAGE(uint8_t source);
+extern void adcChangeAdmux(uint8_t pin);
 
 /**
  * @brief  This function read the temperature sensor available in some
@@ -134,7 +125,7 @@ extern void SET_REFERENCE_VOLTAGE(uint8_t source);
  * @param  none
  * @return none
  */
-extern int16_t READ_TEMPERATURE();
+extern int16_t adcReadTemperature();
 
 /**@}*/
 

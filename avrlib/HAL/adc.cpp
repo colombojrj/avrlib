@@ -21,7 +21,7 @@
 
 #include "adc.h"
 
-void SET_ADC_CLK()
+void adcSetClock()
 {
     #if ADC_PREESCALE == CLK_2
     #elif ADC_PREESCALE == CLK_4
@@ -39,7 +39,7 @@ void SET_ADC_CLK()
     #endif
 }
 
-void SET_ADC_REF_VOLTAGE(uint8_t config)
+void adcSetRefVoltage(uint8_t config)
 {
     ADMUX = ADMUX & ~((1 << REFS1) | (1 << REFS0));
     if (config == INTERN)
@@ -52,7 +52,7 @@ void SET_ADC_REF_VOLTAGE(uint8_t config)
     }
 }
 
-void SET_ADC_DATA_ALIGN(uint8_t config)
+void adcSetDataAlign(uint8_t config)
 {
     ADMUX = ADMUX & ~(1 << ADLAR);
     if (config == LEFT)
@@ -61,13 +61,13 @@ void SET_ADC_DATA_ALIGN(uint8_t config)
     }
 }
 
-void INIT_ADC(uint8_t pin) {
+void adcInit(uint8_t pin) {
 	// Enable the A/D converter
     ADCSRA = (1 << ADEN);
-    SET_ADC_CLK();
+    adcSetClock();
     ADMUX = 0;
-    SET_ADC_REF_VOLTAGE(ADC_REFERENCE);
-    SET_ADC_DATA_ALIGN(ADC_DATA_ALIGN);
+    adcSetRefVoltage(ADC_REFERENCE);
+    adcSetDataAlign(ADC_DATA_ALIGN);
 
     #if defined (__AVR_ATmega328P__)
         // Disable input digital buffer (saves power)
@@ -83,16 +83,16 @@ void INIT_ADC(uint8_t pin) {
     #endif
 }
 
-uint16_t ANALOG_READ(uint8_t pin) {
+uint16_t adcRead(uint8_t pin) {
     // Select the pin
-    CHANGE_ADMUX (pin);
+    adcChangeAdmux (pin);
 
 	#if ADC_OPERATION_MODE == OFF
 	    return 0;
     #elif ADC_OPERATION_MODE == SINGLE_CONVERSION
 		ADCSRA |= (1 << ADSC);
 		while (ADCSRA & (1 << ADSC)) {};
-		CHANGE_ADMUX (0);
+		adcChangeAdmux (0);
 		return ADC;
 
 	#elif ADC_OPERATION_MODE == NOISE_REDUCTION
@@ -114,25 +114,21 @@ uint16_t ANALOG_READ(uint8_t pin) {
 		ADCSRA &= ~ _BV(ADIE);
 		return(ADC);
 
+    // TODO add support to free running mode
 	#elif ADC_OPERATION_MODE == FREE_RUNNING
 		return 0;
 	#endif
 }
 
-void CHANGE_ADMUX (uint8_t pin) {
+void adcChangeAdmux (uint8_t pin) {
 	ADMUX &= 0b11110000;
 	ADMUX |= (pin & 0b00001111);
 }
 
-void SET_REFERENCE_VOLTAGE(uint8_t source)
-{
-	ADMUX = source;
-}
-
-int16_t READ_TEMPERATURE()
+int16_t adcReadTemperature()
 {
     #if defined (__AVR_ATmega328P__)
-        return ANALOG_READ(8);
+        return adcRead(8);
     #else
         return 0;
     #endif

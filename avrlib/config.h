@@ -175,7 +175,8 @@
 //////////
 // UART //
 //////////
-#define UART_BAUD_RATE 115200
+#define UART_MODE       UART_NORMAL_SPEED
+#define UART_BAUD_RATE  115200
 
 
 /////////////////////////////////
