@@ -56,12 +56,11 @@ void adcSetDataAlign(uint8_t config)
 {
     ADMUX = ADMUX & ~(1 << ADLAR);
     if (config == LEFT)
-    {
         ADMUX = ADMUX | (1 << ADLAR);
-    }
 }
 
-void adcInit(uint8_t pin) {
+void adcInit(uint8_t pin)
+{
 	// Enable the A/D converter
     ADCSRA = (1 << ADEN);
     adcSetClock();
@@ -69,7 +68,7 @@ void adcInit(uint8_t pin) {
     adcSetRefVoltage(ADC_REFERENCE);
     adcSetDataAlign(ADC_DATA_ALIGN);
 
-    #if defined (__AVR_ATmega328P__)
+    #if defined (PRR)
         // Disable input digital buffer (saves power)
         DIDR0 = (1 << pin);
 
@@ -77,13 +76,13 @@ void adcInit(uint8_t pin) {
         PRR = PRR & ~(1 << PRADC);
     #endif
 
-    // TODO: add support to these operation modes
-    #if ADC_OPERATION_MODE == NOISE_REDUCTION
-    #elif ADC_OPERATION_MODE == FREE_RUNNING
+    // TODO: add support to free running operation mode
+    #if ADC_OPERATION_MODE == FREE_RUNNING
     #endif
 }
 
-uint16_t adcRead(uint8_t pin) {
+uint16_t adcRead(uint8_t pin)
+{
     // Select the pin
     adcChangeAdmux (pin);
 
@@ -120,7 +119,8 @@ uint16_t adcRead(uint8_t pin) {
 	#endif
 }
 
-void adcChangeAdmux (uint8_t pin) {
+void adcChangeAdmux (uint8_t pin)
+{
 	ADMUX &= 0b11110000;
 	ADMUX |= (pin & 0b00001111);
 }
