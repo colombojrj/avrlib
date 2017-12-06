@@ -1,5 +1,5 @@
 /*
-  adc.c - Library to handle the ADC module of AVR micro-controllers
+  adc.c - Library to handle the ADC module of AVR microcontrollers
 
   Copyright (c) 2013 - José Roberto Colombo Junior
 

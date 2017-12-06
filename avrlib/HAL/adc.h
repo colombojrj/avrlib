@@ -56,23 +56,18 @@
 #include "defines.h"
 #include "../config.h"
 
-// Available functions
-
 /**
  * @brief  This function is employed to initialize the ADC module as configured in \ref config.h
  *
  * In OFF mode this function start energy saving.
  *
  * @param  uint8_t pin: the ADC pin number (ex: PC0)
- * @return none
  */
 extern void adcInit(uint8_t pin);
 
 /**
  * @brief  This function is employed to configure the ADC clock source configured in \ref config.h
  *
- * @param  none
- * @return none
  */
 extern void adcSetClock();
 
@@ -86,7 +81,6 @@ extern void adcSetClock();
  *
  *
  * @param  uint8_t source
- * @return none
  */
 extern void adcSetRefVoltage(uint8_t config);
 
@@ -94,7 +88,6 @@ extern void adcSetRefVoltage(uint8_t config);
  * @brief  This function is employed to configure the ADC data alignment configured in \ref config.h
  *
  * @param  uint8_t config: data align configuration  (see \ref config.h)
- * @return none
  */
 extern void adcSetDataAlign(uint8_t config);
 
@@ -103,7 +96,7 @@ extern void adcSetDataAlign(uint8_t config);
  *         the code execution until not finished.
  *
  * @param  uint8_t pin: the ADC pin number (ex: PC0)
- * @return uint16_t converted value (12 bits)
+ * @return uint16_t converted value (10 bits)
  */
 extern uint16_t adcRead(uint8_t pin);
 
@@ -112,7 +105,6 @@ extern uint16_t adcRead(uint8_t pin);
  *         \ref FREE_RUNING mode.
  *
  * @param  uint8_t pin: the ADC pin number (ex: PC0)
- * @return none
  */
 extern void adcChangeAdmux(uint8_t pin);
 
@@ -123,8 +115,7 @@ extern void adcChangeAdmux(uint8_t pin);
  * Known micro-controllers that possesses this hardware:
  * * ATmega328P
  *
- * @param  none
- * @return none
+ * @return uint16_t converted value (12 bits)
  */
 extern int16_t adcReadTemperature();
 
