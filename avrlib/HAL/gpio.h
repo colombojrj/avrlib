@@ -5,10 +5,11 @@ extern "C"
 {
 	#include <avr/io.h>
 	#include <avr/interrupt.h>
-    #include "adc.h"
+
 }
 #include "defines.h"
 #include "timers.h"
+#include "adc.h"
 
 /**
  * @defgroup hal_gpio_group gpio

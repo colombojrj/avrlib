@@ -58,10 +58,7 @@
 #include "defines.h"
 #include "gpio.h"
 #include "timers.h"
-extern "C"
-{
-    #include "uart.h"
-}
+#include "uart.h"
 #include "adc.h"
 #include "spi.h"
 

@@ -1,10 +1,3 @@
-/*
- * general_config.h
- *
- *  Created on: 16/07/2017
- *      Author: junior
- */
-
 /**
  * \file config.h
  * Configure the peripherals of the micro-controller. All the possible
@@ -182,10 +175,10 @@
 /////////////////////////////////
 // ANALOG TO DIGITAL CONVERTER //
 /////////////////////////////////
-#define ADC_OPERATION_MODE      OFF
-#define ADC_REFERENCE           INTERN
-#define ADC_SUPPLY_VOLTAGE      5.0
-#define ADC_PREESCALE           CLK_32
-#define ADC_DATA_ALIGN          RIGHT
+constexpr adcConfig_t       adcConfig           = adcConfig_t::singleConversion;
+constexpr adcRefVoltage_t   adcReferenceConfig  = adcRefVoltage_t::avcc;
+constexpr float             adcSupplyVoltage    = 5.0;
+constexpr adcClock_t        adcClock            = adcClock_t::divideBy32;
+constexpr adcDataAlign_t    adcDataAlign        = adcDataAlign_t::right;
 
 #endif /* AVRLIB_CONFIG_H_ */

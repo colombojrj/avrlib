@@ -32,7 +32,7 @@
  * The supported modes of operation are:
  * * OFF
  * * SINGLE_CONVERSION
- * * NOISE_REDUCTION (to do)
+ * * NOISE_REDUCTION
  * * FREE_RUNNING (to do)
  *
  * In the FREE_RUNNING mode, when a conversion is ready an interruption
@@ -79,17 +79,18 @@ extern void adcSetClock();
  * * EXTERNAL (extern value connected through pin)
  * * VCC      (microcontroller VCC voltage)
  *
+ * @param  adcReferenceVoltage_t adcRefVoltage is the configuration for the reference voltage
  *
- * @param  uint8_t source
+ * @see adcReferenceVoltage_t
  */
-extern void adcSetRefVoltage(uint8_t config);
+extern void adcSetRefVoltage(adcRefVoltage_t adcRefVoltage);
 
 /**
  * @brief  This function is employed to configure the ADC data alignment configured in \ref config.h
  *
- * @param  uint8_t config: data align configuration  (see \ref config.h)
+ * @param  adcDataAlign_t adcDataAlign: data align configuration  (see \ref config.h)
  */
-extern void adcSetDataAlign(uint8_t config);
+extern void adcSetDataAlign(adcDataAlign_t adcDataAlign);
 
 /**
  * @brief  This function start an analog conversion. It will block
