@@ -26,10 +26,10 @@ extern "C"
 {
 	#include <avr/io.h>
 	#include <avr/interrupt.h>
+    #include "gpio.h"
 }
 #include "defines.h"
 #include "../config.h"
-#include "gpio.h"
 
 /**
  * Organizational idea of this library:

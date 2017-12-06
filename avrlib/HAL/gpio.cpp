@@ -5,11 +5,6 @@ void gpioAsOutput(volatile uint8_t *port, const uint8_t pin)
     DDR(*port) = DDR(*port) | (1 << pin);
 }
 
-void gpioAsInput(volatile uint8_t *port, const uint8_t pin)
-{
-    DDR(*port) = DDR(*port) & ~(1 << pin);
-}
-
 void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp)
 {
     DDR(*port) = DDR(*port) & ~(1 << pin);

@@ -5,10 +5,10 @@ extern "C"
 {
 	#include <avr/io.h>
 	#include <avr/interrupt.h>
+    #include "adc.h"
 }
 #include "defines.h"
 #include "timers.h"
-#include "adc.h"
 
 /**
  * @defgroup hal_gpio_group gpio
@@ -31,17 +31,6 @@ extern "C"
 extern void gpioAsOutput(volatile uint8_t *port, const uint8_t pin);
 
 /**
- * gpioAsInput(volatile uint8_t *port, const uint8_t pin)
- *
- * Configures the \b pin placed on \b port as input
- *
- * @param port is a pointer to the port of the pin (example: &PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
- * added to the pin, use 1 to yes or 0 to no
- */
-extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin);
-
-/**
  * gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp)
  *
  * Configures the \b pin placed on \b port as input
@@ -51,7 +40,7 @@ extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin);
  * @param pullUp defines if a pull-up resistor will be
  * added to the pin, use 1 to yes or 0 to no
  */
-extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp);
+extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp = 0);
 
 /**
  * gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir)
