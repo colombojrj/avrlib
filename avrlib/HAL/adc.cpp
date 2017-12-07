@@ -114,14 +114,14 @@ uint16_t adcRead(uint8_t pin)
 
 void adcChangeAdmux (uint8_t pin)
 {
-	ADMUX &= 0b11110000;
-	ADMUX |= (pin & 0b00001111);
+	ADMUX = ADMUX & ~static_cast<uint8_t>(adcAdmux_t::resetState);
+	ADMUX = ADMUX | (pin & static_cast<uint8_t>(adcAdmux_t::resetState));
 }
 
 int16_t adcReadTemperature()
 {
     #if defined (__AVR_ATmega328P__)
-        return adcRead(8);
+        return adcRead(static_cast<uint8_t>(adcAdmux_t::temperatureSensor));
     #else
         return 0;
     #endif

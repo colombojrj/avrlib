@@ -129,6 +129,10 @@
 #ifndef AVRLIB_CONFIG_H_
 #define AVRLIB_CONFIG_H_
 
+#if defined (__AVR_ATmega328P__)
+    #include "HAL/devices/atmega328p.h"
+#endif
+
 // Use this file to configure the micro-controller peripherals
 
 #define TIMER0_CONFIG           PWM_AB       ///< TIMER0 operation mode. For more information see \ref conf_timers
