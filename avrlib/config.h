@@ -163,11 +163,11 @@
 /////////
 // SPI //
 /////////
-#define SPI_MODE                OFF
-#define SPI_CLK                 CLK_2
-#define SPI_USE_INTERRUPT       FALSE
-#define SPI_DATA_ORDER          MSB_FIRST
-
+constexpr spiConfig_t       spiConfig           = spiConfig_t::master;
+constexpr spiMode_t         spiMode             = spiMode_t::mode0;
+constexpr spiClock_t        spiClock            = spiClock_t::divideBy16;
+constexpr spiUseInterrupt_t spiUseInterrupt     = spiUseInterrupt_t::no;
+constexpr spiDataOrder_t    spiDataOrder        = spiDataOrder_t::msbFisrt;
 
 //////////
 // UART //

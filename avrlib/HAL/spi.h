@@ -37,14 +37,6 @@
 #include "defines.h"
 #include "../config.h"
 
-#if defined (__AVR_ATmega328P__)
-    #define _SPI_PORT   PORTB
-    #define _SPI_SS     PB2
-    #define _SPI_MOSI   PB3
-    #define _SPI_MISO   PB4
-    #define _SPI_SCK    PB5
-#endif
-
 /**
  * @brief  This function has the purpose of configuring
  *          the SPI clock source.
@@ -75,7 +67,8 @@ extern void spiInit();
  *
  * @return none
  */
-extern void spiMasterSend(uint8_t data);
+extern void spiSend(uint8_t data);
+// TODO make spiMasterSend return if send was successful (use WCOL from SPSR)
 
 /**
  * Function to send and receive data from SPI.
@@ -85,7 +78,7 @@ extern void spiMasterSend(uint8_t data);
  *
  * @return uint8_t received data
  */
-extern uint8_t spiMasterTransceiver(uint8_t data);
+extern uint8_t spiTransceiver(uint8_t data);
 
 /**
  * Function to send data from SPI.

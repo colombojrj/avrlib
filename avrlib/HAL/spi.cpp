@@ -4,35 +4,30 @@ bool spiBusy;
 
 void spiSetClock()
 {
-    #if SPI_CLK == CLK_2
-        SPSR = SPSR | (1 << SPI2X);
-        SPCR = SPCR & ~(1 << SPR1);
-        SPCR = SPCR  & ~(1 << SPR0);
-    #elif SPI_CLK == CLK_4
-        SPSR = SPSR & ~(1 << SPI2X);
-        SPCR = SPCR & ~(1 << SPR1);
-        SPCR = SPCR & ~(1 << SPR0);
-    #elif SPI_CLK == CLK_8
-        SPSR = SPSR |  (1 << SPI2X);
-        SPCR = SPCR & ~(1 << SPR1);
-        SPCR = SPCR |  (1 << SPR0);
-    #elif SPI_CLK == CLK_16
-        SPSR = SPSR & ~(1 << SPI2X);
-        SPCR = SPCR & ~(1 << SPR1);
-        SPCR = SPCR |  (1 << SPR0);
-    #elif SPI_CLK == CLK_32
-        SPSR = SPSR |  (1 << SPI2X);
-        SPCR = SPCR |  (1 << SPR1);
-        SPCR = SPCR & ~(1 << SPR0);
-    #elif SPI_CLK == CLK_64
-        SPSR = SPSR & ~(1 << SPI2X);
-        SPCR = SPCR |  (1 << SPR1);
-        SPCR = SPCR  & ~(1 << SPR0);
-    #else
-        SPSR = SPSR & ~(1 << SPI2X);
-        SPCR = SPCR |  (1 << SPR1)
-        SPCR = SPCR | (1 << SPR0);
-    #endif
+    // Default values
+    const spiClockResetState resetClockRegisters;
+
+    // Configure clock
+    if (spiClock == spiClock_t::divideBy2)
+        const spiClockDivideBy2 helper;
+
+    else if (spiClock == spiClock_t::divideBy4)
+        const spiClockDivideBy4 helper;
+
+    else if (spiClock == spiClock_t::divideBy8)
+        const spiClockDivideBy8 helper;
+
+    else if (spiClock == spiClock_t::divideBy16)
+        const spiClockDivideBy16 helper;
+
+    else if (spiClock == spiClock_t::divideBy32)
+        const spiClockDivideBy32 helper;
+
+    else if (spiClock == spiClock_t::divideBy64)
+        const spiClockDivideBy64 helper;
+
+    else // i.e. spiClock == spiClock_t::divideBy128
+        spiClockDivideBy128 helper;
 }
 
 void spiInit()
@@ -40,51 +35,77 @@ void spiInit()
     // SPI is initializing, then it is busy
     spiBusy = true;
 
-    #if SPI_MODE == MASTER || SPI_MODE == SLAVE
+    if (spiConfig != spiConfig_t::off)
+    {
+        // Make sure to reset SPI registers
+        SPCR = 0;
 
         // Turn off power saving
-        PRR = PRR & ~(1 << PRSPI);
+        #if defined (PRR)
+            PRR = PRR & ~(1 << PRSPI);
+        #endif
 
-        // Reset configuration
-        SPCR = (1 << SPE) | (1 << SPR0);
+        // Firstly it is necessary to configure the SS pin as output
+        // As the datasheet specifies, if this pin is an input, then
+        // any change in its logic state will cause the SPI behaviour
+        // change automatically from master to slave
+        if (spiConfig == spiConfig_t::master)
+        {
+            gpioAsOutput(&_SPI_PORT, _SPI_SS);
+            SPCR = (1 << SPE) | (1 << MSTR);
+        }
+        else
+        {
+            gpioAsInput(&_SPI_PORT, _SPI_SS, 1);
+            SPCR = (1 << SPE);
+        }
 
-        // Pin configuration
-        #if SPI_MODE == MASTER
-            SPCR = (1 << MSTR);
+        // SPI mode
+        SPCR = SPCR | static_cast<uint8_t>(spiMode);
+
+        // SPI clock
+        spiSetClock();
+
+        if (spiUseInterrupt == spiUseInterrupt_t::yes)
+        {
+            SPCR = SPCR | static_cast<uint8_t>(spiUseInterrupt);
+            sei();
+        }
+
+        if (spiDataOrder == spiDataOrder_t::lsbFirst)
+            SPCR = SPCR | static_cast<uint8_t>(spiDataOrder);
+
+        // Configure the MOSI, MISO and SCK SPI pins
+        if (spiConfig == spiConfig_t::master)
+        {
             gpioAsOutput(&_SPI_PORT, _SPI_MOSI);
             gpioAsOutput(&_SPI_PORT, _SPI_SCK);
             gpioAsInput(&_SPI_PORT, _SPI_MISO);
-        #else
-            gpioAsInput(&_SPI_PORT, _SPI_SS);
+        }
+        else
+        {
             gpioAsInput(&_SPI_PORT, _SPI_SCK);
             gpioAsInput(&_SPI_PORT, _SPI_MOSI);
             gpioAsOutput(&_SPI_PORT, _SPI_MISO);
-        #endif
+        }
 
-        spiSetClock();
-
-        #if SPI_USE_INTERRUPT == TRUE
-            SPCR = SPCR | (1 << SPIE);
-            sei();
-        #endif
-
-        #if SPI_DATA_ORDER == LSB_FIRST
-            SPCR = SPCR | (1 << DORD);
-        #endif
-
-    #else // SPI is off
+        // SPI is not busy
+        spiBusy = false;
+    }
+    else
+    {
         spiOff();
-    #endif
-
-    // SPI is not busy
-    spiBusy = false;
+    }
 }
 
 /*
  * This function will block the CPU
  */
-void spiMasterSend(uint8_t data)
+void spiSend(uint8_t data)
 {
+    // Wait to spi to be free
+    while(spiBusy == true) {}
+
     // SPI is getting busy
     spiBusy = true;
 
@@ -101,9 +122,9 @@ void spiMasterSend(uint8_t data)
 /*
  * This function will block the CPU
  */
-uint8_t spiMasterTransceiver(uint8_t data)
+uint8_t spiTransceiver(uint8_t data)
 {
-    spiMasterSend(data);
+    spiSend(data);
     return SPDR;
 }
 
