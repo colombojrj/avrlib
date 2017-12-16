@@ -114,8 +114,8 @@ uint16_t adcRead(uint8_t pin)
 
 void adcChangeAdmux (uint8_t pin)
 {
-	ADMUX = ADMUX & ~static_cast<uint8_t>(adcAdmux_t::resetState);
-	ADMUX = ADMUX | (pin & static_cast<uint8_t>(adcAdmux_t::resetState));
+	ADMUX = ADMUX & ~static_cast<uint8_t>(adcAdmux_t::setState);
+	ADMUX = ADMUX | (pin & static_cast<uint8_t>(adcAdmux_t::setState));
 }
 
 int16_t adcReadTemperature()

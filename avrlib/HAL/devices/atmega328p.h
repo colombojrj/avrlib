@@ -1,10 +1,3 @@
-/*
- * atmega328p.h
- *
- *  Created on: 06/12/2017
- *      Author: junior
- */
-
 #ifndef AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_
 #define AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_
 
@@ -87,7 +80,7 @@ enum class adcAdmux_t : uint8_t
     temperatureSensor = 0b1000, //!< temperatureSensor
     internalReference = 0b1110, //!< internalReference
     gnd = 0b1111,               //!< gnd
-    resetState = 0b1111         //!< resetState
+    setState = 0b1111           //!< setState
 };
 
 //////////////////
