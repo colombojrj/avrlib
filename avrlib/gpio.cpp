@@ -106,9 +106,9 @@ void DigitalPin::disablePCINT()
     gpioDisablePCINT(_port, _pin);
 }
 
-void DigitalPin::enableINT(uint8_t sensible_edge)
+void DigitalPin::enableINT(gpioInt_t trigger)
 {
-    gpioEnableINT(_port, _pin, sensible_edge);
+    gpioEnableINT(_port, _pin, trigger);
 }
 
 void DigitalPin::disableINT()

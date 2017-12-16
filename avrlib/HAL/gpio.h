@@ -198,7 +198,7 @@ extern void gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin);
  * @param pin is the pin number (example: PD2 or just 2)
  * @param edge can be RISING_EDGE or FALLING_EDGE
  */
-extern void gpioEnableINT(volatile uint8_t *port, const uint8_t pin, const uint8_t edge = RISING_EDGE);
+extern void gpioEnableINT(volatile uint8_t *port, const uint8_t pin, const gpioInt_t trigger);
 
 /**
  * gpioDisableINT(volatile uint8_t *port, const uint8_t pin)

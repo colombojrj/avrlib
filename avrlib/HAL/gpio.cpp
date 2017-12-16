@@ -102,66 +102,32 @@ void gpioDisablePCINT(volatile uint8_t *port, uint8_t pin)
     #endif
 }
 
-void gpioEnableINT(volatile uint8_t *port, uint8_t pin, uint8_t edge)
+void gpioEnableINT(volatile uint8_t *port, uint8_t pin, gpioInt_t trigger)
 {
-    #if defined (__AVR_ATmega8__)
-    #elif defined (__AVR_ATmega328P__)
-        if (pin == PD2) // i.e., INT0
-        {
-            if (edge == LOW_LEVEL)
-            {
-                EICRA &= ~((1 << ISC01) | (1 << ISC00));
-            }
-            else if (edge == ANY_CHANGE)
-            {
-                EICRA &= ~(1 << ISC01);
-                EICRA |= (1 << ISC00);
-            }
-            else if (edge == FALLING_EDGE)
-            {
-                EICRA |= (1 << ISC01);
-                EICRA &= ~(1 << ISC00);
-            }
-            else
-            {
-                EICRA |= (1 << ISC01) | (1 << ISC00);
-            }
-            EIMSK |= (1 << INT0);
-        }
-        else // i.e. PD3 (INT1)
-        {
-            if (edge == LOW_LEVEL)
-            {
-                EICRA &= ~((1 << ISC11) | (1 << ISC10));
-            }
-            else if (edge == ANY_CHANGE)
-            {
-                EICRA &= ~(1 << ISC11);
-                EICRA |= (1 << ISC10);
-            }
-            else if (edge == FALLING_EDGE)
-            {
-                EICRA |= (1 << ISC11);
-                EICRA &= ~(1 << ISC10);
-            }
-            else
-            {
-                EICRA |= (1 << ISC11) | (1 << ISC10);
-            }
-            EIMSK |= (1 << INT1);
-        }
-    #endif
+    if (pin == static_cast<uint8_t>(gpioIntPin_t::int0))
+    {
+        EICRA = EICRA & ~static_cast<uint8_t>(gpioInt_t::setState);
+        EICRA = EICRA | static_cast<uint8_t>(trigger);
+        EIMSK |= (1 << INT0);
+    }
+    else if (pin == static_cast<uint8_t>(gpioIntPin_t::int1)) // i.e. INT1
+    {
+        EICRA = EICRA & ~(static_cast<uint8_t>(gpioInt_t::setState) << 2);
+        EICRA = EICRA | (static_cast<uint8_t>(trigger) << 2);
+        EIMSK |= (1 << INT1);
+    }
 }
 
 void gpioDisableINT(volatile uint8_t *port, uint8_t pin)
 {
-    #if defined (__AVR_ATmega8__)
-    #elif defined (__AVR_ATmega328P__)
-        if (pin == PD2)
-            EIMSK = EIMSK & ~(1 << INT0);
-        else
-            EIMSK = EIMSK & ~(1 << INT1);
-    #endif
+    if (pin == static_cast<uint8_t>(gpioIntPin_t::int0))
+    {
+        EIMSK = EIMSK & ~(1 << INT0);
+    }
+    else if (pin == static_cast<uint8_t>(gpioIntPin_t::int1))
+    {
+        EIMSK = EIMSK & ~(1 << INT1);
+    }
 }
 
 void gpioSetDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)

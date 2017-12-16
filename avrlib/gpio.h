@@ -177,7 +177,7 @@ public:
     void disablePCINT();
 
     // Functions to deal with EXT_INT interrupt (usually INT0 and INT1)
-    void enableINT(uint8_t sensible_edge = RISING_EDGE);
+    void enableINT(gpioInt_t sensible_edge = gpioInt_t::risingEdge);
     void disableINT();
 };
 

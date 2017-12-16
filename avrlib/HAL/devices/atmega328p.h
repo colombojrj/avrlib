@@ -83,6 +83,25 @@ enum class adcAdmux_t : uint8_t
     setState = 0b1111           //!< setState
 };
 
+///////////////////
+/// GPIO module ///
+///////////////////
+
+enum class gpioIntPin_t : uint8_t
+{
+    int0 = PD2,
+    int1 = PD3
+};
+
+enum class gpioInt_t : uint8_t
+{
+    lowLevel    = 0b00,
+    anyChange   = 0b01,
+    fallingEdge = 0b10,
+    risingEdge  = 0b11,
+    setState    = 0b11
+};
+
 //////////////////
 /// SPI module ///
 //////////////////
