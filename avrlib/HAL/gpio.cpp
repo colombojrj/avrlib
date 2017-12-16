@@ -67,40 +67,56 @@ uint8_t gpioRead(volatile uint8_t *port, uint8_t pin)
         return 0;
 }
 
+#if defined(__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
 void gpioEnablePCINT(volatile uint8_t *port, uint8_t pin)
 {
-    #if defined (__AVR_ATmega8__)
-    #elif defined (__AVR_ATmega328P__)
     if (*port == PORTB)
-        {
-            PCICR = PCICR | (1 << PCIE0);
-            PCMSK0 = PCMSK0 | (1 << pin);
-        }
-        else if (*port == PORTC)
-        {
-            PCICR = PCICR | (1 << PCIE1);
-            PCMSK1 = PCMSK1 | (1 << pin);
-        }
-        else // i.e., PORTD
-        {
-            PCICR = PCICR | (1 << PCIE2);
-            PCMSK2 = PCMSK2 | (1 << pin);
-        }
-    #endif
+    {
+        PCICR = PCICR | (1 << PCIE0);
+        PCMSK0 = PCMSK0 | (1 << pin);
+    }
+    else if (*port == PORTC)
+    {
+        PCICR = PCICR | (1 << PCIE1);
+        PCMSK1 = PCMSK1 | (1 << pin);
+    }
+    else if (*port == PORTD)
+    {
+        PCICR = PCICR | (1 << PCIE2);
+        PCMSK2 = PCMSK2 | (1 << pin);
+    }
 }
 
 void gpioDisablePCINT(volatile uint8_t *port, uint8_t pin)
 {
-    #if defined (__AVR_ATmega8__)
-    #elif defined (__AVR_ATmega328P__)
-        if (*port == PORTB)
-            PCMSK0 = PCMSK0 & ~(1 << pin);
-        else if (*port == PORTC)
-            PCMSK1 = PCMSK1 & ~(1 << pin);
-        else // i.e., PORTD
-            PCMSK2 = PCMSK2 & ~(1 << pin);
-    #endif
+    if (*port == PORTB)
+    {
+        PCMSK0 = PCMSK0 & ~(1 << pin);
+
+        /* If any pin have an interrupt attached, then there is
+         * no need to keep the interrupt generator active
+         */
+        if (PCMSK0 == 0)
+            PCICR = PCICR & ~(1 << PCIE0);
+    }
+
+    else if (*port == PORTC)
+    {
+        PCMSK1 = PCMSK1 & ~(1 << pin);
+
+        if (PCMSK1 == 0)
+            PCICR = PCICR & ~(1 << PCIE1);
+    }
+
+    else if (*port == PORTD)
+    {
+        PCMSK2 = PCMSK2 & ~(1 << pin);
+
+        if (PCMSK2 == 0)
+            PCICR = PCICR & ~(1 << PCIE2);
+    }
 }
+#endif
 
 void gpioEnableINT(volatile uint8_t *port, uint8_t pin, gpioInt_t trigger)
 {

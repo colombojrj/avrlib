@@ -169,7 +169,9 @@ extern uint8_t gpioRead(volatile uint8_t *port, const uint8_t pin);
  * @param port is a pointer to the port of the pin (example: &PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  */
+#if defined(__AVR_ATmega328__)  | defined(__AVR_ATmega328P__)
 extern void gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin);
+#endif
 
 /**
  * gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin)
@@ -181,7 +183,9 @@ extern void gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin);
  * @param port is a pointer to the port of the pin (example: &PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  */
+#if defined(__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
 extern void gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin);
+#endif
 
 /**
  * gpioEnableINT(volatile uint8_t *port, const uint8_t pin, const uint8_t edge = RISING_EDGE)
