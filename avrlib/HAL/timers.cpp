@@ -21,7 +21,7 @@
 
 #include "timers.h"
 
-/*****************
+/*
  * TIMER0 MODULE
  */
 
@@ -30,18 +30,6 @@
 	void INIT_TIMER0B () {}
 	void TIMER0A_SET_OCR (uint8_t OCR) {}
 	void TIMER0B_SET_OCR (uint8_t OCR) {}
-#endif
-
-#if TIMER0_CONFIG == NORMAL
-	#if defined (__AVR_ATmega8__)
-		void INIT_TIMER0 ()
-		{
-			TIMSK = (1 << TOIE0); // Enable overflow interrupt
-			TCCR0 = TIMER0_CLOCK;
-			TCNT0 = 0;
-			sei();
-		}
-	#endif
 #endif
 
 #if TIMER0_CONFIG == CTC

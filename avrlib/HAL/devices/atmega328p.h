@@ -207,6 +207,78 @@ enum class spiUseInterrupt_t : uint8_t
     yes = (1 << SPIE)
 };
 
+////////////////////
+/// Timer module ///
+////////////////////
+
+struct timer0RegisterConfig
+{
+    timer0RegisterConfig(uint8_t rWGM02, uint8_t rWGM01, uint8_t rWGM00)
+    {
+        TCCR0A = TCCR0A | (rWGM01 << WGM01) | (rWGM00 << rWGM00);
+        TCCR0B = TCCR0B | (rWGM02 << WGM02);
+    }
+};
+
+struct timer0AsNormal : timer0RegisterConfig
+{
+    timer0AsNormal() : timer0RegisterConfig(0, 0, 0) {}
+};
+
+struct timer0AsCTC : timer0RegisterConfig
+{
+    timer0AsCTC() : timer0RegisterConfig(0, 1, 0) {}
+};
+
+struct timer0AsPwm : timer0RegisterConfig
+{
+    timer0AsPwm() : timer0RegisterConfig(0, 1, 1) {}
+};
+
+struct timer0AsPwmPhaseCorrect : timer0RegisterConfig
+{
+    timer0AsPwmPhaseCorrect() : timer0RegisterConfig(0, 0, 1) {}
+};
+
+// TODO add support to select frequency automatically (ctc mode only)
+enum class timer0Config_t : uint8_t
+{
+    off = 0,
+    normal,
+    ctc,
+    pwmChannelA   = (1 << COM0A1),
+    pwmChannelB   = (1 << COM0B1),
+    pwmChannelsAB = (1 << COM0A1) | (1 << COM0B1),
+    pwmPhaseCorrectA,
+    pwmPhaseCorrectB,
+    pwmPhaseCorrectAB
+};
+
+enum class timer0APolarity_t : uint8_t
+{
+    normal,
+    inverted
+};
+
+enum class timer0BPolarity_t : uint8_t
+{
+    normal,
+    inverted
+};
+
+enum class timer0Clock_t : uint8_t
+{
+    off                 = 0,
+    noPreescale         = (1 << CS00),
+	divideBy8           = (1 << CS01),
+	divideBy64          = (1 << CS01) | (1 << CS00),
+	divideBy256         = (1 << CS02),
+	divideBy1024        = (1 << CS02) | (1 << CS00),
+	externT0FallingEdge = (1 << CS02) | (1 << CS01),
+	externT0RisingEdge  = (1 << CS02) | (1 << CS01) | (1 << CS00),
+	setState            = (1 << CS02) | (1 << CS01) | (1 << CS00)
+};
+
 /**@}*/
 
 #endif /* AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_ */
