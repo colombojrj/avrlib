@@ -25,6 +25,96 @@
  * TIMER0 MODULE
  */
 
+void timer0Init(timer0Config_t config,
+                timer0Clock_t clock,
+                timer0APolarity_t polarityChannelA,
+                timer0BPolarity_t polarityChannelB)
+{
+    #if defined (PRR)
+        if (config == timer0Config_t::off)
+        {
+            // If timer 0 is off, then turn it off to save power
+            PRR = PRR | (1 << PRTIM0);
+        }
+        else
+        {
+            // Disables power save
+            PRR = PRR & ~(1 << PRTIM0);
+        }
+    #endif
+
+    // Firstly, reset timer0 configuration
+    TIMSK0 = 0;
+    TCCR0A = 0;
+    TCCR0B = 0;
+
+    // Output pin configuration
+    if (config == timer0Config_t::pwmChannelA || config == timer0Config_t::pwmPhaseCorrectA)
+    {
+        gpioAsOutput(&OC0A_PORT, OC0A_PIN);
+    }
+
+    else if(config == timer0Config_t::pwmChannelB || config == timer0Config_t::pwmPhaseCorrectB)
+    {
+        gpioAsOutput(&OC0B_PORT, OC0B_PIN);
+    }
+
+    else if (config == timer0Config_t::pwmChannelsAB || config == timer0Config_t::pwmPhaseCorrectAB)
+    {
+        gpioAsOutput(&OC0A_PORT, OC0A_PIN);
+        gpioAsOutput(&OC0B_PORT, OC0B_PIN);
+
+    }
+
+    if (config == timer0Config_t::normal)
+    {
+        // Set timer configuration
+        const timer0AsNormal helper;
+    }
+
+    else if (config == timer0Config_t::ctc)
+    {
+        // Set timer configuration
+        const timer0AsCTC helper;
+    }
+
+    else if (config == timer0Config_t::pwmChannelA)
+    {
+        // Set timer configuration
+        const timer0AsPwm helper;
+    }
+
+    else if (config == timer0Config_t::pwmChannelB)
+    {
+        // Set timer configuration
+        const timer0AsPwm helper;
+    }
+
+    else if (config == timer0Config_t::pwmChannelsAB)
+    {
+        // Set timer configuration
+        const timer0AsPwm helper;
+    }
+
+    else if (config == timer0Config_t::pwmPhaseCorrectA)
+    {
+        // Set timer configuration
+        const timer0AsPwmPhaseCorrect helper;
+    }
+
+    else if (config == timer0Config_t::pwmPhaseCorrectB)
+    {
+        // Set timer configuration
+        const timer0AsPwmPhaseCorrect helper;
+    }
+
+    else if (config == timer0Config_t::pwmPhaseCorrectAB)
+    {
+        // Set timer configuration
+        const timer0AsPwmPhaseCorrect helper;
+    }
+}
+
 #if TIMER0_CONFIG == OFF
 	void INIT_TIMER0A () {}
 	void INIT_TIMER0B () {}

@@ -33,23 +33,7 @@
 
 // Microcontroller specifics
 #if defined (__AVR_ATmega328P__)
-    // Timer 0
-    #define OC0A_PIN            PD6
-    #define OC0A_PORT           PORTD
-    #define OC0B_PIN            PD5
-    #define OC0B_PORT           PORTB
 
-    // Timer 1
-    #define OC1A_PIN            PB1
-    #define OC1A_PORT           PORTB
-    #define OC1B_PIN            PB2
-    #define OC1B_PORT           PORTB
-
-    // Timer 2
-    #define OC2A_PIN            PB3
-    #define OC2A_PORT           PORTB
-    #define OC2B_PIN            PD3
-    #define OC2B_PORT           PORTD
 #endif
 
 ///////////

@@ -59,6 +59,7 @@ extern "C"
 /**
  * Functions to handle the TIMER0 module
  */
+extern void timer0Init(timer0Config_t config, timer0Clock_t clock, timer0APolarity_t polarityChannelA, timer0BPolarity_t polarityChannelB);
 extern void INIT_TIMER0A();
 extern void INIT_TIMER0B();
 extern void TIMER0A_SET_OCR(uint8_t OCR);

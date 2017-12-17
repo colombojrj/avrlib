@@ -211,6 +211,24 @@ enum class spiUseInterrupt_t : uint8_t
 /// Timer module ///
 ////////////////////
 
+// Timer 0
+#define OC0A_PIN            PD6
+#define OC0A_PORT           PORTD
+#define OC0B_PIN            PD5
+#define OC0B_PORT           PORTB
+
+// Timer 1
+#define OC1A_PIN            PB1
+#define OC1A_PORT           PORTB
+#define OC1B_PIN            PB2
+#define OC1B_PORT           PORTB
+
+// Timer 2
+#define OC2A_PIN            PB3
+#define OC2A_PORT           PORTB
+#define OC2B_PIN            PD3
+#define OC2B_PORT           PORTD
+
 struct timer0RegisterConfig
 {
     timer0RegisterConfig(uint8_t rWGM02, uint8_t rWGM01, uint8_t rWGM00)
@@ -270,13 +288,13 @@ enum class timer0Clock_t : uint8_t
 {
     off                 = 0,
     noPreescale         = (1 << CS00),
-	divideBy8           = (1 << CS01),
-	divideBy64          = (1 << CS01) | (1 << CS00),
-	divideBy256         = (1 << CS02),
-	divideBy1024        = (1 << CS02) | (1 << CS00),
-	externT0FallingEdge = (1 << CS02) | (1 << CS01),
-	externT0RisingEdge  = (1 << CS02) | (1 << CS01) | (1 << CS00),
-	setState            = (1 << CS02) | (1 << CS01) | (1 << CS00)
+    divideBy8           = (1 << CS01),
+    divideBy64          = (1 << CS01) | (1 << CS00),
+    divideBy256         = (1 << CS02),
+    divideBy1024        = (1 << CS02) | (1 << CS00),
+    externT0FallingEdge = (1 << CS02) | (1 << CS01),
+    externT0RisingEdge  = (1 << CS02) | (1 << CS01) | (1 << CS00),
+    setState            = (1 << CS02) | (1 << CS01) | (1 << CS00)
 };
 
 /**@}*/
