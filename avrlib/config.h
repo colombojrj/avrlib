@@ -133,14 +133,14 @@
     #include "HAL/devices/atmega328p.h"
 #endif
 
-// Use this file to configure the micro-controller peripherals
+// Use this file to configure the microcontroller peripherals
 
-#define TIMER0_CONFIG           PWM_AB       ///< TIMER0 operation mode. For more information see \ref conf_timers
-#define TIMER0_CLOCK            NO_PREESCALE ///< configure TIMER0 clock source. For more information see \ref conf_timers
-#define TIMER0A_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
-#define TIMER0A_INITIAL_OCR     0            ///< Initial duty cycle. For more information see \ref conf_timers
-#define TIMER0B_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
-#define TIMER0B_INITIAL_OCR     0            ///< Initial duty cycle. For more information see \ref conf_timers
+constexpr timer0Config_t    timer0Config        = timer0Config_t::off;
+constexpr timer0Clock_t     timer0Clock         = timer0Clock_t::noPreescale;
+constexpr timer0APolarity_t timer0APolarity     = timer0APolarity_t::normal;
+constexpr uint8_t           timer0AInitialOcr   = 0;
+constexpr timer0BPolarity_t timer0BPolarity     = timer0BPolarity_t::normal;
+constexpr uint8_t           timer0BInitialOcr   = 0;
 
 #define TIMER1_CONFIG           PWM_AB       ///< TIMER1 operation mode. For more information see \ref conf_timers
 #define TIMER1_CLOCK            CLK_64       ///< configure TIMER1 clock source. For more information see \ref conf_timers

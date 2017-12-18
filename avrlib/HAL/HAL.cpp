@@ -4,9 +4,10 @@
 void initHAL()
 {
     // Initialize the TIMERs
-    TIMER0_OFF();
-    INIT_TIMER0A();
-    INIT_TIMER0B();
+    if (timer0Config == timer0Config_t::off)
+        TIMER0_OFF();
+    else
+        timer0Init(timer0Config, timer0Clock, timer0APolarity, timer0BPolarity);
 
     TIMER1_OFF();
     INIT_TIMER1A();

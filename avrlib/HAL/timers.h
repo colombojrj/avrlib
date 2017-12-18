@@ -26,12 +26,21 @@ extern "C"
 {
 	#include <avr/io.h>
 	#include <avr/interrupt.h>
-    #include "gpio.h"
 }
+#include "gpio.h"
 #include "defines.h"
 #include "../config.h"
 
 /**
+ * Definitions:
+ * - BOTTOM: The counter reaches the BOTTOM when it becomes 0x00
+ * - MAX: The counter reaches its MAXimum when it becomes 0xFF (decimal 255)
+ * - TOP: The counter reaches the TOP when it becomes equal to the highest value in the
+ *        count sequence. The TOP value can be assigned to be the fixed value 0xFF
+ *        (MAX) or the value stored in the OCR0A Register. The assignment is depen-
+ *        dent on the mode of operation.
+ *
+ *
  * Organizational idea of this library:
  *
  * - The file defines.h keeps the definitions of the actual
@@ -59,11 +68,15 @@ extern "C"
 /**
  * Functions to handle the TIMER0 module
  */
-extern void timer0Init(timer0Config_t config, timer0Clock_t clock, timer0APolarity_t polarityChannelA, timer0BPolarity_t polarityChannelB);
-extern void INIT_TIMER0A();
-extern void INIT_TIMER0B();
-extern void TIMER0A_SET_OCR(uint8_t OCR);
-extern void TIMER0B_SET_OCR(uint8_t OCR);
+extern void timer0Init(timer0Config_t config,
+                       timer0Clock_t clock,
+                       timer0APolarity_t polarityChannelA = timer0APolarity_t::normal,
+                       timer0BPolarity_t polarityChannelB = timer0BPolarity_t::normal);
+extern void timer0Init(timer0Config_t config,
+                       timer0Clock_t clock,
+                       timer0BPolarity_t polarityChannelB);
+extern void timer0ASetDuty(uint8_t OCR, timer0APolarity_t polarity = timer0APolarity_t::normal);
+extern void timer0BSetDuty(uint8_t OCR, timer0BPolarity_t polarity = timer0BPolarity_t::normal);
 extern void TIMER0_OFF();
 
 /**

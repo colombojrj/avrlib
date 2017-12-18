@@ -216,12 +216,16 @@ enum class spiUseInterrupt_t : uint8_t
 #define OC0A_PORT           PORTD
 #define OC0B_PIN            PD5
 #define OC0B_PORT           PORTB
+#define T0_PIN              PD4
+#define T0_PORT             PORTD
 
 // Timer 1
 #define OC1A_PIN            PB1
 #define OC1A_PORT           PORTB
 #define OC1B_PIN            PB2
 #define OC1B_PORT           PORTB
+#define T1_PIN              PD5
+#define T1_PORT             PORTD
 
 // Timer 2
 #define OC2A_PIN            PB3
@@ -229,59 +233,32 @@ enum class spiUseInterrupt_t : uint8_t
 #define OC2B_PIN            PD3
 #define OC2B_PORT           PORTD
 
-struct timer0RegisterConfig
+enum class timer0APolarity_t : uint8_t
 {
-    timer0RegisterConfig(uint8_t rWGM02, uint8_t rWGM01, uint8_t rWGM00)
-    {
-        TCCR0A = TCCR0A | (rWGM01 << WGM01) | (rWGM00 << rWGM00);
-        TCCR0B = TCCR0B | (rWGM02 << WGM02);
-    }
+    normal   = (1 << COM0A1),
+    inverted = (1 << COM0A1) | (1 << COM0A0),
+    setState = (1 << COM0A1) | (1 << COM0A0),
 };
 
-struct timer0AsNormal : timer0RegisterConfig
+enum class timer0BPolarity_t : uint8_t
 {
-    timer0AsNormal() : timer0RegisterConfig(0, 0, 0) {}
-};
-
-struct timer0AsCTC : timer0RegisterConfig
-{
-    timer0AsCTC() : timer0RegisterConfig(0, 1, 0) {}
-};
-
-struct timer0AsPwm : timer0RegisterConfig
-{
-    timer0AsPwm() : timer0RegisterConfig(0, 1, 1) {}
-};
-
-struct timer0AsPwmPhaseCorrect : timer0RegisterConfig
-{
-    timer0AsPwmPhaseCorrect() : timer0RegisterConfig(0, 0, 1) {}
+    normal   = (1 << COM0B1),
+    inverted = (1 << COM0B1) | (1 << COM0B0),
+    setState = (1 << COM0B1) | (1 << COM0B0)
 };
 
 // TODO add support to select frequency automatically (ctc mode only)
 enum class timer0Config_t : uint8_t
 {
     off = 0,
-    normal,
-    ctc,
-    pwmChannelA   = (1 << COM0A1),
-    pwmChannelB   = (1 << COM0B1),
-    pwmChannelsAB = (1 << COM0A1) | (1 << COM0B1),
-    pwmPhaseCorrectA,
-    pwmPhaseCorrectB,
-    pwmPhaseCorrectAB
-};
-
-enum class timer0APolarity_t : uint8_t
-{
-    normal,
-    inverted
-};
-
-enum class timer0BPolarity_t : uint8_t
-{
-    normal,
-    inverted
+    normal = 0,
+    ctc = (1 << WGM01),
+    pwmChannelA = (1 << WGM01) | (1 << WGM00),
+    pwmChannelB = (1 << WGM01) | (1 << WGM00),
+    pwmChannelsAB = (1 << WGM01) | (1 << WGM00),
+    pwmPhaseCorrectA = (1 << WGM00),
+    pwmPhaseCorrectB = (1 << WGM00),
+    pwmPhaseCorrectAB = (1 << WGM00)
 };
 
 enum class timer0Clock_t : uint8_t

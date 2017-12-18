@@ -31,11 +31,6 @@
 #define TIMER2A                 4
 #define TIMER2B                 5
 
-// Microcontroller specifics
-#if defined (__AVR_ATmega328P__)
-
-#endif
-
 ///////////
 // CLOCK //
 ///////////
@@ -80,14 +75,6 @@
 /////////////////////////////////
 // ANALOG TO DIGITAL CONVERTER //
 /////////////////////////////////
-#define SINGLE_CONVERSION   1
-#define NOISE_REDUCTION     2
-#define FREE_RUNNING        3
-#define EXTERN              0
-#define INTERN              1
-#define REF_VCC             2
-#define LEFT                0
-#define RIGHT               1
 
 ///* Configure the microcontroller reference voltage
 #if defined (__AVR_ATmega88__)  || (__AVR_ATmega88P__)   || \
@@ -109,14 +96,6 @@
 #else
 	#define ADC_REFERENCE_VOLTAGE adcSupplyVoltage
 #endif
-
-/////////
-// SPI //
-/////////
-#define SLAVE                   2
-#define MASTER                  1
-#define MSB_FIRST               0
-#define LSB_FIRST               1
 
 //////////
 // UART //
