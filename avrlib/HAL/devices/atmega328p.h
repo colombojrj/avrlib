@@ -274,6 +274,93 @@ enum class timer0Clock_t : uint8_t
     setState            = (1 << CS02) | (1 << CS01) | (1 << CS00)
 };
 
+////////////////////
+// TIMER 1 MODULE //
+////////////////////
+enum class timer1Config_t : uint8_t
+{
+    off,
+    normal,
+    ctc,
+    pwm8Bits,
+    pwm9bits,
+    pwm10bits,
+    pwmDefinedTop,
+    pwmPhaseCorrect8bits,
+    pwmPhaseCorrect9bits,
+    pwmPhaseCorrect10bits,
+    pwmPhaseCorrectDefinedTop
+};
+
+enum class timer1outputConfig_t : uint8_t
+{
+    channelAnormal   = (1 << COM1A1),
+    channelAinverted = (1 << COM1A1) | (1 << COM1A0),
+    channelBnormal   = (1 << COM1B1),
+    channelBinverted = (1 << COM1B1) | (1 << COM1B0),
+    setState         = (1 << COM1A1) | (1 << COM1A0) | (1 << COM1B1) | (1 << COM1B0)
+};
+
+struct timer1RegisterConfig
+{
+    timer1RegisterConfig(uint8_t rWGM13, uint8_t rWGM12, uint8_t rWGM11, uint8_t rWGM10, uint8_t output)
+    {
+        TCCR0A = TCCR0A | (rWGM11 << WGM11) | (rWGM10 << rWGM10) | output;
+        TCCR0B = TCCR0B | (rWGM12 << WGM12);
+    }
+};
+
+struct timer1AsNormal : timer1RegisterConfig
+{
+    timer1AsNormal(uint8_t output) : timer1RegisterConfig(0, 0, 0, 0, output) {}
+};
+
+struct timer1AsCTC : timer1RegisterConfig
+{
+    timer1AsCTC(uint8_t output) : timer1RegisterConfig(0, 1, 0, 0, output) {}
+};
+
+struct timer1As8bitPwm : timer1RegisterConfig
+{
+    timer1As8bitPwm(uint8_t output) : timer1RegisterConfig(0, 1, 0, 1, output) {}
+};
+
+struct timer1As9bitPwm : timer1RegisterConfig
+{
+    timer1As9bitPwm(uint8_t output) : timer1RegisterConfig(0, 1, 1, 0, output) {}
+};
+
+struct timer1As10bitPwm : timer1RegisterConfig
+{
+    timer1As10bitPwm(uint8_t output) : timer1RegisterConfig(0, 1, 1, 1, output) {}
+};
+
+struct timer1As16bitPwm : timer1RegisterConfig
+{
+    timer1As16bitPwm(uint8_t output) : timer1RegisterConfig(1, 1, 1, 0, output) {}
+};
+
+struct timer1As8bitPhaseCorrectPwm : timer1RegisterConfig
+{
+    timer1As8bitPhaseCorrectPwm(uint8_t output) : timer1RegisterConfig(0, 0, 0, 1, output) {}
+};
+
+struct timer1As9bitPhaseCorrectPwm : timer1RegisterConfig
+{
+    timer1As9bitPhaseCorrectPwm(uint8_t output) : timer1RegisterConfig(0, 0, 1, 0, output) {}
+};
+
+struct timer1As10bitPhaseCorrectPwm : timer1RegisterConfig
+{
+    timer1As10bitPhaseCorrectPwm(uint8_t output) : timer1RegisterConfig(0, 0, 1, 1, output) {}
+};
+
+struct timer1As16bitPhaseCorrectPwm : timer1RegisterConfig
+{
+    timer1As16bitPhaseCorrectPwm(uint8_t output) : timer1RegisterConfig(1, 0, 0, 0, output) {}
+};
+
+
 /**@}*/
 
 #endif /* AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_ */
