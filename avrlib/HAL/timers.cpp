@@ -209,6 +209,142 @@ void TIMER0_OFF()
 ///////////////////
 //
 
+void timer1Init(timer1Config_t config,
+                timer1Clock_t clock,
+                timer1outputConfig_t outputConfig)
+{
+    #if defined (PRR)
+        // Enables Timer/Counter1 module
+        PRR = PRR & ~(1 << PRTIM1);
+    #endif
+
+    // Set timer1 configuration
+    if (config == timer1Config_t::normal)
+    {
+        timer1AsNormal helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::ctc)
+    {
+        timer1AsCTC helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::pwm8Bits)
+    {
+        timer1As8bitPwm helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::pwm9bits)
+    {
+        timer1As9bitPwm helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::pwm10bits)
+    {
+        timer1As10bitPwm helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::pwmDefinedTop)
+    {
+        timer1As16bitPwm helper(static_cast<uint8_t>(outputConfig), 0);
+    }
+
+    else if (config == timer1Config_t::pwmPhaseCorrect8bits)
+    {
+        timer1As8bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::pwmPhaseCorrect9bits)
+    {
+        timer1As9bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::pwmPhaseCorrect10bits)
+    {
+        timer1As10bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+    }
+
+    else if (config == timer1Config_t::pwmPhaseCorrectDefinedTop)
+    {
+        timer1As16bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+    }
+}
+
+void timer1ASetDuty(uint8_t OCR, timer1outputConfig_t output)
+{
+    if (OCR >= 255)
+    {
+        // Disable compare match
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+
+        if (output == timer1outputConfig_t::channelAnormal)
+            gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
+        else
+            gpioWriteLow(&OC1A_PORT, OC1A_PIN);
+    }
+
+    else if (OCR <= 0)
+    {
+        // Disable compare match
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+
+        if (output == timer1outputConfig_t::channelAnormal)
+            gpioWriteLow(&OC1A_PORT, OC1A_PIN);
+        else
+            gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
+    }
+
+    else
+    {
+        // Enable compare match
+        TCCR1A = TCCR1A | static_cast<uint8_t>(output);
+
+        // Set the output compare register
+        OCR1A = OCR;
+    }
+}
+
+void timer1BSetDuty(uint8_t OCR, timer1outputConfig_t output)
+{
+    if (OCR >= 255)
+    {
+        // Disable compare match
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+
+        if (output == timer1outputConfig_t::channelAnormal)
+            gpioWriteHigh(&OC1B_PORT, OC1B_PIN);
+        else
+            gpioWriteLow(&OC1B_PORT, OC1B_PIN);
+    }
+
+    else if (OCR <= 0)
+    {
+        // Disable compare match
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+
+        if (output == timer1outputConfig_t::channelAnormal)
+            gpioWriteLow(&OC1B_PORT, OC1B_PIN);
+        else
+            gpioWriteHigh(&OC1B_PORT, OC1B_PIN);
+    }
+
+    else
+    {
+        // Enable compare match
+        TCCR1A = TCCR1A | static_cast<uint8_t>(output);
+
+        // Set the output compare register
+        OCR1B = OCR;
+    }
+}
+
+void enableInputCapture(timer1InputCaptureEdge_t config)
+{
+    TCCR1B = TCCR1B & ~static_cast<uint8_t>(timer1InputCaptureEdge_t::setState);
+    TCCR1B = TCCR1B |  static_cast<uint8_t>(config);
+}
+
+
 #if TIMER1_CONFIG == OFF
     void INIT_TIMER1A () {}
     void INIT_TIMER1B () {}
@@ -264,29 +400,8 @@ void TIMER0_OFF()
 #endif
 
 #if TIMER1_CONFIG == CTC
-    #if defined (__AVR_ATmega8__)
-        void INIT_TIMER1 (uint16_t TOP_OCR1A) {
-            OCR1A   = TOP_OCR1A;
-            TCCR1B |= (1 << WGM12) | TIMER1_CLOCK;
-            TIMSK  |= (1 << OCIE1A); // Enable output compare interrupt
-            TCCR1A  = 0;
-            TCNT1   = 0;
-            sei();
-        }
-    #endif
     #if defined (__AVR_ATmega328P__)
         void INIT_TIMER1A () {
-            // Disables power save
-            PRR = PRR & ~(1 << PRTIM1);
-
-            TIMSK1 = (1 << OCIE1A);
-            TCCR1A = 0;
-            TCCR1B = (1 << WGM12) | TIMER1_CLOCK;
-            TCNT1 = 0;
-            OCR1A = TIMER1A_INITIAL_OCR;
-            sei();
-        }
-        void INIT_TIMER1B () {
             // Disables power save
             PRR = PRR & ~(1 << PRTIM1);
 
