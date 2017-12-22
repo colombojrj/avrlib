@@ -239,52 +239,52 @@ void timer1Init(timer1Config_t config,
     // Set timer1 configuration
     if (config == timer1Config_t::normal)
     {
-        timer1AsNormal helperNormal(static_cast<uint8_t>(outputConfig));
+        timer1AsNormal helperNormal(outputConfig);
     }
 
     else if (config == timer1Config_t::ctc)
     {
-        timer1AsCTC helperCTC(static_cast<uint8_t>(outputConfig));
+        timer1AsCTC helperCTC(outputConfig);
     }
 
     else if (config == timer1Config_t::pwm8Bits)
     {
-        timer1As8bitPwm helper(static_cast<uint8_t>(outputConfig));
+        timer1As8bitPwm helper(outputConfig);
     }
 
     else if (config == timer1Config_t::pwm9Bits)
     {
-        timer1As9bitPwm helper(static_cast<uint8_t>(outputConfig));
+        timer1As9bitPwm helper(outputConfig);
     }
 
     else if (config == timer1Config_t::pwm10Bits)
     {
-        timer1As10bitPwm helper(static_cast<uint8_t>(outputConfig));
+        timer1As10bitPwm helper(outputConfig);
     }
 
     else if (config == timer1Config_t::pwmDefinedTop)
     {
-        timer1As16bitPwm helper(static_cast<uint8_t>(outputConfig), topValue);
+        timer1As16bitPwm helper(outputConfig, topValue);
     }
 
     else if (config == timer1Config_t::pwmPhaseCorrect8Bits)
     {
-        timer1As8bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+        timer1As8bitPhaseCorrectPwm helper(outputConfig);
     }
 
     else if (config == timer1Config_t::pwmPhaseCorrect9Bits)
     {
-        timer1As9bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+        timer1As9bitPhaseCorrectPwm helper(outputConfig);
     }
 
     else if (config == timer1Config_t::pwmPhaseCorrect10Bits)
     {
-        timer1As10bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+        timer1As10bitPhaseCorrectPwm helper(outputConfig);
     }
 
     else if (config == timer1Config_t::pwmPhaseCorrectDefinedTop)
     {
-        timer1As16bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig), topValue);
+        timer1As16bitPhaseCorrectPwm helper(outputConfig, topValue);
     }
 
     // Set timer 1 clock source

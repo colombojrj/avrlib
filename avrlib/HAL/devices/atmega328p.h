@@ -325,45 +325,43 @@ enum class timer1InputCaptureEdge_t : uint8_t
     setState    = (1 << ICNC1) | (1 << ICES1)
 };
 
-// TODO put the static_cast inside this struct to make the code in timers.cpp more readable
-//      the idea is replace uint8_t output with timer1outputConfig_t output
 struct timer1RegisterConfig
 {
-    timer1RegisterConfig(uint8_t rWGM13, uint8_t rWGM12, uint8_t rWGM11, uint8_t rWGM10, uint8_t output)
+    timer1RegisterConfig(uint8_t rWGM13, uint8_t rWGM12, uint8_t rWGM11, uint8_t rWGM10, timer1OutputConfig_t output)
     {
-        TCCR1A = (rWGM11 << WGM11) | (rWGM10 << WGM10) | output;
+        TCCR1A = (rWGM11 << WGM11) | (rWGM10 << WGM10) | static_cast<uint8_t>(output);
         TCCR1B = (rWGM13 << WGM13) | (rWGM12 << WGM12);
     }
 };
 
 struct timer1AsNormal : timer1RegisterConfig
 {
-    timer1AsNormal(uint8_t output) : timer1RegisterConfig(0, 0, 0, 0, output) {}
+    timer1AsNormal(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 0, 0, output) {}
 };
 
 struct timer1AsCTC : timer1RegisterConfig
 {
-    timer1AsCTC(uint8_t output) : timer1RegisterConfig(0, 1, 0, 0, output) {}
+    timer1AsCTC(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 0, 0, output) {}
 };
 
 struct timer1As8bitPwm : timer1RegisterConfig
 {
-    timer1As8bitPwm(uint8_t output) : timer1RegisterConfig(0, 1, 0, 1, output) {}
+    timer1As8bitPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 0, 1, output) {}
 };
 
 struct timer1As9bitPwm : timer1RegisterConfig
 {
-    timer1As9bitPwm(uint8_t output) : timer1RegisterConfig(0, 1, 1, 0, output) {}
+    timer1As9bitPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 1, 0, output) {}
 };
 
 struct timer1As10bitPwm : timer1RegisterConfig
 {
-    timer1As10bitPwm(uint8_t output) : timer1RegisterConfig(0, 1, 1, 1, output) {}
+    timer1As10bitPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 1, 1, output) {}
 };
 
 struct timer1As16bitPwm : timer1RegisterConfig
 {
-    timer1As16bitPwm(uint8_t output, uint16_t rICR1) : timer1RegisterConfig(1, 1, 1, 0, output)
+    timer1As16bitPwm(timer1OutputConfig_t output, uint16_t rICR1) : timer1RegisterConfig(1, 1, 1, 0, output)
     {
         ICR1 = rICR1;
     }
@@ -371,22 +369,22 @@ struct timer1As16bitPwm : timer1RegisterConfig
 
 struct timer1As8bitPhaseCorrectPwm : timer1RegisterConfig
 {
-    timer1As8bitPhaseCorrectPwm(uint8_t output) : timer1RegisterConfig(0, 0, 0, 1, output) {}
+    timer1As8bitPhaseCorrectPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 0, 1, output) {}
 };
 
 struct timer1As9bitPhaseCorrectPwm : timer1RegisterConfig
 {
-    timer1As9bitPhaseCorrectPwm(uint8_t output) : timer1RegisterConfig(0, 0, 1, 0, output) {}
+    timer1As9bitPhaseCorrectPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 1, 0, output) {}
 };
 
 struct timer1As10bitPhaseCorrectPwm : timer1RegisterConfig
 {
-    timer1As10bitPhaseCorrectPwm(uint8_t output) : timer1RegisterConfig(0, 0, 1, 1, output) {}
+    timer1As10bitPhaseCorrectPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 1, 1, output) {}
 };
 
 struct timer1As16bitPhaseCorrectPwm : timer1RegisterConfig
 {
-    timer1As16bitPhaseCorrectPwm(uint8_t output, uint16_t rICR1) : timer1RegisterConfig(1, 0, 0, 0, output)
+    timer1As16bitPhaseCorrectPwm(timer1OutputConfig_t output, uint16_t rICR1) : timer1RegisterConfig(1, 0, 0, 0, output)
     {
         ICR1 = rICR1;
     }
