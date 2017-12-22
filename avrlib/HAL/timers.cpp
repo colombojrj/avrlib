@@ -211,22 +211,40 @@ void TIMER0_OFF()
 
 void timer1Init(timer1Config_t config,
                 timer1Clock_t clock,
-                timer1outputConfig_t outputConfig)
+                timer1outputConfig_t outputConfig,
+                uint16_t topValue)
 {
     #if defined (PRR)
         // Enables Timer/Counter1 module
         PRR = PRR & ~(1 << PRTIM1);
     #endif
 
+    // Pin configuration
+    if (outputConfig == timer1outputConfig_t::channelAnormal   ||
+        outputConfig == timer1outputConfig_t::channelAinverted ||
+        outputConfig == timer1outputConfig_t::channelABnormal  ||
+        outputConfig == timer1outputConfig_t::channelABinverted)
+    {
+        gpioAsOutput(&OC1A_PORT, OC1A_PIN);
+    }
+
+    if (outputConfig == timer1outputConfig_t::channelBnormal   ||
+        outputConfig == timer1outputConfig_t::channelBinverted ||
+        outputConfig == timer1outputConfig_t::channelABnormal  ||
+        outputConfig == timer1outputConfig_t::channelABinverted)
+    {
+        gpioAsOutput(&OC1B_PORT, OC1B_PIN);
+    }
+
     // Set timer1 configuration
     if (config == timer1Config_t::normal)
     {
-        timer1AsNormal helper(static_cast<uint8_t>(outputConfig));
+        timer1AsNormal helperNormal(static_cast<uint8_t>(outputConfig));
     }
 
     else if (config == timer1Config_t::ctc)
     {
-        timer1AsCTC helper(static_cast<uint8_t>(outputConfig));
+        timer1AsCTC helperCTC(static_cast<uint8_t>(outputConfig));
     }
 
     else if (config == timer1Config_t::pwm8Bits)
@@ -234,45 +252,52 @@ void timer1Init(timer1Config_t config,
         timer1As8bitPwm helper(static_cast<uint8_t>(outputConfig));
     }
 
-    else if (config == timer1Config_t::pwm9bits)
+    else if (config == timer1Config_t::pwm9Bits)
     {
         timer1As9bitPwm helper(static_cast<uint8_t>(outputConfig));
     }
 
-    else if (config == timer1Config_t::pwm10bits)
+    else if (config == timer1Config_t::pwm10Bits)
     {
         timer1As10bitPwm helper(static_cast<uint8_t>(outputConfig));
     }
 
     else if (config == timer1Config_t::pwmDefinedTop)
     {
-        timer1As16bitPwm helper(static_cast<uint8_t>(outputConfig), 0);
+        timer1As16bitPwm helper(static_cast<uint8_t>(outputConfig), topValue);
     }
 
-    else if (config == timer1Config_t::pwmPhaseCorrect8bits)
+    else if (config == timer1Config_t::pwmPhaseCorrect8Bits)
     {
         timer1As8bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
     }
 
-    else if (config == timer1Config_t::pwmPhaseCorrect9bits)
+    else if (config == timer1Config_t::pwmPhaseCorrect9Bits)
     {
         timer1As9bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
     }
 
-    else if (config == timer1Config_t::pwmPhaseCorrect10bits)
+    else if (config == timer1Config_t::pwmPhaseCorrect10Bits)
     {
         timer1As10bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
     }
 
     else if (config == timer1Config_t::pwmPhaseCorrectDefinedTop)
     {
-        timer1As16bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig));
+        timer1As16bitPhaseCorrectPwm helper(static_cast<uint8_t>(outputConfig), topValue);
     }
+
+    // Set timer 1 clock source
+    TCCR1B = TCCR1B | static_cast<uint8_t>(clock);
+
+    // Reset counting
+    TCNT1 = 0;
+
 }
 
-void timer1ASetDuty(uint8_t OCR, timer1outputConfig_t output)
+void timer1ASetDuty(uint16_t duty, timer1outputConfig_t output, uint16_t top)
 {
-    if (OCR >= 255)
+    if (duty >= top)
     {
         // Disable compare match
         TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
@@ -283,7 +308,7 @@ void timer1ASetDuty(uint8_t OCR, timer1outputConfig_t output)
             gpioWriteLow(&OC1A_PORT, OC1A_PIN);
     }
 
-    else if (OCR <= 0)
+    else if (duty <= 0)
     {
         // Disable compare match
         TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
@@ -300,7 +325,7 @@ void timer1ASetDuty(uint8_t OCR, timer1outputConfig_t output)
         TCCR1A = TCCR1A | static_cast<uint8_t>(output);
 
         // Set the output compare register
-        OCR1A = OCR;
+        OCR1A = duty;
     }
 }
 

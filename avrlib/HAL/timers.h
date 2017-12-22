@@ -87,8 +87,9 @@ extern void INIT_TIMER1B ();
 
 extern void timer1Init(timer1Config_t config,
                        timer1Clock_t clock,
-                       timer1outputConfig_t outputConfig);
-extern void timer1ASetDuty(uint8_t OCR, timer1outputConfig_t output);
+                       timer1outputConfig_t outputConfig,
+                       uint16_t topValue = 4095);
+extern void timer1ASetDuty(uint16_t duty, timer1outputConfig_t output, uint16_t top = 255);
 extern void timer1BSetDuty(uint8_t OCR, timer1outputConfig_t output);
 
 extern void TIMER1A_SET_OCR (uint16_t OCR);
