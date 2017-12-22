@@ -215,7 +215,7 @@ enum class spiUseInterrupt_t : uint8_t
 #define OC0A_PIN            PD6
 #define OC0A_PORT           PORTD
 #define OC0B_PIN            PD5
-#define OC0B_PORT           PORTB
+#define OC0B_PORT           PORTD
 #define T0_PIN              PD4
 #define T0_PORT             PORTD
 
@@ -313,8 +313,8 @@ enum class timer1Clock_t : uint8_t
     divideBy64          = (1 << CS11) | (1 << CS10),
     divideBy256         = (1 << CS12),
     divideBy1024        = (1 << CS12) | (1 << CS10),
-    externT0FallingEdge = (1 << CS12) | (1 << CS11),
-    externT0RisingEdge  = (1 << CS12) | (1 << CS11) | (1 << CS10),
+    externT1FallingEdge = (1 << CS12) | (1 << CS11),
+    externT1RisingEdge  = (1 << CS12) | (1 << CS11) | (1 << CS10),
     setState            = (1 << CS12) | (1 << CS11) | (1 << CS10)
 };
 
@@ -390,6 +390,43 @@ struct timer1As16bitPhaseCorrectPwm : timer1RegisterConfig
     }
 };
 
+////////////////////
+// TIMER 2 MODULE //
+////////////////////
+enum class timer2Config_t : uint8_t
+{
+    off             = 0,
+    normal          = 0,
+    ctc             = (1 << WGM21),
+    pwm             = (1 << WGM21) | (1 << WGM20),
+    pwmPhaseCorrect = (1 << WGM20)
+};
+
+enum class timer2OutputConfig_t
+{
+    off                = 0,
+    channelAnormal     = (1 << COM2A1),
+    channelAinverted   = (1 << COM2A1) | (1 << COM2A0),
+    channelBnormal     = (1 << COM2B1),
+    channelBinverted   = (1 << COM2B1) | (1 << COM2B0),
+    channelAsetState   = (1 << COM2A1) | (1 << COM2A0),
+    channelBsetState   = (1 << COM2B1) | (1 << COM2B0),
+    channelABnormal    = channelAnormal | channelBnormal,
+    channelABinverted  = channelAinverted | channelBinverted
+};
+
+enum class timer2Clock_t : uint8_t
+{
+    off                = 0,
+    noPreescale        = (1 << CS20),
+    divideBy8          = (1 << CS21),
+    divideBy32         = (1 << CS21) | (1 << CS20),
+    divideBy64         = (1 << CS22),
+    divideBy128        = (1 << CS22) | (1 << CS20),
+    divideBy256        = (1 << CS22) | (1 << CS21),
+    divideBy1024       = (1 << CS22) | (1 << CS21) | (1 << CS20),
+    setState           = (1 << CS22) | (1 << CS21) | (1 << CS20)
+};
 
 /**@}*/
 

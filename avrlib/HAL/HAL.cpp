@@ -14,9 +14,10 @@ void initHAL()
     else
         timer1Init(timer1Config, timer1Clock, timer1OutputConfig, timer1TopValue);
 
-    TIMER2_OFF();
-    INIT_TIMER2A();
-    INIT_TIMER2B();
+    if (timer2Config == timer2Config_t::off)
+        TIMER2_OFF();
+    else
+        timer2Init(timer2Config, timer2Clock, timer2OutputConfig);
 
     // Initialize the ADC
 

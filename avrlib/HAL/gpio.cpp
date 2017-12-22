@@ -151,24 +151,21 @@ void gpioDisableINT(volatile uint8_t *port, uint8_t pin)
 
 void gpioSetDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
 {
-    #if defined (__AVR_ATmega328P__)
-        if (*port == PORTD)
-        {
-            if (pin == PD6)      // OC0A
-                timer0ASetDuty((uint8_t) (duty & 0x00FF));
-            else if (pin == PD5) // OC0B
-                timer0BSetDuty((uint8_t) (duty & 0x00FF));
-            else if (pin == PD3) // OC2B
-                TIMER2B_SET_OCR((uint8_t) (duty & 0x00FF));
-        }
-        else // i.e., *port == PORTB
-        {
-            if (pin == PB1)      // OC1A
-                timer1ASetDuty(duty, timer1OutputConfig, timer1TopValue);
-            else if (pin == PB2) // OC1B
-                timer1BSetDuty(duty, timer1OutputConfig, timer1TopValue);
-            else if (pin == PB3) // OC2A
-                TIMER2A_SET_OCR((uint8_t) (duty & 0x00FF));
-        }
-    #endif
+    if (*port == OC0A_PORT && pin == OC0A_PIN)
+        timer0ASetDuty((uint8_t) (duty & 0xFF));
+
+    else if (*port == OC0B_PORT && pin == OC0B_PIN)
+        timer0BSetDuty((uint8_t) (duty & 0xFF));
+
+    else if (*port == OC1A_PORT && pin == OC1A_PIN)
+        timer1ASetDuty(duty, timer1OutputConfig, timer1TopValue);
+
+    else if (*port == OC1B_PORT && pin == OC1B_PIN)
+        timer1BSetDuty(duty, timer1OutputConfig, timer1TopValue);
+
+    else if (*port == OC2A_PORT && pin == OC2A_PIN)
+        timer2ASetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
+
+    else if (*port == OC2B_PORT && pin == OC2B_PIN)
+        timer2BSetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
 }

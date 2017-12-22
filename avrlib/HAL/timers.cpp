@@ -299,10 +299,11 @@ void timer1Init(timer1Config_t config,
 
     // Set timer 1 clock source
     TCCR1B = TCCR1B | static_cast<uint8_t>(clock);
+    if (clock == timer1Clock_t::externT1FallingEdge || clock == timer1Clock_t::externT1RisingEdge)
+        gpioAsInput(&T1_PORT, T1_PIN, 1);
 
     // Reset counting
     TCNT1 = 0;
-
 }
 
 void timer1ASetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top)
@@ -399,183 +400,132 @@ void enableInputCapture(timer1InputCaptureEdge_t config)
     }
 #endif
 
-/*
- * TIMER2 MODULE
- */
+//
+///////////////////
+// TIMER2 MODULE //
+///////////////////
+//
 
-void TIMER2_SET_CLK(uint8_t config)
+void timer2Init(timer2Config_t config,
+                timer2Clock_t clock,
+                timer2OutputConfig_t outputConfig)
 {
-    if (config <= CLK_8)
-        TCCR2B = config;
-    else if (config == CLK_32)
-        TCCR2B = 3;
-    else if (config == CLK_64)
-        TCCR2B = 4;
-    else if (config == CLK_128)
-        TCCR2B = 5;
-    else if (config == CLK_256)
-        TCCR2B = 6;
-    else
-        TCCR2B = 7;
+    #if defined (PRR)
+        // Enables Timer/Counter2 module
+        PRR = PRR & ~(1 << PRTIM2);
+    #endif
+
+    // Pin configuration
+    if (outputConfig == timer2OutputConfig_t::channelAnormal   ||
+        outputConfig == timer2OutputConfig_t::channelAinverted ||
+        outputConfig == timer2OutputConfig_t::channelABnormal  ||
+        outputConfig == timer2OutputConfig_t::channelABinverted)
+    {
+        gpioAsOutput(&OC2A_PORT, OC2A_PIN);
+    }
+
+    if (outputConfig == timer2OutputConfig_t::channelBnormal   ||
+        outputConfig == timer2OutputConfig_t::channelBinverted ||
+        outputConfig == timer2OutputConfig_t::channelABnormal  ||
+        outputConfig == timer2OutputConfig_t::channelABinverted)
+    {
+        gpioAsOutput(&OC2B_PORT, OC2B_PIN);
+    }
+
+    // Set timer 2 configuration
+    #if defined (TCCR2A)
+        TCCR2A = static_cast<uint8_t>(config) | static_cast<uint8_t>(outputConfig);
+    #elif defined (TCCR2) // ATmega8, for example
+    #endif
+
+    // Enable interrupts
+    if (config == timer2Config_t::normal)
+    {
+        TIMSK2 = (1 << TOIE2); // overflow
+        sei();
+    }
+
+    else if (config == timer2Config_t::ctc)
+    {
+        TIMSK2 = (1 << OCIE2A);
+        sei();
+    }
+
+    // Set timer 2 clock source
+    TCCR2B = static_cast<uint8_t>(clock);
 }
 
-#if TIMER2_CONFIG == OFF
-    void INIT_TIMER2A (uint8_t auxiliary_call) {}
-    void INIT_TIMER2B (uint8_t auxiliary_call) {}
-    void TIMER2A_SET_OCR (uint8_t OCR) {}
-    void TIMER2B_SET_OCR (uint8_t OCR) {}
-#endif
-
-#if TIMER2_CONFIG == NORMAL
-#endif
-
-#if TIMER2_CONFIG == CTC
-    #if defined (__AVR_ATmega328P__)
-        void INIT_TIMER2A (uint8_t auxiliary_call) {
-            // Disables power save
-            PRR = PRR & ~(1 << PRTIM2);
-
-            TIMSK2 = (1 << OCIE2A);
-            #if TIMER2A_POLATIRY == NORMAL
-                TCCR2A = (1 << COM2A1) | (1 << WGM21);
-            #else
-                TCCR2A = (1 << COM2A1) | (1 << COM2A0) | (1 << WGM21);
-            #endif
-            TIMER2_SET_CLK(TIMER2_CLOCK);
-            TCNT2 = 0;
-            OCR2A = TIMER2A_INITIAL_OCR;
-            sei();
-        }
-    #endif
-#endif
-
-#if TIMER2_CONFIG == PWM_A || TIMER2_CONFIG == PWM_AB
-    void TIMER2A_SET_OCR (uint8_t OCR)
+void timer2ASetDuty(uint8_t duty, timer2OutputConfig_t outputConfig)
+{
+    if (duty >= 255)
     {
-        if (OCR >= 255)
-        {
-            // Disable compare match
-            TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
+        // Disable compare match
+        TCCR2A = TCCR2A & ~static_cast<uint8_t>(timer2OutputConfig_t::channelAsetState);
 
-            #if TIMER2A_POLATIRY == NORMAL
-                gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
-            #else
-                gpioWriteLow(&OC2A_PORT, OC2A_PIN);
-            #endif
-        }
-        else if (OCR <= 0)
-        {
-            // Disable compare match
-            TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
-
-            #if TIMER2A_POLATIRY == NORMAL
-                gpioWriteLow(&OC2A_PORT, OC2A_PIN);
-            #else
-                gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
-            #endif
-        }
+        if (outputConfig == timer2OutputConfig_t::channelAnormal ||
+            outputConfig == timer2OutputConfig_t::channelABnormal)
+            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
         else
-        {
-            // Enable compare match
-            #if TIMER2A_POLATIRY == NORMAL
-                TCCR2A = TCCR2A | (1 << COM2A1);
-            #else
-                TCCR2A = TCCR2A | (1 << COM2A1) | (1 << COM2A0);
-            #endif
-
-            // Set output compare register
-            OCR2A = OCR;
-        }
+            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
     }
 
-    #if defined (__AVR_ATmega328P__)
-        void INIT_TIMER2A()
-        {
-            // Disables power save
-            PRR = PRR & ~(1 << PRTIM2);
-
-            // Set pin as output
-            gpioAsOutput(&OC2A_PORT, OC2A_PIN);
-
-            #if TIMER2A_POLATIRY == NORMAL
-                TCCR2A = TCCR2A | (1 << COM2A1) | (1 << WGM21) | (1 << WGM20);
-                TCCR2B = TCCR2B | (1 << WGM22);
-            #else // i.e., TIMER2A_POLATIRY == INVERTED
-                TCCR2A = TCCR2A | (1 << COM2B1) | (1 << COM2A0) | (1 << WGM21) | (1 << WGM20);
-            #endif
-            TIMER2_SET_CLK(TIMER2_CLOCK);
-            TCNT2 = 0;
-            TIMER2A_SET_OCR (TIMER2A_INITIAL_OCR);
-        }
-    #endif
-#endif
-
-#if TIMER2_CONFIG == PWM_B || TIMER2_CONFIG == PWM_AB
-    void TIMER2B_SET_OCR (uint8_t OCR)
+    else if (duty <= 0)
     {
-        if (OCR >= 255)
-        {
-            // Disable compare match
-            TCCR2B = TCCR2B & ~((1 << COM2B1) | (1 << COM2B0));
+        // Disable compare match
+        TCCR2A = TCCR2A & ~static_cast<uint8_t>(timer2OutputConfig_t::channelAsetState);
 
-            #if TIMER2B_POLATIRY == NORMAL
-                gpioWriteHigh(&OC2B_PORT, OC2B_PIN);
-            #else
-                gpioWriteLow(&OC2B_PORT, OC2B_PIN);
-            #endif
-        }
-        else if (OCR <= 0)
-        {
-            // Disable compare match
-            TCCR2A = TCCR2A & ~((1 << COM2A1) | (1 << COM2A0));
-
-            #if TIMER2B_POLATIRY == NORMAL
-                gpioWriteLow(&OC2B_PORT, OC2B_PIN);
-            #else
-                gpioWriteHigh(&OC2B_PORT, OC2B_PIN);
-            #endif
-        }
+        if (outputConfig == timer2OutputConfig_t::channelAnormal ||
+            outputConfig == timer2OutputConfig_t::channelABnormal)
+            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
         else
-        {
-            // Enable compare match
-            #if TIMER2B_POLATIRY == NORMAL
-                TCCR2B = TCCR2B | (1 << COM2B1);
-            #else
-                TCCR2B = TCCR2B | (1 << COM2B1) | (1 << COM2B0);
-            #endif
-
-            // Set output compare register
-            OCR2B = OCR;
-        }
+            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
     }
 
-    void INIT_TIMER2B()
+    else
     {
-        // Disables power save
-        PRR = PRR & ~(1 << PRTIM2);
+        // Enable compare match
+        TCCR2A = TCCR2A | static_cast<uint8_t>(outputConfig);
 
-        // Set pin as output
-        gpioAsOutput(&OC2B_PORT, OC2B_PIN);
-
-        #if TIMER2B_POLATIRY == NORMAL
-            TCCR2A = TCCR2A | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-            TCCR2B = TCCR2B | (1 << WGM22);
-        #else // i.e., TIMER2B_POLATIRY == INVERTED
-            TCCR2A = TCCR2A | (1 << COM2B1) | (1 << COM2B0) | (1 << WGM21) | (1 << WGM20);
-        #endif
-        TIMER2_SET_CLK(TIMER2_CLOCK);
-        TCNT2 = 0;
-        TIMER2B_SET_OCR(TIMER2B_INITIAL_OCR);
+        // Set the output compare register
+        OCR2A = duty;
     }
-#endif
+}
 
-#if TIMER2_CONFIG == PHASE_CORRECT
-#endif
+void timer2BSetDuty(uint8_t duty, timer2OutputConfig_t outputConfig)
+{
+    if (duty >= 255)
+    {
+        // Disable compare match
+        TCCR2A = TCCR2A & ~static_cast<uint8_t>(timer2OutputConfig_t::channelBsetState);
 
-#if TIMER2_CONFIG == OFF
-    void INIT_TIMER2A() {}
-    void INIT_TIMER2B() {}
-#endif
+        if (outputConfig == timer2OutputConfig_t::channelBnormal ||
+            outputConfig == timer2OutputConfig_t::channelABnormal)
+            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
+        else
+            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
+    }
+
+    else if (duty <= 0)
+    {
+        // Disable compare match
+        TCCR2A = TCCR2A & ~static_cast<uint8_t>(timer2OutputConfig_t::channelBsetState);
+
+        if (outputConfig == timer2OutputConfig_t::channelBnormal ||
+            outputConfig == timer2OutputConfig_t::channelABnormal)
+            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
+        else
+            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
+    }
+
+    else
+    {
+        // Enable compare match
+        TCCR2A = TCCR2A | static_cast<uint8_t>(outputConfig);
+
+        // Set the output compare register
+        OCR2B = duty;
+    }
+}
 
 void TIMER2_OFF()
 {

@@ -94,11 +94,11 @@ extern void TIMER1_OFF();
 /**
  * Functions to handle the TIMER2 module
  */
-extern void INIT_TIMER2A ();
-extern void INIT_TIMER2B ();
-extern void TIMER2_SET_CLK(uint8_t config);
-extern void TIMER2A_SET_OCR (uint8_t OCR);
-extern void TIMER2B_SET_OCR (uint8_t OCR);
+void timer2Init(timer2Config_t config,
+                timer2Clock_t clock,
+                timer2OutputConfig_t outputConfig);
+extern void timer2ASetDuty(uint8_t OCR, timer2OutputConfig_t outputConfig);
+extern void timer2BSetDuty(uint8_t duty, timer2OutputConfig_t outputConfig);
 extern void TIMER2_OFF();
 
 #endif /* TIMER_H_ */
