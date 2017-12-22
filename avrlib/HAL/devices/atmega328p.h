@@ -233,18 +233,17 @@ enum class spiUseInterrupt_t : uint8_t
 #define OC2B_PIN            PD3
 #define OC2B_PORT           PORTD
 
-enum class timer0APolarity_t : uint8_t
+enum class timer0OutputConfig_t
 {
-    normal   = (1 << COM0A1),
-    inverted = (1 << COM0A1) | (1 << COM0A0),
-    setState = (1 << COM0A1) | (1 << COM0A0),
-};
-
-enum class timer0BPolarity_t : uint8_t
-{
-    normal   = (1 << COM0B1),
-    inverted = (1 << COM0B1) | (1 << COM0B0),
-    setState = (1 << COM0B1) | (1 << COM0B0)
+    off                = 0,
+    channelAnormal     = (1 << COM0A1),
+    channelAinverted   = (1 << COM0A1) | (1 << COM0A0),
+    channelBnormal     = (1 << COM0B1),
+    channelBinverted   = (1 << COM0B1) | (1 << COM0B0),
+    channelAsetState   = (1 << COM0A1) | (1 << COM0A0),
+    channelBsetState   = (1 << COM0B1) | (1 << COM0B0),
+    channelABnormal    = channelAnormal | channelBnormal,
+    channelABinverted  = channelAinverted | channelBinverted
 };
 
 // TODO add support to select frequency automatically (ctc mode only)

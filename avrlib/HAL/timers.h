@@ -70,13 +70,9 @@ extern "C"
  */
 extern void timer0Init(timer0Config_t config,
                        timer0Clock_t clock,
-                       timer0APolarity_t polarityChannelA = timer0APolarity_t::normal,
-                       timer0BPolarity_t polarityChannelB = timer0BPolarity_t::normal);
-extern void timer0Init(timer0Config_t config,
-                       timer0Clock_t clock,
-                       timer0BPolarity_t polarityChannelB);
-extern void timer0ASetDuty(uint8_t OCR, timer0APolarity_t polarity = timer0APolarity_t::normal);
-extern void timer0BSetDuty(uint8_t OCR, timer0BPolarity_t polarity = timer0BPolarity_t::normal);
+                       timer0OutputConfig_t outputConfig = timer0OutputConfig_t::off);
+extern void timer0ASetDuty(uint8_t OCR, timer0OutputConfig_t outputConfig);
+extern void timer0BSetDuty(uint8_t OCR, timer0OutputConfig_t outputConfig);
 extern void TIMER0_OFF();
 
 /**

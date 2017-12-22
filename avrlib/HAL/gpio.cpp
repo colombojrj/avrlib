@@ -152,10 +152,10 @@ void gpioDisableINT(volatile uint8_t *port, uint8_t pin)
 void gpioSetDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
 {
     if (*port == OC0A_PORT && pin == OC0A_PIN)
-        timer0ASetDuty((uint8_t) (duty & 0xFF));
+        timer0ASetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
 
     else if (*port == OC0B_PORT && pin == OC0B_PIN)
-        timer0BSetDuty((uint8_t) (duty & 0xFF));
+        timer0BSetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
 
     else if (*port == OC1A_PORT && pin == OC1A_PIN)
         timer1ASetDuty(duty, timer1OutputConfig, timer1TopValue);

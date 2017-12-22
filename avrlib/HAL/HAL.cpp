@@ -7,7 +7,7 @@ void initHAL()
     if (timer0Config == timer0Config_t::off)
         TIMER0_OFF();
     else
-        timer0Init(timer0Config, timer0Clock, timer0APolarity, timer0BPolarity);
+        timer0Init(timer0Config, timer0Clock, timer0OutputConfig);
 
     if (timer1Config == timer1Config_t::off)
         TIMER1_OFF();

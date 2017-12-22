@@ -137,9 +137,8 @@
 
 constexpr timer0Config_t        timer0Config        = timer0Config_t::off;
 constexpr timer0Clock_t         timer0Clock         = timer0Clock_t::noPreescale;
-constexpr timer0APolarity_t     timer0APolarity     = timer0APolarity_t::normal;
+constexpr timer0OutputConfig_t  timer0OutputConfig  = timer0OutputConfig_t::channelAnormal;
 constexpr uint8_t               timer0AInitialOcr   = 0;
-constexpr timer0BPolarity_t     timer0BPolarity     = timer0BPolarity_t::normal;
 constexpr uint8_t               timer0BInitialOcr   = 0;
 
 constexpr timer1Config_t        timer1Config        = timer1Config_t::off;

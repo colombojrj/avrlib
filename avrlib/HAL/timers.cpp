@@ -27,25 +27,27 @@
 ///////////////////
 //
 
-void timer0ASetDuty(uint8_t OCR, timer0APolarity_t polarity)
+void timer0ASetDuty(uint8_t duty, timer0OutputConfig_t outputConfig)
 {
-    if (OCR >= 255)
+    if (duty >= 255)
     {
         // Disable compare match
-        TCCR0A = TCCR0A & ~static_cast<uint8_t>(timer0APolarity_t::setState);
+        TCCR0A = TCCR0A & ~static_cast<uint8_t>(timer0OutputConfig_t::channelAsetState);
 
-        if (polarity == timer0APolarity_t::normal)
+        if (outputConfig == timer0OutputConfig_t::channelAnormal ||
+            outputConfig == timer0OutputConfig_t::channelABnormal)
             gpioWriteHigh(&OC0A_PORT, OC0A_PIN);
         else
             gpioWriteLow(&OC0A_PORT, OC0A_PIN);
     }
 
-    else if (OCR <= 0)
+    else if (duty <= 0)
     {
         // Disable compare match
-        TCCR0A = TCCR0A & ~static_cast<uint8_t>(timer0APolarity_t::setState);
+        TCCR0A = TCCR0A & ~static_cast<uint8_t>(timer0OutputConfig_t::channelAsetState);
 
-        if (polarity == timer0APolarity_t::normal)
+        if (outputConfig == timer0OutputConfig_t::channelAnormal ||
+            outputConfig == timer0OutputConfig_t::channelABnormal)
             gpioWriteLow(&OC0A_PORT, OC0A_PIN);
         else
             gpioWriteHigh(&OC0A_PORT, OC0A_PIN);
@@ -54,32 +56,34 @@ void timer0ASetDuty(uint8_t OCR, timer0APolarity_t polarity)
     else
     {
         // Enable compare match
-        TCCR0A = TCCR0A | static_cast<uint8_t>(polarity);
+        TCCR0A = TCCR0A | static_cast<uint8_t>(outputConfig);
 
         // Set the output compare register
-        OCR0A = OCR;
+        OCR0A = duty;
     }
 }
 
-void timer0BSetDuty(uint8_t OCR, timer0BPolarity_t polarity)
+void timer0BSetDuty(uint8_t duty, timer0OutputConfig_t outputConfig)
 {
-    if (OCR >= 255)
+    if (duty >= 255)
     {
         // Disable compare match
-        TCCR0B = TCCR0B & ~static_cast<uint8_t>(timer0BPolarity_t::setState);
+        TCCR0A = TCCR0A & ~static_cast<uint8_t>(timer0OutputConfig_t::channelBsetState);
 
-        if (polarity == timer0BPolarity_t::normal)
+        if (outputConfig == timer0OutputConfig_t::channelBnormal ||
+            outputConfig == timer0OutputConfig_t::channelABnormal)
             gpioWriteHigh(&OC0B_PORT, OC0B_PIN);
         else
             gpioWriteLow(&OC0B_PORT, OC0B_PIN);
     }
 
-    else if (OCR <= 0)
+    else if (duty <= 0)
     {
         // Disable compare match
-        TCCR0B = TCCR0B & ~static_cast<uint8_t>(timer0BPolarity_t::setState);
+        TCCR0A = TCCR0A & ~static_cast<uint8_t>(timer0OutputConfig_t::channelBsetState);
 
-        if (polarity == timer0BPolarity_t::normal)
+        if (outputConfig == timer0OutputConfig_t::channelBnormal ||
+            outputConfig == timer0OutputConfig_t::channelABnormal)
             gpioWriteLow(&OC0B_PORT, OC0B_PIN);
         else
             gpioWriteHigh(&OC0B_PORT, OC0B_PIN);
@@ -88,30 +92,42 @@ void timer0BSetDuty(uint8_t OCR, timer0BPolarity_t polarity)
     else
     {
         // Enable compare match
-        TCCR0B = TCCR0B | static_cast<uint8_t>(polarity);
+        TCCR0A = TCCR0A | static_cast<uint8_t>(outputConfig);
 
         // Set the output compare register
-        OCR0B = OCR;
+        OCR0B = duty;
     }
 }
 
 void timer0Init(timer0Config_t config,
                 timer0Clock_t clock,
-                timer0APolarity_t polChA,
-                timer0BPolarity_t polChB)
+                timer0OutputConfig_t outputConfig)
 {
     #if defined (PRR)
         // Enables tTimer/Counter0 module
         PRR = PRR & ~(1 << PRTIM0);
     #endif
 
-    // Set timer0 configuration
+    // Pin configuration
+    if (outputConfig == timer0OutputConfig_t::channelAnormal   ||
+        outputConfig == timer0OutputConfig_t::channelAinverted ||
+        outputConfig == timer0OutputConfig_t::channelABnormal  ||
+        outputConfig == timer0OutputConfig_t::channelABinverted)
+    {
+        gpioAsOutput(&OC0A_PORT, OC0A_PIN);
+    }
+
+    if (outputConfig == timer0OutputConfig_t::channelBnormal   ||
+        outputConfig == timer0OutputConfig_t::channelBinverted ||
+        outputConfig == timer0OutputConfig_t::channelABnormal  ||
+        outputConfig == timer0OutputConfig_t::channelABinverted)
+    {
+        gpioAsOutput(&OC0B_PORT, OC0B_PIN);
+    }
+
+    // Set timer 0 configuration
 	#if defined (TCCR0A)
-        uint8_t polarity = static_cast<uint8_t>(polChA) | static_cast<uint8_t>(polChB);
-        if (config == timer0Config_t::off || config == timer0Config_t::normal || config == timer0Config_t::ctc)
-            TCCR0A = static_cast<uint8_t>(config);
-        else
-            TCCR0A = static_cast<uint8_t>(config) | polarity;
+        TCCR0A = static_cast<uint8_t>(config) | static_cast<uint8_t>(outputConfig);
 
     #elif defined (TCCR0) // ATmega8, for example
 	#endif
@@ -121,57 +137,21 @@ void timer0Init(timer0Config_t config,
     if (clock == timer0Clock_t::externT0FallingEdge || clock == timer0Clock_t::externT0RisingEdge)
     	gpioAsInput(&T0_PORT, T0_PIN, 1);
 
-    // Timer0 specific configurations
+    // Enable interrupts
     if (config == timer0Config_t::normal)
     {
-        // Enable overflow interrupt
-        TIMSK0 = (1 << TOIE0);
+        TIMSK0 = (1 << TOIE0); // overflow
         sei();
     }
 
     else if (config == timer0Config_t::ctc)
     {
-        // Enable output compare interrupt
         TIMSK0 = (1 << OCIE0A);
-        OCR0A = timer0AInitialOcr;
         sei();
     }
 
-    else if (config == timer0Config_t::pwmChannelA || config == timer0Config_t::pwmPhaseCorrectA)
-    {
-        // GPIO configuration
-        gpioAsOutput(&OC0A_PORT, OC0A_PIN);
-
-        // Initial duty cycle
-        timer0ASetDuty(timer0AInitialOcr, polChA);
-    }
-
-    else if (config == timer0Config_t::pwmChannelB || config == timer0Config_t::pwmPhaseCorrectB)
-    {
-        // GPIO Configuration
-        gpioAsOutput(&OC0B_PORT, OC0B_PIN);
-
-        // Initial duty cycle
-        timer0BSetDuty(timer0BInitialOcr, polChB);
-    }
-
-    else if (config == timer0Config_t::pwmChannelsAB || config == timer0Config_t::pwmPhaseCorrectAB)
-    {
-        // GPIO Configuration
-        gpioAsOutput(&OC0A_PORT, OC0A_PIN);
-        gpioAsOutput(&OC0B_PORT, OC0B_PIN);
-
-        // Initial duty cycle
-        timer0ASetDuty(timer0AInitialOcr, polChA);
-        timer0BSetDuty(timer0BInitialOcr, polChB);
-    }
-}
-
-void timer0Init(timer0Config_t config,
-                timer0Clock_t clock,
-                timer0BPolarity_t polarityChannelB)
-{
-    timer0Init(config, clock, timer0APolarity_t::normal, polarityChannelB);
+    // Set timer 2 clock source
+    TCCR0B = static_cast<uint8_t>(clock);
 }
 
 /*
