@@ -211,7 +211,7 @@ void TIMER0_OFF()
 
 void timer1Init(timer1Config_t config,
                 timer1Clock_t clock,
-                timer1outputConfig_t outputConfig,
+                timer1OutputConfig_t outputConfig,
                 uint16_t topValue)
 {
     #if defined (PRR)
@@ -220,18 +220,18 @@ void timer1Init(timer1Config_t config,
     #endif
 
     // Pin configuration
-    if (outputConfig == timer1outputConfig_t::channelAnormal   ||
-        outputConfig == timer1outputConfig_t::channelAinverted ||
-        outputConfig == timer1outputConfig_t::channelABnormal  ||
-        outputConfig == timer1outputConfig_t::channelABinverted)
+    if (outputConfig == timer1OutputConfig_t::channelAnormal   ||
+        outputConfig == timer1OutputConfig_t::channelAinverted ||
+        outputConfig == timer1OutputConfig_t::channelABnormal  ||
+        outputConfig == timer1OutputConfig_t::channelABinverted)
     {
         gpioAsOutput(&OC1A_PORT, OC1A_PIN);
     }
 
-    if (outputConfig == timer1outputConfig_t::channelBnormal   ||
-        outputConfig == timer1outputConfig_t::channelBinverted ||
-        outputConfig == timer1outputConfig_t::channelABnormal  ||
-        outputConfig == timer1outputConfig_t::channelABinverted)
+    if (outputConfig == timer1OutputConfig_t::channelBnormal   ||
+        outputConfig == timer1OutputConfig_t::channelBinverted ||
+        outputConfig == timer1OutputConfig_t::channelABnormal  ||
+        outputConfig == timer1OutputConfig_t::channelABinverted)
     {
         gpioAsOutput(&OC1B_PORT, OC1B_PIN);
     }
@@ -295,14 +295,14 @@ void timer1Init(timer1Config_t config,
 
 }
 
-void timer1ASetDuty(uint16_t duty, timer1outputConfig_t output, uint16_t top)
+void timer1ASetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top)
 {
     if (duty >= top)
     {
         // Disable compare match
-        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1OutputConfig_t::channelAsetState);
 
-        if (output == timer1outputConfig_t::channelAnormal)
+        if (output == timer1OutputConfig_t::channelAnormal)
             gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
         else
             gpioWriteLow(&OC1A_PORT, OC1A_PIN);
@@ -311,9 +311,9 @@ void timer1ASetDuty(uint16_t duty, timer1outputConfig_t output, uint16_t top)
     else if (duty <= 0)
     {
         // Disable compare match
-        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1OutputConfig_t::channelAsetState);
 
-        if (output == timer1outputConfig_t::channelAnormal)
+        if (output == timer1OutputConfig_t::channelAnormal)
             gpioWriteLow(&OC1A_PORT, OC1A_PIN);
         else
             gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
@@ -329,14 +329,14 @@ void timer1ASetDuty(uint16_t duty, timer1outputConfig_t output, uint16_t top)
     }
 }
 
-void timer1BSetDuty(uint8_t OCR, timer1outputConfig_t output)
+void timer1BSetDuty(uint8_t OCR, timer1OutputConfig_t output)
 {
     if (OCR >= 255)
     {
         // Disable compare match
-        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1OutputConfig_t::channelAsetState);
 
-        if (output == timer1outputConfig_t::channelAnormal)
+        if (output == timer1OutputConfig_t::channelAnormal)
             gpioWriteHigh(&OC1B_PORT, OC1B_PIN);
         else
             gpioWriteLow(&OC1B_PORT, OC1B_PIN);
@@ -345,9 +345,9 @@ void timer1BSetDuty(uint8_t OCR, timer1outputConfig_t output)
     else if (OCR <= 0)
     {
         // Disable compare match
-        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1outputConfig_t::channelAsetState);
+        TCCR1A = TCCR1A & ~static_cast<uint8_t>(timer1OutputConfig_t::channelAsetState);
 
-        if (output == timer1outputConfig_t::channelAnormal)
+        if (output == timer1OutputConfig_t::channelAnormal)
             gpioWriteLow(&OC1B_PORT, OC1B_PIN);
         else
             gpioWriteHigh(&OC1B_PORT, OC1B_PIN);

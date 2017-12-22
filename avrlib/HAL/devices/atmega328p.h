@@ -292,7 +292,7 @@ enum class timer1Config_t : uint8_t
     pwmPhaseCorrectDefinedTop
 };
 
-enum class timer1outputConfig_t
+enum class timer1OutputConfig_t
 {
     off                = 0,
     channelAnormal     = (1 << COM1A1),
