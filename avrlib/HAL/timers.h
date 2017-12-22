@@ -82,19 +82,12 @@ extern void TIMER0_OFF();
 /**
  * Functions to handle the TIMER1 module
  */
-extern void INIT_TIMER1A ();
-extern void INIT_TIMER1B ();
-
 extern void timer1Init(timer1Config_t config,
                        timer1Clock_t clock,
                        timer1OutputConfig_t outputConfig,
                        uint16_t topValue = 255);
 extern void timer1ASetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top = 255);
 extern void timer1BSetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top = 255);
-
-extern void TIMER1A_SET_OCR (uint16_t OCR);
-extern void TIMER1B_SET_OCR (uint16_t OCR);
-extern void SET_INPUT_CAPTURE_EDGE(uint8_t type);
 extern void enableInputCapture(timer1InputCaptureEdge_t config);
 extern void TIMER1_OFF();
 

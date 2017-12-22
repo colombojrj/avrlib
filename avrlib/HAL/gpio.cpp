@@ -161,9 +161,9 @@ void gpioSetDuty(volatile uint8_t *port, uint8_t pin, uint16_t duty)
         else // i.e., *port == PORTB
         {
             if (pin == PB1)      // OC1A
-                TIMER1A_SET_OCR(duty);
+                timer1ASetDuty(duty, timer1OutputConfig, timer1TopValue);
             else if (pin == PB2) // OC1B
-                TIMER1B_SET_OCR(duty);
+                timer1BSetDuty(duty, timer1OutputConfig, timer1TopValue);
             else if (pin == PB3) // OC2A
                 TIMER2A_SET_OCR((uint8_t) (duty & 0x00FF));
         }
