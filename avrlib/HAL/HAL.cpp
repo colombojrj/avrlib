@@ -9,9 +9,10 @@ void initHAL()
     else
         timer0Init(timer0Config, timer0Clock, timer0APolarity, timer0BPolarity);
 
-    TIMER1_OFF();
-    INIT_TIMER1A();
-    INIT_TIMER1B();
+    if (timer1Config == timer1Config_t::off)
+        TIMER1_OFF();
+    else
+        timer1Init(timer1Config, timer1Clock, timer1OutputConfig, timer1TopValue);
 
     TIMER2_OFF();
     INIT_TIMER2A();

@@ -135,21 +135,19 @@
 
 // Use this file to configure the microcontroller peripherals
 
-constexpr timer0Config_t    timer0Config        = timer0Config_t::off;
-constexpr timer0Clock_t     timer0Clock         = timer0Clock_t::noPreescale;
-constexpr timer0APolarity_t timer0APolarity     = timer0APolarity_t::normal;
-constexpr uint8_t           timer0AInitialOcr   = 0;
-constexpr timer0BPolarity_t timer0BPolarity     = timer0BPolarity_t::normal;
-constexpr uint8_t           timer0BInitialOcr   = 0;
+constexpr timer0Config_t        timer0Config        = timer0Config_t::off;
+constexpr timer0Clock_t         timer0Clock         = timer0Clock_t::noPreescale;
+constexpr timer0APolarity_t     timer0APolarity     = timer0APolarity_t::normal;
+constexpr uint8_t               timer0AInitialOcr   = 0;
+constexpr timer0BPolarity_t     timer0BPolarity     = timer0BPolarity_t::normal;
+constexpr uint8_t               timer0BInitialOcr   = 0;
 
-#define TIMER1_CONFIG           PWM_AB       ///< TIMER1 operation mode. For more information see \ref conf_timers
-#define TIMER1_CLOCK            CLK_64       ///< configure TIMER1 clock source. For more information see \ref conf_timers
-#define TIMER1_RESOLUTION       16           ///< in bits. For more information see \ref conf_timers
-#define TIMER1_PWM_TOP          0xFFFF       ///< if using up to 16 bit resolution. For more information see \ref conf_timers
-#define TIMER1A_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
-#define TIMER1A_INITIAL_OCR     0x0000       ///< Initial duty cycle. For more information see \ref conf_timers
-#define TIMER1B_POLATIRY        NORMAL       ///< can be NORMAL or INVERTED. For more information see \ref conf_timers
-#define TIMER1B_INITIAL_OCR     0x0000       ///< Initial duty cycle. For more information see \ref conf_timers
+constexpr timer1Config_t        timer1Config        = timer1Config_t::pwm8Bits;
+constexpr timer1Clock_t         timer1Clock         = timer1Clock_t::divideBy8;
+constexpr timer1OutputConfig_t  timer1OutputConfig  = timer1OutputConfig_t::channelAnormal;
+constexpr uint16_t              timer1TopValue      = 255; /// If 8 bits, it is 255, if 9 bits it is 511, if 10 bits it is 1023, if DefinedTop users may choose maximum value
+constexpr uint16_t              timer1AInitialOcr   = 0;
+constexpr uint16_t              timer1BInitialOcr   = 0;
 
 #define TIMER2_CONFIG           PWM_AB       ///< TIMER2 operation mode. For more information see \ref conf_timers
 #define TIMER2_CLOCK            CLK_128      ///< configure TIMER2 clock source. For more information see \ref conf_timers
