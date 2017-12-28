@@ -129,11 +129,9 @@
 #ifndef AVRLIB_CONFIG_H_
 #define AVRLIB_CONFIG_H_
 
-#if defined (__AVR_ATmega328P__)
-    #include "HAL/devices/atmega328p.h"
-#endif
+// Include microcontroller peripheral definitions
+#include "HAL/devices/device.h"
 
-// Use this file to configure the microcontroller peripherals
 
 constexpr timer0Config_t        timer0Config        = timer0Config_t::off;
 constexpr timer0Clock_t         timer0Clock         = timer0Clock_t::noPreescale;
