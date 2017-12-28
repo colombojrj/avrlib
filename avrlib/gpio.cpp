@@ -34,24 +34,24 @@ float AnalogPin::read()
 }
 
 // DigitalPin constructor
-DigitalPin::DigitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state) :
-        Pin(port, pin), _mode(mode)
+DigitalPin::DigitalPin(volatile uint8_t *port, uint8_t pin, gpioConfig_t mode, uint8_t state) :
+        Pin(port, pin)
 {
     // Configure the pin
     setPinMode(mode, state);
 }
 
-void DigitalPin::setPinMode(uint8_t mode, uint8_t state)
+void DigitalPin::setPinMode(gpioConfig_t mode, uint8_t state)
 {
     // Pin configuration
-    if (_mode == OUTPUT)
+    if (mode == gpioConfig_t::output)
     {
         setAsOutput();
         gpioWrite(_port, _pin, state);
     }
     else // i.e., INPUT or INPUT_PULLUP
     {
-        if (_mode == INPUT_PULLUP)
+        if (mode == gpioConfig_t::inputWithPullUp)
             setAsInput(1);
         else
             setAsInput(0);
@@ -70,10 +70,10 @@ void DigitalPin::writeLow()
 
 void DigitalPin::write(uint8_t state)
 {
-    if (state == HIGH)
-        gpioWriteHigh(_port, _pin);
-    else
+    if (state == LOW)
         gpioWriteLow(_port, _pin);
+    else
+        gpioWriteHigh(_port, _pin);
 }
 
 /*

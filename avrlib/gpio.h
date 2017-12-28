@@ -153,15 +153,12 @@ public:
 
 class DigitalPin : private Pin {
 private:
-    // Mode information
-    uint8_t _mode;
-
 public:
     // Constructors
-    DigitalPin(volatile uint8_t *port, uint8_t pin, uint8_t mode, uint8_t state = LOW);
+    DigitalPin(volatile uint8_t *port, uint8_t pin, gpioConfig_t mode, uint8_t state = LOW);
 
     // Set pin mode
-    void setPinMode(uint8_t mode, uint8_t state = LOW);
+    void setPinMode(gpioConfig_t mode, uint8_t state = LOW);
 
     // Writing functions
     void writeHigh();

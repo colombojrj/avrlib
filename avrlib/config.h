@@ -146,7 +146,7 @@ constexpr uint16_t              timer1TopValue      = 255; /// If 8 bits, it is 
 constexpr uint16_t              timer1AInitialOcr   = 0;
 constexpr uint16_t              timer1BInitialOcr   = 0;
 
-constexpr timer2Config_t        timer2Config        = timer2Config_t::pwm;
+constexpr timer2Config_t        timer2Config        = timer2Config_t::off;
 constexpr timer2Clock_t         timer2Clock         = timer2Clock_t::divideBy8;
 constexpr timer2OutputConfig_t  timer2OutputConfig  = timer2OutputConfig_t::channelAnormal;
 constexpr uint8_t               timer2AInitialOcr   = 0;

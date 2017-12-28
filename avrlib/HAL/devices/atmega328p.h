@@ -102,6 +102,13 @@ enum class gpioInt_t : uint8_t
     setState    = 0b11
 };
 
+enum class gpioConfig_t : uint8_t
+{
+    input,
+    inputWithPullUp,
+    output
+};
+
 //////////////////
 /// SPI module ///
 //////////////////
