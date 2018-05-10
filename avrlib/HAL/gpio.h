@@ -50,6 +50,7 @@ extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t
  *
  * @param port is a pointer to the port of the pin (example: &PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
+ * @param dir is the direction (0 is input and 1 is output)
  */
 extern void gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir);
 

@@ -6,6 +6,15 @@
 #include <stdlib.h>
 #include <avr/io.h>
 
+// Supported stuff
+#define SUPPORT_TO_GPIO
+#define SUPPORT_TO_SPI
+#define SUPPORT_TO_ADC
+//#define SUPPORT_TO_I2C
+#define SUPPORT_TO_TIMER0
+#define SUPPORT_TO_TIMER1
+#define SUPPORT_TO_TIMER2
+
 // TODO documentation of this file
 
 /**
