@@ -1,5 +1,5 @@
 /*
-  adc.c - Library to handle the ADC module of AVR microcontrollers
+  adc.cpp - Library to handle the ADC module of AVR microcontrollers
 
   Copyright (c) 2013 - José Roberto Colombo Junior
 
@@ -59,57 +59,59 @@ void adcInit(uint8_t pin)
         PRR = PRR & ~(1 << PRADC);
     #endif
 
-    // TODO: add support to free running operation mode
-    if (adcConfig == adcConfig_t::freeRunning)
+    // Scan mode requires interrupt
+    if (adcConfig == adcConfig_t::scanMode)
     {
+        ADCSRA = ADCSRA | (1 << ADIE);
+        sei();
+        ADCSRA = ADCSRA | (1 << ADSC);
     }
 }
 
 uint16_t adcRead(uint8_t pin)
 {
-    if (adcConfig == adcConfig_t::off)
+    uint16_t convertedValue = 0;
+    if (adcConfig != adcConfig_t::off)
     {
-        return 0;
+        // Select the pin
+        adcChangeAdmux(pin);
+
+        if (adcConfig == adcConfig_t::singleConversion)
+        {
+            ADCSRA |= (1 << ADSC);
+            while (ADCSRA & (1 << ADSC)) {};
+            adcChangeAdmux(0);
+            convertedValue = ADC;
+        }
+
+        else if (adcConfig == adcConfig_t::noiseReduction)
+        {
+            ADCSRA |= _BV(ADIE); // Generate an interrupt when conversion is ready
+            set_sleep_mode(SLEEP_MODE_ADC);
+            sleep_enable();
+
+            do {
+                sei();
+                sleep_cpu();
+                cli();
+            }
+            while (ADCSRA & (1<<ADSC));
+
+            sleep_disable();
+            sei();
+
+            // Disable ADC interrupt
+            ADCSRA &= ~_BV(ADIE);
+            convertedValue = ADC;
+        }
+
+        else // i.e., adcConfig == freeRunning
+        {
+            convertedValue = 1;
+        }
     }
 
-    // Select the pin
-    adcChangeAdmux (pin);
-
-    if (adcConfig == adcConfig_t::singleConversion)
-    {
-		ADCSRA |= (1 << ADSC);
-		while (ADCSRA & (1 << ADSC)) {};
-		adcChangeAdmux (0);
-		return ADC;
-    }
-
-	else if (adcConfig == adcConfig_t::noiseReduction)
-	{
-		// TODO before enter in sleep mode, it is necessary to wait the uart to finish actual transmission
-
-		ADCSRA |= _BV(ADIE); // Generate an interrupt when conversion is ready
-		set_sleep_mode(SLEEP_MODE_ADC);
-		sleep_enable();
-
-		do {
-			sei();
-			sleep_cpu();
-			cli();
-		}
-		while (ADCSRA & (1<<ADSC));
-
-		sleep_disable();
-		sei();
-
-		// Disable ADC interrupt
-		ADCSRA &= ~_BV(ADIE);
-		return(ADC);
-	}
-    // TODO add support to free running mode
-	else // i.e., adcConfig == freeRunning
-	{
-		return 1;
-	}
+    return convertedValue;
 }
 
 void adcChangeAdmux (uint8_t pin)

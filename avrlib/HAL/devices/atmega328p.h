@@ -25,7 +25,7 @@ enum class adcConfig_t : uint8_t
     off,              //!< off
     singleConversion, //!< singleConversion
     noiseReduction,   //!< noiseReduction
-    freeRunning       //!< freeRunning
+    scanMode          //!< Scan mode
 };
 
 /**
