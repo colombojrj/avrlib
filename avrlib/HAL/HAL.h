@@ -76,4 +76,6 @@ extern void initHAL();
 
 //} // namespace HAL
 
+/**@}*/
+
 #endif /* AVRLIB_HAL_H_ */

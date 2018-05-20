@@ -31,40 +31,12 @@ void gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir)
         gpioAsInput(port, pin, dir);
 }
 
-void gpioWriteHigh(volatile uint8_t *port, const uint8_t pin)
-{
-    *port = *port | (1 << pin);
-}
-
-void gpioWriteLow(volatile uint8_t *port, const uint8_t pin)
-{
-    *port = *port & ~(1 << pin);
-}
-
 void gpioWrite(volatile uint8_t *port, const uint8_t pin, const uint8_t state)
 {
     if (state == LOW)
         gpioWriteLow(port, pin);
     else
         gpioWriteHigh(port, pin);
-}
-
-void gpioToggle(volatile uint8_t *port, const uint8_t pin)
-{
-    *port = *port ^ (1 << pin);
-}
-
-uint8_t gpioFastRead(volatile uint8_t *port, uint8_t pin)
-{
-    return (PIN(*port) & (1 << pin));
-}
-
-uint8_t gpioRead(volatile uint8_t *port, uint8_t pin)
-{
-    if (gpioFastRead(port, pin) > 0)
-        return 1;
-    else
-        return 0;
 }
 
 #if defined (__AVR_ATmega48__)  || defined(__AVR_ATmega48P__) || \

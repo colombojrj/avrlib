@@ -3,9 +3,7 @@
 
 extern "C"
 {
-	#include <avr/io.h>
 	#include <avr/interrupt.h>
-
 }
 #include "defines.h"
 #include "timers.h"
@@ -14,6 +12,10 @@ extern "C"
 /**
  * @defgroup hal_gpio_group gpio
  *
+ * Some functions were replaced with macros. The main advantage is
+ * the code size (macros use less flash memory)
+ *
+ * See https://www.nongnu.org/avr-libc/user-manual/FAQ.html#faq_port_pass
  */
 
 /**@{*/
@@ -77,6 +79,8 @@ extern void gpioAsAdc(volatile uint8_t *port, const uint8_t pin);
 extern void gpioAsPwm(volatile uint8_t *port, const uint8_t pin);
 
 /**
+ * Macro for gpio writing
+ *
  * gpioWriteHigh(volatile uint8_t *port, const uint8_t pin)
  *
  * Write high logic level on the \b pin placed on \b port as output (there is
@@ -84,21 +88,52 @@ extern void gpioAsPwm(volatile uint8_t *port, const uint8_t pin);
  *
  * \todo Add support for open-drain configuration
  *
- * @param port is a pointer to the port of the pin (example: &PORTB)
+ * @param port is the pin port (example: PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  */
-extern void gpioWriteHigh(volatile uint8_t *port, const uint8_t pin);
+#define gpioWriteHigh(port,pin) *port=*port||(1<<pin)
 
 /**
- * gpioWriteLow(volatile uint8_t *port, const uint8_t pin)
+ * Macro for gpio writing
+ *
+ * gpioWriteLow(port, pin)
  *
  * Write low logic level on the \b pin placed on \b port as output (there is
  * support only for push-pull configuration)
  *
- * @param port is a pointer to the port of the pin (example: &PORTB)
+ * @param port is the pin port (example: PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  */
-extern void gpioWriteLow(volatile uint8_t *port, const uint8_t pin);
+#define gpioWriteLow(port,pin) *port=*port&~(1<<pin)
+
+/**
+ * Macro for gpio writing
+ *
+ * gpioToggle(volatile uint8_t *port, const uint8_t pin)
+ *
+ * Toggles logic level on the \b pin placed on \b port as output (there is
+ * support only for push-pull configuration)
+ *
+ * @param port is the pin port (example: PORTB)
+ * @param pin is the pin number (example: PB5 or just 5)
+ */
+#define gpioToggle(port,pin) *port=*port^(1<<pin)
+
+/**
+ * Macro for gpio reading
+ *
+ * gpioFast(volatile uint8_t *port, const uint8_t pin)
+ *
+ * Reads the logic level on the \b pin placed on \b port as output
+ * This function is faster than @ref gpioFastRead because it returns
+ * 1 if the logic level on the pin is HIGH and 0 if LOW level.
+ *
+ * @param port is a pointer to the port of the pin (example: &PORTB)
+ * @param pin is the pin number (example: PB5 or just 5)
+ * @return a non-negative number with the logic level on the pin
+ *         (1 if it is HIGH and 0 if LOW)
+ */
+#define gpioRead(port,pin) (PIN(*port)&(1<<pin))
 
 /**
  * gpioWrite(volatile uint8_t *port, const uint8_t pin, const uint8_t level)
@@ -111,46 +146,6 @@ extern void gpioWriteLow(volatile uint8_t *port, const uint8_t pin);
  * @param level is the logic level to write (true or false, HIGH or LOW, 1 or 0)
  */
 extern void gpioWrite(volatile uint8_t *port, const uint8_t pin, const uint8_t level);
-
-/**
- * gpioToggle(volatile uint8_t *port, const uint8_t pin)
- *
- * Toggles logic level on the \b pin placed on \b port as output (there is
- * support only for push-pull configuration)
- *
- * @param port is a pointer to the port of the pin (example: &PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
- */
-extern void gpioToggle(volatile uint8_t *port, const uint8_t pin);
-
-/**
- * gpioFastRead(volatile uint8_t *port, const uint8_t pin)
- *
- * Reads the logic level on the \b pin placed on \b port as output
- * This function is faster than @ref gpioFastRead because it returns
- * a positive integer (1, 2, 4, 8, 16, 32, 64 or 128) if the logic
- * level on the pin is HIGH. However, LOW level is always zero.
- *
- * @param port is a pointer to the port of the pin (example: &PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
- * @return a non-negative number with the logic level on the pin
- *         (if >= 1 then it is HIGH and 0 if LOW)
- */
-extern uint8_t gpioFastRead(volatile uint8_t *port, const uint8_t pin);
-
-/**
- * gpioFast(volatile uint8_t *port, const uint8_t pin)
- *
- * Reads the logic level on the \b pin placed on \b port as output
- * This function is faster than @ref gpioFastRead because it returns
- * 1 if the logic level on the pin is HIGH and 0 if LOW level.
- *
- * @param port is a pointer to the port of the pin (example: &PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
- * @return a non-negative number with the logic level on the pin
- *         (1 if it is HIGH and 0 if LOW)
- */
-extern uint8_t gpioRead(volatile uint8_t *port, const uint8_t pin);
 
 /**
  * gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin)

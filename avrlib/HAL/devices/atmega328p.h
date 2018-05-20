@@ -1,6 +1,15 @@
 #ifndef AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_
 #define AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_
 
+/**
+ * @defgroup hal_device_atmega328p_group ATmega88P/ATmega168P/ATmega328P
+ *
+ * Some functions were replaced with macros. The main advantage is
+ * the code size (macros use less flash memory)
+ *
+ * See https://www.nongnu.org/avr-libc/user-manual/FAQ.html#faq_port_pass
+ */
+
 /**@{*/
 
 #include <stdlib.h>
@@ -15,7 +24,75 @@
 #define SUPPORT_TO_TIMER1
 #define SUPPORT_TO_TIMER2
 
-// TODO documentation of this file
+/**
+ * gpio_t
+ *
+ * @brief Basic pin structure.
+ *
+ * This struct holds information about an specific pin:
+ * @param number is the pin number
+ * @param port is the pin port
+ * @param ddr is the direction register
+ * @param pin is the pin value register
+ * @param pcmsk is the pin change interrupt register
+ */
+typedef struct
+{
+    uint8_t number;
+    volatile uint8_t* port;
+    volatile uint8_t* ddr;
+    volatile uint8_t* pin;
+    volatile uint8_t* pcmsk;
+} gpio_t;
+
+#define PinB0 ((gpio_t){0, &PORTB, &DDRB, &PINB, &PCMSK1})
+#define PinB1 ((gpio_t){1, &PORTB, &DDRB, &PINB, &PCMSK0})
+#define PinB2 ((gpio_t){2, &PORTB, &DDRB, &PINB, &PCMSK0})
+#define PinB3 ((gpio_t){3, &PORTB, &DDRB, &PINB, &PCMSK0})
+#define PinB4 ((gpio_t){4, &PORTB, &DDRB, &PINB, &PCMSK0})
+#define PinB5 ((gpio_t){5, &PORTB, &DDRB, &PINB, &PCMSK0})
+#define PinB6 ((gpio_t){6, &PORTB, &DDRB, &PINB, &PCMSK0})
+#define PinB7 ((gpio_t){7, &PORTB, &DDRB, &PINB, &PCMSK0})
+
+#define PinC0 ((gpio_t){0, &PORTC, &DDRC, &PINC, &PCMSK1})
+#define PinC1 ((gpio_t){1, &PORTC, &DDRC, &PINC, &PCMSK1})
+#define PinC2 ((gpio_t){2, &PORTC, &DDRC, &PINC, &PCMSK1})
+#define PinC3 ((gpio_t){3, &PORTC, &DDRC, &PINC, &PCMSK1})
+#define PinC4 ((gpio_t){4, &PORTC, &DDRC, &PINC, &PCMSK1})
+#define PinC5 ((gpio_t){5, &PORTC, &DDRC, &PINC, &PCMSK1})
+#define PinC6 ((gpio_t){6, &PORTC, &DDRC, &PINC, &PCMSK1})
+#define PinC7 ((gpio_t){7, &PORTC, &DDRC, &PINC, &PCMSK1})
+
+#define PinD0 ((gpio_t){0, &PORTD, &DDRD, &PIND, &PCMSK2})
+#define PinD1 ((gpio_t){1, &PORTD, &DDRD, &PIND, &PCMSK2})
+#define PinD2 ((gpio_t){2, &PORTD, &DDRD, &PIND, &PCMSK2})
+#define PinD3 ((gpio_t){3, &PORTD, &DDRD, &PIND, &PCMSK2})
+#define PinD4 ((gpio_t){4, &PORTD, &DDRD, &PIND, &PCMSK2})
+#define PinD5 ((gpio_t){5, &PORTD, &DDRD, &PIND, &PCMSK2})
+#define PinD6 ((gpio_t){6, &PORTD, &DDRD, &PIND, &PCMSK2})
+#define PinD7 ((gpio_t){7, &PORTD, &DDRD, &PIND, &PCMSK2})
+
+enum class gpioIntPin_t : uint8_t
+{
+    int0 = PD2,
+    int1 = PD3
+};
+
+enum class gpioInt_t : uint8_t
+{
+    lowLevel    = 0b00,
+    anyChange   = 0b01,
+    fallingEdge = 0b10,
+    risingEdge  = 0b11,
+    setState    = 0b11
+};
+
+enum class gpioConfig_t : uint8_t
+{
+    input,
+    inputWithPullUp,
+    output
+};
 
 /**
  * adcConfig_t
@@ -92,31 +169,8 @@ enum class adcAdmux_t : uint8_t
     setState = 0b1111           //!< setState
 };
 
-///////////////////
-/// GPIO module ///
-///////////////////
 
-enum class gpioIntPin_t : uint8_t
-{
-    int0 = PD2,
-    int1 = PD3
-};
 
-enum class gpioInt_t : uint8_t
-{
-    lowLevel    = 0b00,
-    anyChange   = 0b01,
-    fallingEdge = 0b10,
-    risingEdge  = 0b11,
-    setState    = 0b11
-};
-
-enum class gpioConfig_t : uint8_t
-{
-    input,
-    inputWithPullUp,
-    output
-};
 
 //////////////////
 /// SPI module ///
