@@ -45,7 +45,7 @@ typedef struct
     volatile uint8_t* pcmsk;
 } gpio_t;
 
-#define PinB0 ((gpio_t){0, &PORTB, &DDRB, &PINB, &PCMSK1})
+#define PinB0 ((gpio_t){0, &PORTB, &DDRB, &PINB, &PCMSK0})
 #define PinB1 ((gpio_t){1, &PORTB, &DDRB, &PINB, &PCMSK0})
 #define PinB2 ((gpio_t){2, &PORTB, &DDRB, &PINB, &PCMSK0})
 #define PinB3 ((gpio_t){3, &PORTB, &DDRB, &PINB, &PCMSK0})
@@ -185,6 +185,12 @@ enum class adcAdmux_t : uint8_t
 #define _SPI_MOSI   PB3
 #define _SPI_MISO   PB4
 #define _SPI_SCK    PB5
+/*
+#define _SPI_SS     PinB2
+#define _SPI_MOSI   PinB3
+#define _SPI_MISO   PinB4
+#define _SPI_SCK    PinB5
+*/
 
 struct spiClockDivideBy
 {
