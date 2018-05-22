@@ -36,9 +36,9 @@ void timer0ASetDuty(uint8_t duty, timer0OutputConfig_t outputConfig)
 
         if (outputConfig == timer0OutputConfig_t::channelAnormal ||
             outputConfig == timer0OutputConfig_t::channelABnormal)
-            gpioWriteHigh(&OC0A_PORT, OC0A_PIN);
+            gpioWriteHigh(OC0A_PIN);
         else
-            gpioWriteLow(&OC0A_PORT, OC0A_PIN);
+            gpioWriteLow(OC0A_PIN);
     }
 
     else if (duty <= 0)
@@ -48,9 +48,9 @@ void timer0ASetDuty(uint8_t duty, timer0OutputConfig_t outputConfig)
 
         if (outputConfig == timer0OutputConfig_t::channelAnormal ||
             outputConfig == timer0OutputConfig_t::channelABnormal)
-            gpioWriteLow(&OC0A_PORT, OC0A_PIN);
+            gpioWriteLow(OC0A_PIN);
         else
-            gpioWriteHigh(&OC0A_PORT, OC0A_PIN);
+            gpioWriteHigh(OC0A_PIN);
     }
 
     else
@@ -72,9 +72,9 @@ void timer0BSetDuty(uint8_t duty, timer0OutputConfig_t outputConfig)
 
         if (outputConfig == timer0OutputConfig_t::channelBnormal ||
             outputConfig == timer0OutputConfig_t::channelABnormal)
-            gpioWriteHigh(&OC0B_PORT, OC0B_PIN);
+            gpioWriteHigh(OC0B_PIN);
         else
-            gpioWriteLow(&OC0B_PORT, OC0B_PIN);
+            gpioWriteLow(OC0B_PIN);
     }
 
     else if (duty <= 0)
@@ -84,9 +84,9 @@ void timer0BSetDuty(uint8_t duty, timer0OutputConfig_t outputConfig)
 
         if (outputConfig == timer0OutputConfig_t::channelBnormal ||
             outputConfig == timer0OutputConfig_t::channelABnormal)
-            gpioWriteLow(&OC0B_PORT, OC0B_PIN);
+            gpioWriteLow(OC0B_PIN);
         else
-            gpioWriteHigh(&OC0B_PORT, OC0B_PIN);
+            gpioWriteHigh(OC0B_PIN);
     }
 
     else
@@ -114,7 +114,7 @@ void timer0Init(timer0Config_t config,
         outputConfig == timer0OutputConfig_t::channelABnormal  ||
         outputConfig == timer0OutputConfig_t::channelABinverted)
     {
-        gpioAsOutput(&OC0A_PORT, OC0A_PIN);
+        gpioAsOutput(OC0A_PIN);
     }
 
     if (outputConfig == timer0OutputConfig_t::channelBnormal   ||
@@ -122,7 +122,7 @@ void timer0Init(timer0Config_t config,
         outputConfig == timer0OutputConfig_t::channelABnormal  ||
         outputConfig == timer0OutputConfig_t::channelABinverted)
     {
-        gpioAsOutput(&OC0B_PORT, OC0B_PIN);
+        gpioAsOutput(OC0B_PIN);
     }
 
     // Set timer 0 configuration
@@ -135,7 +135,10 @@ void timer0Init(timer0Config_t config,
     // Set timer0 clock source
     TCCR0B = static_cast<uint8_t>(clock);
     if (clock == timer0Clock_t::externT0FallingEdge || clock == timer0Clock_t::externT0RisingEdge)
-    	gpioAsInput(&T0_PORT, T0_PIN, 1);
+    {
+    	gpioAsInput(T0_PIN);
+    	gpioPullUpEnable(T0_PIN);
+    }
 
     // Enable interrupts
     if (config == timer0Config_t::normal)
@@ -207,7 +210,7 @@ void timer1Init(timer1Config_t config,
         outputConfig == timer1OutputConfig_t::channelABnormal  ||
         outputConfig == timer1OutputConfig_t::channelABinverted)
     {
-        gpioAsOutput(&OC1A_PORT, OC1A_PIN);
+        gpioAsOutput(OC1A_PIN);
     }
 
     if (outputConfig == timer1OutputConfig_t::channelBnormal   ||
@@ -215,7 +218,7 @@ void timer1Init(timer1Config_t config,
         outputConfig == timer1OutputConfig_t::channelABnormal  ||
         outputConfig == timer1OutputConfig_t::channelABinverted)
     {
-        gpioAsOutput(&OC1B_PORT, OC1B_PIN);
+        gpioAsOutput(OC1B_PIN);
     }
 
     // Set timer1 configuration
@@ -280,7 +283,10 @@ void timer1Init(timer1Config_t config,
     // Set timer 1 clock source
     TCCR1B = TCCR1B | static_cast<uint8_t>(clock);
     if (clock == timer1Clock_t::externT1FallingEdge || clock == timer1Clock_t::externT1RisingEdge)
-        gpioAsInput(&T1_PORT, T1_PIN, 1);
+    {
+        gpioAsInput(T1_PIN);
+        gpioPullUpEnable(T1_PIN);
+    }
 
     // Reset counting
     TCNT1 = 0;
@@ -295,9 +301,9 @@ void timer1ASetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top)
 
         if (output == timer1OutputConfig_t::channelAnormal ||
             output == timer1OutputConfig_t::channelABnormal)
-            gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
+            gpioWriteHigh(OC1A_PIN);
         else
-            gpioWriteLow(&OC1A_PORT, OC1A_PIN);
+            gpioWriteLow(OC1A_PIN);
     }
 
     else if (duty <= 0)
@@ -307,9 +313,9 @@ void timer1ASetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top)
 
         if (output == timer1OutputConfig_t::channelAnormal ||
             output == timer1OutputConfig_t::channelABnormal)
-            gpioWriteLow(&OC1A_PORT, OC1A_PIN);
+            gpioWriteLow(OC1A_PIN);
         else
-            gpioWriteHigh(&OC1A_PORT, OC1A_PIN);
+            gpioWriteHigh(OC1A_PIN);
     }
 
     else
@@ -331,9 +337,9 @@ void timer1BSetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top)
 
         if (output == timer1OutputConfig_t::channelBnormal ||
             output == timer1OutputConfig_t::channelABnormal)
-            gpioWriteHigh(&OC1B_PORT, OC1B_PIN);
+            gpioWriteHigh(OC1B_PIN);
         else
-            gpioWriteLow(&OC1B_PORT, OC1B_PIN);
+            gpioWriteLow(OC1B_PIN);
     }
 
     else if (duty <= 0)
@@ -343,9 +349,9 @@ void timer1BSetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t top)
 
         if (output == timer1OutputConfig_t::channelBnormal ||
             output == timer1OutputConfig_t::channelABnormal)
-            gpioWriteLow(&OC1B_PORT, OC1B_PIN);
+            gpioWriteLow(OC1B_PIN);
         else
-            gpioWriteHigh(&OC1B_PORT, OC1B_PIN);
+            gpioWriteHigh(OC1B_PIN);
     }
 
     else
@@ -401,7 +407,7 @@ void timer2Init(timer2Config_t config,
         outputConfig == timer2OutputConfig_t::channelABnormal  ||
         outputConfig == timer2OutputConfig_t::channelABinverted)
     {
-        gpioAsOutput(&OC2A_PORT, OC2A_PIN);
+        gpioAsOutput(OC2A_PIN);
     }
 
     if (outputConfig == timer2OutputConfig_t::channelBnormal   ||
@@ -409,7 +415,7 @@ void timer2Init(timer2Config_t config,
         outputConfig == timer2OutputConfig_t::channelABnormal  ||
         outputConfig == timer2OutputConfig_t::channelABinverted)
     {
-        gpioAsOutput(&OC2B_PORT, OC2B_PIN);
+        gpioAsOutput(OC2B_PIN);
     }
 
     // Set timer 2 configuration
@@ -444,9 +450,9 @@ void timer2ASetDuty(uint8_t duty, timer2OutputConfig_t outputConfig)
 
         if (outputConfig == timer2OutputConfig_t::channelAnormal ||
             outputConfig == timer2OutputConfig_t::channelABnormal)
-            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
+            gpioWriteHigh(OC2A_PIN);
         else
-            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
+            gpioWriteLow(OC2A_PIN);
     }
 
     else if (duty <= 0)
@@ -456,9 +462,9 @@ void timer2ASetDuty(uint8_t duty, timer2OutputConfig_t outputConfig)
 
         if (outputConfig == timer2OutputConfig_t::channelAnormal ||
             outputConfig == timer2OutputConfig_t::channelABnormal)
-            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
+            gpioWriteLow(OC2A_PIN);
         else
-            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
+            gpioWriteHigh(OC2A_PIN);
     }
 
     else
@@ -480,9 +486,9 @@ void timer2BSetDuty(uint8_t duty, timer2OutputConfig_t outputConfig)
 
         if (outputConfig == timer2OutputConfig_t::channelBnormal ||
             outputConfig == timer2OutputConfig_t::channelABnormal)
-            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
+            gpioWriteHigh(OC2B_PIN);
         else
-            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
+            gpioWriteLow(OC2B_PIN);
     }
 
     else if (duty <= 0)
@@ -492,9 +498,9 @@ void timer2BSetDuty(uint8_t duty, timer2OutputConfig_t outputConfig)
 
         if (outputConfig == timer2OutputConfig_t::channelBnormal ||
             outputConfig == timer2OutputConfig_t::channelABnormal)
-            gpioWriteLow(&OC2A_PORT, OC2A_PIN);
+            gpioWriteLow(OC2B_PIN);
         else
-            gpioWriteHigh(&OC2A_PORT, OC2A_PIN);
+            gpioWriteHigh(OC2B_PIN);
     }
 
     else

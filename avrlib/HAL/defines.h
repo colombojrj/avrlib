@@ -52,8 +52,7 @@
 //////////
 // GPIO //
 //////////
-#define DDR(x)                  (*(&x - 1)) // This does not work for ATmega64 or higher
-#define PIN(x)                  (*(&x - 2)) // This does not work for ATmega64 or higher
+
 
 #define INPUT                   0
 #define INPUT_PULLUP            1

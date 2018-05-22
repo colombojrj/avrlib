@@ -21,30 +21,49 @@ extern "C"
 /**@{*/
 
 /**
- * gpioAsOutput(volatile uint8_t *port, const uint8_t pin)
+ * gpioAsOutput(port, pinNumber)
  *
- * Configures the \b pin placed on \b port as output (there is
- * support only for push-pull configuration)
+ * Configures the pin placed on port as output (ATmega devices support only
+ * push-pull configuration)
  *
- * \todo Add support for open-drain configuration
- *
- * @param port is a pointer to the port of the pin (example: &PORTB)
+ * @param port is a pointer to the pin port (example: &PortB)
  * @param pin is the pin number (example: PB5 or just 5)
+ *
+ * @see port_t
  */
-extern void gpioAsOutput(volatile uint8_t *port, const uint8_t pin);
-//extern void gpioAsOutput(gpio_t gpio);
+#define gpioAsOutput(port,pinNumber) (*(*port).ddr=*(*port).ddr|(1<<pinNumber))
 
 /**
- * gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp)
+ * gpioAsInput(port, pinNumber)
  *
- * Configures the \b pin placed on \b port as input
+ * Configures the pin placed on port as input
  *
- * @param port is a pointer to the port of the pin (example: &PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
- * @param pullUp defines if a pull-up resistor will be
- * added to the pin, use 1 to yes or 0 to no
+ * @param port is a pointer to the port of the pin (example: &PortB)
+ * @param pinNumber is the pin number (example: PB5 or just 5)
+ *
+ * @see port_t
  */
-extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t pullUp = 0);
+#define gpioAsInput(port,pinNumber) (*(*port).ddr=*(*port).ddr&(~(1<<pinNumber)))
+
+/**
+ * gpioPullUpEnable(gpio_t gpio)
+ *
+ * Enable gpio pull up resistor.
+ *
+ * @param port is the pin port which the pull up resistor will be disabled
+ * @param pinNumber is the pin number
+ */
+extern void gpioPullUpEnable(port_t* port, uint8_t pinNumber);
+
+/**
+ * gpioPullUpDisable(gpio_t gpio)
+ *
+ * Disable gpio pull up resistor.
+ *
+ * @param port is the pin port which the pull up resistor will be disabled
+ * @param pinNumber is the pin number
+ */
+extern void gpioPullUpDisable(port_t* port, uint8_t pinNumber);
 
 /**
  * gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir)
@@ -52,73 +71,56 @@ extern void gpioAsInput(volatile uint8_t *port, const uint8_t pin, const uint8_t
  * Configures the \b pin placed on \b port as input
  *
  * @param port is a pointer to the port of the pin (example: &PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
+ * @param pinNumber is the pin number (example: PB5 or just 5)
  * @param dir is the direction (0 is input and 1 is output)
+ *
+ * @todo migrate from const uint8_t dir to enum
  */
-extern void gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir);
-
-/**
- * gpioAsAdc(volatile uint8_t *port, const uint8_t pin)
- *
- * Configures the \b pin placed on \b port as ADC input.
- * It will automatically disable digital registers and
- * set the pin as INPUT (\b without the pull-up resistor)
- *
- * @param port is a pointer to the port of the pin (example: &PORTC)
- * @param pin is the pin number (example: PC0 or just 0)
- */
-extern void gpioAsAdc(volatile uint8_t *port, const uint8_t pin);
-
-/**
- * gpioAsPwm(volatile uint8_t *port, const uint8_t pin)
- *
- * Configures the \b pin placed on \b port as PWM output
- *
- * @param port is a pointer to the port of the pin (example: &PORTD)
- * @param pin is the pin number (example: PC5 or just 5)
- */
-extern void gpioAsPwm(volatile uint8_t *port, const uint8_t pin);
+extern void gpioDirection(port_t* port, const uint8_t pinNumber, const uint8_t dir);
 
 /**
  * Macro for gpio writing
  *
- * gpioWriteHigh(volatile uint8_t *port, const uint8_t pin)
+ * gpioWriteHigh(port, pin)
  *
- * Write high logic level on the \b pin placed on \b port as output (there is
+ * Write high logic level on the pin placed on port as output (there is
  * support only for push-pull configuration)
  *
- * \todo Add support for open-drain configuration
+ * @param port is the gpio pin port address (example: &PortB)
+ * @param pinNumber is the pin number (example: PB5)
  *
- * @param port is the pin port (example: PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
+ * @see port_t
  */
-#define gpioWriteHigh(port,pin) (*port=*port||(1<<pin))
+#define gpioWriteHigh(port,pinNumber) (*(*port).port=*(*port).port|(1<<pinNumber))
 
 /**
  * Macro for gpio writing
  *
  * gpioWriteLow(port, pin)
  *
- * Write low logic level on the \b pin placed on \b port as output (there is
- * support only for push-pull configuration)
+ * Write low logic level on the pin placed on port as output (ATmega devices
+ * there is support only push-pull configuration)
  *
- * @param port is the pin port (example: PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
+ * @param port is the gpio pin port address (example: &PortB)
+ * @param pinNumber is the pin number (example: PB5)
+ *
+ * @see port_t
  */
-#define gpioWriteLow(port,pin) (*port=*port&~(1<<pin))
+#define gpioWriteLow(port,pinNumber) (*(*port).port=*(*port).port&(~(1<<pinNumber)))
 
 /**
  * Macro for gpio writing
  *
- * gpioToggle(volatile uint8_t *port, const uint8_t pin)
+ * gpioToggle(port, pinNumber)
  *
- * Toggles logic level on the \b pin placed on \b port as output (there is
- * support only for push-pull configuration)
+ * Toggles an output pin logic level
  *
- * @param port is the pin port (example: PORTB)
+ * @param port is the pin port address (example: &PortB)
  * @param pin is the pin number (example: PB5 or just 5)
+ *
+ * @ref port_t
  */
-#define gpioToggle(port,pin) (*port=*port^(1<<pin))
+#define gpioToggle(port,pinNumber) (*port=*port^(1<<pinNumber))
 
 /**
  * Macro for gpio reading
@@ -132,7 +134,7 @@ extern void gpioAsPwm(volatile uint8_t *port, const uint8_t pin);
  * @param port is a pointer to the port of the pin (example: &PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  * @return a non-negative number with the logic level on the pin
- *         (1 if it is HIGH and 0 if LOW)
+ *         (0 if LOW or a positive number if HIGH)
  */
 #define gpioRead(port,pin) (PIN(*port)&(1<<pin))
 
@@ -146,7 +148,7 @@ extern void gpioAsPwm(volatile uint8_t *port, const uint8_t pin);
  * @param pin is the pin number (example: PB5 or just 5)
  * @param level is the logic level to write (true or false, HIGH or LOW, 1 or 0)
  */
-extern void gpioWrite(volatile uint8_t *port, const uint8_t pin, const uint8_t level);
+extern void gpioWrite(port_t* port, const uint8_t pinNumber, const uint8_t level);
 
 /**
  * gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin)

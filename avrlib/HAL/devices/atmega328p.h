@@ -24,53 +24,42 @@
 #define SUPPORT_TO_TIMER1
 #define SUPPORT_TO_TIMER2
 
+#define DDR(port) (*(&port - 1)) // This does not work for ATmega64 or higher
+#define PIN(port) (*(&port - 2)) // This does not work for ATmega64 or higher
+
 /**
- * gpio_t
+ * port_t
  *
- * @brief Basic pin structure.
+ * @brief Basic port structure.
  *
- * This struct holds information about an specific pin:
- * @param number is the pin number
- * @param port is the pin port
- * @param ddr is the direction register
- * @param pin is the pin value register
- * @param pcmsk is the pin change interrupt register
+ * This struct holds information about an specific port:
+ * @param port is the port address
+ * @param ddr is the direction register address
+ * @param pin is the pin value register address
+ * @param pcmsk is the pin change interrupt register address
  */
-typedef struct
+typedef struct port_t
 {
-    uint8_t number;
     volatile uint8_t* port;
     volatile uint8_t* ddr;
     volatile uint8_t* pin;
     volatile uint8_t* pcmsk;
-} gpio_t;
+} port_t;
 
-#define PinB0 ((gpio_t){0, &PORTB, &DDRB, &PINB, &PCMSK0})
-#define PinB1 ((gpio_t){1, &PORTB, &DDRB, &PINB, &PCMSK0})
-#define PinB2 ((gpio_t){2, &PORTB, &DDRB, &PINB, &PCMSK0})
-#define PinB3 ((gpio_t){3, &PORTB, &DDRB, &PINB, &PCMSK0})
-#define PinB4 ((gpio_t){4, &PORTB, &DDRB, &PINB, &PCMSK0})
-#define PinB5 ((gpio_t){5, &PORTB, &DDRB, &PINB, &PCMSK0})
-#define PinB6 ((gpio_t){6, &PORTB, &DDRB, &PINB, &PCMSK0})
-#define PinB7 ((gpio_t){7, &PORTB, &DDRB, &PINB, &PCMSK0})
+/**
+ * Port B declaration
+ */
+extern port_t PortB;
 
-#define PinC0 ((gpio_t){0, &PORTC, &DDRC, &PINC, &PCMSK1})
-#define PinC1 ((gpio_t){1, &PORTC, &DDRC, &PINC, &PCMSK1})
-#define PinC2 ((gpio_t){2, &PORTC, &DDRC, &PINC, &PCMSK1})
-#define PinC3 ((gpio_t){3, &PORTC, &DDRC, &PINC, &PCMSK1})
-#define PinC4 ((gpio_t){4, &PORTC, &DDRC, &PINC, &PCMSK1})
-#define PinC5 ((gpio_t){5, &PORTC, &DDRC, &PINC, &PCMSK1})
-#define PinC6 ((gpio_t){6, &PORTC, &DDRC, &PINC, &PCMSK1})
-#define PinC7 ((gpio_t){7, &PORTC, &DDRC, &PINC, &PCMSK1})
+/**
+ * Port C declaration
+ */
+extern port_t PortC;
 
-#define PinD0 ((gpio_t){0, &PORTD, &DDRD, &PIND, &PCMSK2})
-#define PinD1 ((gpio_t){1, &PORTD, &DDRD, &PIND, &PCMSK2})
-#define PinD2 ((gpio_t){2, &PORTD, &DDRD, &PIND, &PCMSK2})
-#define PinD3 ((gpio_t){3, &PORTD, &DDRD, &PIND, &PCMSK2})
-#define PinD4 ((gpio_t){4, &PORTD, &DDRD, &PIND, &PCMSK2})
-#define PinD5 ((gpio_t){5, &PORTD, &DDRD, &PIND, &PCMSK2})
-#define PinD6 ((gpio_t){6, &PORTD, &DDRD, &PIND, &PCMSK2})
-#define PinD7 ((gpio_t){7, &PORTD, &DDRD, &PIND, &PCMSK2})
+/**
+ * Port D declaration
+ */
+extern port_t PortD;
 
 enum class gpioIntPin_t : uint8_t
 {
@@ -180,17 +169,11 @@ enum class adcAdmux_t : uint8_t
  *
  */
 
-#define _SPI_PORT   PORTB
-#define _SPI_SS     PB2
-#define _SPI_MOSI   PB3
-#define _SPI_MISO   PB4
-#define _SPI_SCK    PB5
-/*
 #define _SPI_SS     PinB2
 #define _SPI_MOSI   PinB3
 #define _SPI_MISO   PinB4
 #define _SPI_SCK    PinB5
-*/
+
 
 struct spiClockDivideBy
 {
@@ -288,26 +271,24 @@ enum class spiUseInterrupt_t : uint8_t
 ////////////////////
 
 // Timer 0
-#define OC0A_PIN            PD6
+#define OC0A_PIN            PinD6
 #define OC0A_PORT           PORTD
-#define OC0B_PIN            PD5
+#define OC0B_PIN            PinD5
 #define OC0B_PORT           PORTD
-#define T0_PIN              PD4
+#define T0_PIN              PinD4
 #define T0_PORT             PORTD
 
 // Timer 1
-#define OC1A_PIN            PB1
+#define OC1A_PIN            PinB1
 #define OC1A_PORT           PORTB
-#define OC1B_PIN            PB2
+#define OC1B_PIN            PinB2
 #define OC1B_PORT           PORTB
-#define T1_PIN              PD5
+#define T1_PIN              PinD5
 #define T1_PORT             PORTD
 
 // Timer 2
-#define OC2A_PIN            PB3
-#define OC2A_PORT           PORTB
-#define OC2B_PIN            PD3
-#define OC2B_PORT           PORTD
+#define OC2A_PIN            PinB3
+#define OC2B_PIN            PinD3
 
 enum class timer0OutputConfig_t
 {

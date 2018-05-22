@@ -51,12 +51,13 @@ void spiInit()
         // change automatically from master to slave
         if (spiConfig == spiConfig_t::master)
         {
-            gpioAsOutput(&_SPI_PORT, _SPI_SS);
+            gpioAsOutput(_SPI_SS);
             SPCR = (1 << SPE) | (1 << MSTR);
         }
         else
         {
-            gpioAsInput(&_SPI_PORT, _SPI_SS, 1);
+            gpioAsInput(_SPI_SS);
+            gpioPullUpEnable(_SPI_SS);
             SPCR = (1 << SPE);
         }
 
@@ -78,15 +79,15 @@ void spiInit()
         // Configure the MOSI, MISO and SCK SPI pins
         if (spiConfig == spiConfig_t::master)
         {
-            gpioAsOutput(&_SPI_PORT, _SPI_MOSI);
-            gpioAsOutput(&_SPI_PORT, _SPI_SCK);
-            gpioAsInput(&_SPI_PORT, _SPI_MISO);
+            gpioAsOutput(_SPI_MOSI);
+            gpioAsOutput(_SPI_SCK);
+            gpioAsInput(_SPI_MISO);
         }
         else
         {
-            gpioAsInput(&_SPI_PORT, _SPI_SCK);
-            gpioAsInput(&_SPI_PORT, _SPI_MOSI);
-            gpioAsOutput(&_SPI_PORT, _SPI_MISO);
+            gpioAsInput(_SPI_SCK);
+            gpioAsInput(_SPI_MOSI);
+            gpioAsOutput(_SPI_MISO);
         }
 
         // SPI is not busy
