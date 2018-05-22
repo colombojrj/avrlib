@@ -21,49 +21,49 @@ extern "C"
 /**@{*/
 
 /**
- * gpioAsOutput(port, pinNumber)
+ * gpioAsOutput(p, pinNumber)
  *
  * Configures the pin placed on port as output (ATmega devices support only
  * push-pull configuration)
  *
- * @param port is a pointer to the pin port (example: &PortB)
- * @param pin is the pin number (example: PB5 or just 5)
- *
- * @see port_t
- */
-#define gpioAsOutput(port,pinNumber) (*(*port).ddr=*(*port).ddr|(1<<pinNumber))
-
-/**
- * gpioAsInput(port, pinNumber)
- *
- * Configures the pin placed on port as input
- *
- * @param port is a pointer to the port of the pin (example: &PortB)
+ * @param p is a pointer to the pin port (example: &PortB)
  * @param pinNumber is the pin number (example: PB5 or just 5)
  *
  * @see port_t
  */
-#define gpioAsInput(port,pinNumber) (*(*port).ddr=*(*port).ddr&(~(1<<pinNumber)))
+#define gpioAsOutput(p,pinNumber) (*(*p).ddr=*(*p).ddr|(1<<pinNumber))
 
 /**
- * gpioPullUpEnable(gpio_t gpio)
+ * gpioAsInput(p, pinNumber)
+ *
+ * Configures the pin placed on port as input
+ *
+ * @param p is a pointer to the port of the pin (example: &PortB)
+ * @param pinNumber is the pin number (example: PB5 or just 5)
+ *
+ * @see port_t
+ */
+#define gpioAsInput(p,pinNumber) (*(*p).ddr=*(*p).ddr&(~(1<<pinNumber)))
+
+/**
+ * gpioPullUpEnable(p,pinNumber)
  *
  * Enable gpio pull up resistor.
  *
- * @param port is the pin port which the pull up resistor will be disabled
+ * @param p is the pin port which the pull up resistor will be disabled
  * @param pinNumber is the pin number
  */
-extern void gpioPullUpEnable(port_t* port, uint8_t pinNumber);
+#define gpioPullUpEnable(p,pinNumber) (*(*p).port=*(*p).port|(1<<pinNumber))
 
 /**
- * gpioPullUpDisable(gpio_t gpio)
+ * gpioPullUpDisable(p, pinNumber)
  *
  * Disable gpio pull up resistor.
  *
- * @param port is the pin port which the pull up resistor will be disabled
+ * @param p is the pin port which the pull up resistor will be disabled
  * @param pinNumber is the pin number
  */
-extern void gpioPullUpDisable(port_t* port, uint8_t pinNumber);
+#define gpioPullUpDisable(p,pinNumber) (*(*p).port=*(*p).port&(~(1<<pinNumber)))
 
 /**
  * gpioDirection(volatile uint8_t *port, const uint8_t pin, const uint8_t dir)
@@ -81,46 +81,46 @@ extern void gpioDirection(port_t* port, const uint8_t pinNumber, const uint8_t d
 /**
  * Macro for gpio writing
  *
- * gpioWriteHigh(port, pin)
+ * gpioWriteHigh(p, pin)
  *
  * Write high logic level on the pin placed on port as output (there is
  * support only for push-pull configuration)
  *
- * @param port is the gpio pin port address (example: &PortB)
+ * @param p is the gpio pin port address (example: &PortB)
  * @param pinNumber is the pin number (example: PB5)
  *
  * @see port_t
  */
-#define gpioWriteHigh(port,pinNumber) (*(*port).port=*(*port).port|(1<<pinNumber))
+#define gpioWriteHigh(p,pinNumber) (*(*p).port=*(*p).port|(1<<pinNumber))
 
 /**
  * Macro for gpio writing
  *
- * gpioWriteLow(port, pin)
+ * gpioWriteLow(p, pin)
  *
  * Write low logic level on the pin placed on port as output (ATmega devices
  * there is support only push-pull configuration)
  *
- * @param port is the gpio pin port address (example: &PortB)
+ * @param p is the pin port address (example: &PortB)
  * @param pinNumber is the pin number (example: PB5)
  *
  * @see port_t
  */
-#define gpioWriteLow(port,pinNumber) (*(*port).port=*(*port).port&(~(1<<pinNumber)))
+#define gpioWriteLow(p,pinNumber) (*(*p).port=*(*p).port&(~(1<<pinNumber)))
 
 /**
  * Macro for gpio writing
  *
- * gpioToggle(port, pinNumber)
+ * gpioToggle(p, pinNumber)
  *
  * Toggles an output pin logic level
  *
- * @param port is the pin port address (example: &PortB)
+ * @param p is the pin port address (example: &PortB)
  * @param pin is the pin number (example: PB5 or just 5)
  *
  * @ref port_t
  */
-#define gpioToggle(port,pinNumber) (*port=*port^(1<<pinNumber))
+#define gpioToggle(p,pinNumber) (*(*p).port=*(*p).port^(1<<pinNumber))
 
 /**
  * Macro for gpio reading

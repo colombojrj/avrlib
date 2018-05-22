@@ -51,13 +51,13 @@ void spiInit()
         // change automatically from master to slave
         if (spiConfig == spiConfig_t::master)
         {
-            gpioAsOutput(_SPI_SS);
+            gpioAsOutput(&_SPI_SS_PORT, _SPI_SS_PIN);
             SPCR = (1 << SPE) | (1 << MSTR);
         }
         else
         {
-            gpioAsInput(_SPI_SS);
-            gpioPullUpEnable(_SPI_SS);
+            gpioAsInput(&_SPI_SS_PORT, _SPI_SS_PIN);
+            gpioPullUpEnable(&_SPI_SS_PORT, _SPI_SS_PIN);
             SPCR = (1 << SPE);
         }
 
@@ -79,15 +79,15 @@ void spiInit()
         // Configure the MOSI, MISO and SCK SPI pins
         if (spiConfig == spiConfig_t::master)
         {
-            gpioAsOutput(_SPI_MOSI);
-            gpioAsOutput(_SPI_SCK);
-            gpioAsInput(_SPI_MISO);
+            gpioAsOutput(&_SPI_MOSI_PORT, _SPI_MOSI_PIN);
+            gpioAsOutput(&_SPI_SCK_PORT, _SPI_SCK_PIN);
+            gpioAsInput(&_SPI_MISO_PORT, _SPI_MISO_PIN);
         }
         else
         {
-            gpioAsInput(_SPI_SCK);
-            gpioAsInput(_SPI_MOSI);
-            gpioAsOutput(_SPI_MISO);
+            gpioAsInput(&_SPI_SCK_PORT, _SPI_SCK_PIN);
+            gpioAsInput(&_SPI_MOSI_PORT, _SPI_MOSI_PIN);
+            gpioAsOutput(&_SPI_MISO_PORT, _SPI_MISO_PIN);
         }
 
         // SPI is not busy
@@ -144,6 +144,6 @@ bool spiIsBusy()
     return spiBusy;
 }
 
-// TODO add support to software SPI
-// TODO add support to USI as SPI
+/// @todo add support to software SPI
+/// @todo add support to USI as SPI (ATtiny devices)
 

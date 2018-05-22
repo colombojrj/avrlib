@@ -52,9 +52,6 @@
 
 /**@{*/
 
-//namespace HAL
-//{
-
 #include "defines.h"
 #include "gpio.h"
 #include "timers.h"
@@ -73,8 +70,6 @@
  * start to use the microcontroller peripherals.
  */
 extern void initHAL();
-
-//} // namespace HAL
 
 /**@}*/
 

@@ -61,6 +61,30 @@ extern port_t PortC;
  */
 extern port_t PortD;
 
+/// SPI SS port definition
+#define _SPI_SS_PORT     PortB
+
+/// SPI SS pin definition
+#define _SPI_SS_PIN      PB2
+
+/// SPI MOSI port definition
+#define _SPI_MOSI_PORT   PortB
+
+/// SPI MOSI pin definition
+#define _SPI_MOSI_PIN    PB3
+
+/// SPI MISO port definition
+#define _SPI_MISO_PORT   PortB
+
+/// SPI MISO pin definition
+#define _SPI_MISO_PIN    PB4
+
+/// SPI SCK port definition
+#define _SPI_SCK_PORT    PortB
+
+//<@ SPI SCK pin definition
+#define _SPI_SCK_PIN     PB5
+
 enum class gpioIntPin_t : uint8_t
 {
     int0 = PD2,
@@ -164,16 +188,6 @@ enum class adcAdmux_t : uint8_t
 //////////////////
 /// SPI module ///
 //////////////////
-
-/**
- *
- */
-
-#define _SPI_SS     PinB2
-#define _SPI_MOSI   PinB3
-#define _SPI_MISO   PinB4
-#define _SPI_SCK    PinB5
-
 
 struct spiClockDivideBy
 {
