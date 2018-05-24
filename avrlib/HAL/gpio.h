@@ -136,7 +136,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  *
  * @see gpio_t
  */
-#define gpioRead(gpio) (*(*port).pin&(1<<(*gpio).pinNumber))
+#define gpioRead(gpio) (*(*gpio).pin&(1<<(*gpio).pinNumber))
 
 /**
  * gpioWrite(gpio_t* gpio, const uint8_t level)
