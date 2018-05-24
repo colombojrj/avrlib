@@ -1,6 +1,8 @@
 #include "HAL.h"
 #include "../config.h"
 
+#if defined(SUPPORT_TO_HAL)
+
 void initHAL()
 {
     // Initialize the TIMERs
@@ -37,4 +39,4 @@ void initHAL()
     #endif
 }
 
-
+#endif /* defined(SUPPORT_TO_HAL) */

@@ -1,5 +1,7 @@
 #include "spi.h"
 
+#if defined(SUPPORT_TO_SPI)
+
 bool spiBusy;
 
 void spiSetClock()
@@ -143,6 +145,8 @@ bool spiIsBusy()
 {
     return spiBusy;
 }
+
+#endif // SUPPORT_TO_SPI
 
 /// @todo add support to software SPI
 /// @todo add support to USI as SPI (ATtiny devices)

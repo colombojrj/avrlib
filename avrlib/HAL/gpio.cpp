@@ -1,22 +1,19 @@
 #include "gpio.h"
 
-/**
- * @todo Migrate from const uint8_t dir (OUTPUT or INPUT) to enum
- */
-void gpioDirection(port_t* port, const uint8_t pinNumber, const uint8_t dir)
+void gpioDirection(gpio_t* gpio, const uint8_t dir)
 {
     if (dir == OUTPUT)
-        gpioAsOutput(port, pinNumber);
+        gpioAsOutput(gpio);
     else
-        gpioAsInput(port, pinNumber);
+        gpioAsInput(gpio);
 }
 
-void gpioWrite(port_t* port, const uint8_t pinNumber, const uint8_t level)
+void gpioWrite(gpio_t* gpio, const uint8_t level)
 {
     if (level == LOW)
-        gpioWriteLow(port, pinNumber);
+        gpioWriteLow(gpio);
     else
-        gpioWriteHigh(port, pinNumber);
+        gpioWriteHigh(gpio);
 }
 
 #if defined (__AVR_ATmega48__)  || defined(__AVR_ATmega48P__) || \
@@ -101,23 +98,29 @@ void gpioDisableINT(volatile uint8_t *port, uint8_t pin)
     }
 }
 
-void gpioSetDuty(gpio_t gpio, const uint16_t duty)
+void gpioSetDuty(port_t* p, const uint16_t duty)
 {
-    if (*gpio.port == *OC0A_PIN.port && gpio.number == OC0A_PIN.number)
-        timer0ASetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
+    #if defined(SUPPORT_TO_TIMER0)
+        if (*p.port == *OC0A_PIN.port && gpio.number == OC0A_PIN.number)
+            timer0ASetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
 
-    else if (*gpio.port == *OC0B_PIN.port && gpio.number == OC0B_PIN.number)
-        timer0BSetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
+        else if (*p.port == *OC0B_PIN.port && gpio.number == OC0B_PIN.number)
+            timer0BSetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
+    #endif
 
-    else if (*gpio.port == *OC1A_PIN.port && gpio.number == OC1A_PIN.number)
-        timer1ASetDuty(duty, timer1OutputConfig, timer1TopValue);
+    #if defined(SUPPORT_TO_TIMER1)
+        if (*gpio.port == *OC1A_PIN.port && gpio.number == OC1A_PIN.number)
+            timer1ASetDuty(duty, timer1OutputConfig, timer1TopValue);
 
-    else if (*gpio.port == *OC1B_PIN.port && gpio.number == OC1B_PIN.number)
-        timer1BSetDuty(duty, timer1OutputConfig, timer1TopValue);
+        else if (*gpio.port == *OC1B_PIN.port && gpio.number == OC1B_PIN.number)
+            timer1BSetDuty(duty, timer1OutputConfig, timer1TopValue);
+    #endif
 
-    else if (*gpio.port == *OC2A_PIN.port && gpio.number == OC2A_PIN.number)
-        timer2ASetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
+    #if defined(SUPPORT_TO_TIMER2)
+        if (*gpio.port == *OC2A_PIN.port && gpio.number == OC2A_PIN.number)
+            timer2ASetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
 
-    else if (*gpio.port == *OC2B_PIN.port && gpio.number == OC2B_PIN.number)
-        timer2BSetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
+        else if (*gpio.port == *OC2B_PIN.port && gpio.number == OC2B_PIN.number)
+            timer2BSetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
+    #endif
 }

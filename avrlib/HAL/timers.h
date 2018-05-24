@@ -65,6 +65,7 @@ extern "C"
  *   not the right microcontroller for the application.
  */
 
+#if defined(SUPPORT_TO_TIMER0)
 /**
  * Functions to handle the TIMER0 module
  */
@@ -74,6 +75,10 @@ extern void timer0Init(timer0Config_t config,
 extern void timer0ASetDuty(uint8_t OCR, timer0OutputConfig_t outputConfig);
 extern void timer0BSetDuty(uint8_t OCR, timer0OutputConfig_t outputConfig);
 extern void TIMER0_OFF();
+
+#endif
+
+#if defined(SUPPORT_TO_TIMER1)
 
 /**
  * Functions to handle the TIMER1 module
@@ -87,6 +92,10 @@ extern void timer1BSetDuty(uint16_t duty, timer1OutputConfig_t output, uint16_t 
 extern void enableInputCapture(timer1InputCaptureEdge_t config);
 extern void TIMER1_OFF();
 
+#endif
+
+#if defined(SUPPORT_TO_TIMER2)
+
 /**
  * Functions to handle the TIMER2 module
  */
@@ -96,5 +105,7 @@ void timer2Init(timer2Config_t config,
 extern void timer2ASetDuty(uint8_t OCR, timer2OutputConfig_t outputConfig);
 extern void timer2BSetDuty(uint8_t duty, timer2OutputConfig_t outputConfig);
 extern void TIMER2_OFF();
+
+#endif /* defined(SUPPORT_TO_TIMER2) */
 
 #endif /* TIMER_H_ */

@@ -37,6 +37,8 @@
 #include "defines.h"
 #include "../config.h"
 
+#if defined(SUPPORT_TO_SPI)
+
 /**
  * @brief  This function has the purpose of configuring
  *          the SPI clock source.
@@ -106,5 +108,7 @@ extern bool spiBusy;
 extern bool spiIsBusy();
 
 /**@}*/
+
+#endif // SUPPORT_TO_SPI
 
 #endif /* AVRLIB_HAL_SPI_H_ */

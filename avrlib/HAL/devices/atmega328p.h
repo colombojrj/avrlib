@@ -17,12 +17,13 @@
 
 // Supported stuff
 #define SUPPORT_TO_GPIO
-#define SUPPORT_TO_SPI
+//#define SUPPORT_TO_SPI
 #define SUPPORT_TO_ADC
 //#define SUPPORT_TO_I2C
-#define SUPPORT_TO_TIMER0
-#define SUPPORT_TO_TIMER1
-#define SUPPORT_TO_TIMER2
+//#define SUPPORT_TO_TIMER0
+//#define SUPPORT_TO_TIMER1
+//#define SUPPORT_TO_TIMER2
+//#define SUPPORT_TO_HAL
 
 #define DDR(port) (*(&port - 1)) // This does not work for ATmega64 or higher
 #define PIN(port) (*(&port - 2)) // This does not work for ATmega64 or higher
@@ -38,7 +39,7 @@
  * @param pin is the pin value register address
  * @param pcmsk is the pin change interrupt register address
  */
-typedef struct port_t
+typedef struct Port_t
 {
     volatile uint8_t* port;
     volatile uint8_t* ddr;
@@ -46,20 +47,104 @@ typedef struct port_t
     volatile uint8_t* pcmsk;
 } port_t;
 
-/**
- * Port B declaration
- */
-extern port_t PortB;
+/// Port B declaration
+constexpr port_t PortB = {&PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Port C declaration
+constexpr port_t PortC = {&PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Port D declaration
+constexpr port_t PortD = {&PORTD, &DDRD, &PIND, &PCMSK2};
 
 /**
- * Port C declaration
+ * gpio_t
+ *
+ * @brief Basic pin structure.
+ *
+ * This struct holds information about an specific pin:
+ * @param pinNumber is the pin number
+ * @param port is the port address
+ * @param ddr is the direction register address
+ * @param pin is the pin value register address
+ * @param pcmsk is the pin change interrupt register address
  */
-extern port_t PortC;
+typedef struct Gpio_t
+{
+    const uint8_t pinNumber;
+    volatile uint8_t* port;
+    volatile uint8_t* ddr;
+    volatile uint8_t* pin;
+    volatile uint8_t* pcmsk;
+} gpio_t;
 
-/**
- * Port D declaration
- */
-extern port_t PortD;
+/// Pin PB0 declaration
+constexpr gpio_t PinB0 = {PB0, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PB1 declaration
+constexpr gpio_t PinB1 = {PB1, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PB2 declaration
+constexpr gpio_t PinB2 = {PB2, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PB3 declaration
+constexpr gpio_t PinB3 = {PB3, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PB4 declaration
+constexpr gpio_t PinB4 = {PB4, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PB5 declaration
+constexpr gpio_t PinB5 = {PB5, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PB6 declaration
+constexpr gpio_t PinB6 = {PB6, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PB7 declaration
+constexpr gpio_t PinB7 = {PB7, &PORTB, &DDRB, &PINB, &PCMSK0};
+
+/// Pin PC0 declaration
+constexpr gpio_t PinC0 = {PC0, &PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Pin PC1 declaration
+constexpr gpio_t PinC1 = {PC1, &PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Pin PC2 declaration
+constexpr gpio_t PinC2 = {PC2, &PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Pin PC3 declaration
+constexpr gpio_t PinC3 = {PC3, &PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Pin PC4 declaration
+constexpr gpio_t PinC4 = {PC4, &PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Pin PC5 declaration
+constexpr gpio_t PinC5 = {PC5, &PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Pin PC6 declaration
+constexpr gpio_t PinC6 = {PC6, &PORTC, &DDRC, &PINC, &PCMSK1};
+
+/// Pin PD0 declaration
+constexpr gpio_t PinD0 = {PD0, &PORTD, &DDRD, &PIND, &PCMSK2};
+
+/// Pin PD1 declaration
+constexpr gpio_t PinD1 = {PD1, &PORTD, &DDRD, &PIND, &PCMSK2};
+
+/// Pin PD2 declaration
+constexpr gpio_t PinD2 = {PD2, &PORTD, &DDRD, &PIND, &PCMSK2};
+
+/// Pin PD3 declaration
+constexpr gpio_t PinD3 = {PD3, &PORTD, &DDRD, &PIND, &PCMSK2};
+
+/// Pin PD4 declaration
+constexpr gpio_t PinD4 = {PD4, &PORTD, &DDRD, &PIND, &PCMSK2};
+
+/// Pin PD5 declaration
+constexpr gpio_t PinD5 = {PD5, &PORTD, &DDRD, &PIND, &PCMSK2};
+
+/// Pin PD6 declaration
+constexpr gpio_t PinD6 = {PD6, &PORTD, &DDRD, &PIND, &PCMSK2};
+
+/// Pin PD7 declaration
+constexpr gpio_t PinD7 = {PD7, &PORTD, &DDRD, &PIND, &PCMSK2};
 
 /// SPI SS port definition
 #define _SPI_SS_PORT     PortB
@@ -82,7 +167,7 @@ extern port_t PortD;
 /// SPI SCK port definition
 #define _SPI_SCK_PORT    PortB
 
-//<@ SPI SCK pin definition
+/// SPI SCK pin definition
 #define _SPI_SCK_PIN     PB5
 
 enum class gpioIntPin_t : uint8_t

@@ -27,6 +27,8 @@
 ///////////////////
 //
 
+#if defined(SUPPORT_TO_TIMER0)
+
 void timer0ASetDuty(uint8_t duty, timer0OutputConfig_t outputConfig)
 {
     if (duty >= 255)
@@ -188,11 +190,15 @@ void TIMER0_OFF()
     }
 #endif
 
+#endif
+
 //
 ///////////////////
 // TIMER1 MODULE //
 ///////////////////
 //
+
+#if defined(SUPPORT_TO_TIMER1)
 
 void timer1Init(timer1Config_t config,
                 timer1Clock_t clock,
@@ -386,11 +392,15 @@ void enableInputCapture(timer1InputCaptureEdge_t config)
     }
 #endif
 
+#endif
+
 //
 ///////////////////
 // TIMER2 MODULE //
 ///////////////////
 //
+
+#if defined(SUPPORT_TO_TIMER2)
 
 void timer2Init(timer2Config_t config,
                 timer2Clock_t clock,
@@ -530,4 +540,4 @@ void TIMER2_OFF()
     #endif
 }
 
-
+#endif
