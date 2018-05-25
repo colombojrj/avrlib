@@ -17,7 +17,7 @@
 
 // Supported stuff
 #define SUPPORT_TO_GPIO
-//#define SUPPORT_TO_SPI
+#define SUPPORT_TO_SPI
 #define SUPPORT_TO_ADC
 //#define SUPPORT_TO_I2C
 //#define SUPPORT_TO_TIMER0
@@ -27,34 +27,6 @@
 
 #define DDR(port) (*(&port - 1)) // This does not work for ATmega64 or higher
 #define PIN(port) (*(&port - 2)) // This does not work for ATmega64 or higher
-
-/**
- * port_t
- *
- * @brief Basic port structure.
- *
- * This struct holds information about an specific port:
- * @param port is the port address
- * @param ddr is the direction register address
- * @param pin is the pin value register address
- * @param pcmsk is the pin change interrupt register address
- */
-typedef struct Port_t
-{
-    volatile uint8_t* port;
-    volatile uint8_t* ddr;
-    volatile uint8_t* pin;
-    volatile uint8_t* pcmsk;
-} port_t;
-
-/// Port B declaration
-constexpr port_t PortB = {&PORTB, &DDRB, &PINB, &PCMSK0};
-
-/// Port C declaration
-constexpr port_t PortC = {&PORTC, &DDRC, &PINC, &PCMSK1};
-
-/// Port D declaration
-constexpr port_t PortD = {&PORTD, &DDRD, &PIND, &PCMSK2};
 
 /**
  * gpio_t
@@ -68,7 +40,7 @@ constexpr port_t PortD = {&PORTD, &DDRD, &PIND, &PCMSK2};
  * @param pin is the pin value register address
  * @param pcmsk is the pin change interrupt register address
  */
-typedef struct Gpio_t
+typedef struct Gpio
 {
     const uint8_t pinNumber;
     volatile uint8_t* port;
@@ -146,30 +118,6 @@ constexpr gpio_t PinD6 = {PD6, &PORTD, &DDRD, &PIND, &PCMSK2};
 /// Pin PD7 declaration
 constexpr gpio_t PinD7 = {PD7, &PORTD, &DDRD, &PIND, &PCMSK2};
 
-/// SPI SS port definition
-#define _SPI_SS_PORT     PortB
-
-/// SPI SS pin definition
-#define _SPI_SS_PIN      PB2
-
-/// SPI MOSI port definition
-#define _SPI_MOSI_PORT   PortB
-
-/// SPI MOSI pin definition
-#define _SPI_MOSI_PIN    PB3
-
-/// SPI MISO port definition
-#define _SPI_MISO_PORT   PortB
-
-/// SPI MISO pin definition
-#define _SPI_MISO_PIN    PB4
-
-/// SPI SCK port definition
-#define _SPI_SCK_PORT    PortB
-
-/// SPI SCK pin definition
-#define _SPI_SCK_PIN     PB5
-
 enum class gpioIntPin_t : uint8_t
 {
     int0 = PD2,
@@ -191,6 +139,91 @@ enum class gpioConfig_t : uint8_t
     inputWithPullUp,
     output
 };
+
+/**
+ * spi_t
+ *
+ * @brief SPI registers structure.
+ *
+ * This struct holds information about an specific pin:
+ * @param spiControl is the SPI registers control. ATmega devices usually have two main
+ *        registers to control the SPI peripheral: SPCR and SPSR. Because these registers
+ *        are aligned in the memory map (see page 425 of the datasheet) they can be used
+ *        as a single 16 bits registers. With this definition, this variable is located
+ *        in 0x2C (SPCR address)
+ * @param data is the SPI data register (ATmega datasheet calls it as SPDR)
+ */
+
+//////////////////
+/// SPI module ///
+//////////////////
+
+typedef struct Spi
+{
+    /// SPCR and SPSR with address of SPCR
+    volatile uint16_t* spiControl;
+
+    /// SPDR address
+    volatile uint8_t* data;
+} spi_t;
+
+/// SPI declaration
+constexpr spi_t spi = {(uint16_t*) &SPCR, &SPDR};
+
+enum class spiClock_t : uint16_t
+{
+    divideBy2 = (1 << (SPI2X+8)),
+    divideBy4 = 0,
+    divideBy8 = (1 << SPR0) | (1 << (SPI2X+8)),
+    divideBy16 = (1 << SPR0),
+    divideBy32 = (1 << SPR1) | (1 << (SPI2X+8)),
+    divideBy64 = (1 << SPR1),
+    divideBy128 = (1 << SPR1) | (1 << SPR0),
+    setState = (1 << SPR1) | (1 << SPR0) | (1 << (SPI2X+8))
+};
+
+enum class spiConfig_t : uint8_t
+{
+    master,
+    slave,
+    off
+};
+
+enum class spiMode_t : uint8_t
+{
+    mode0 = 0,
+    mode1 = (1 << CPHA),
+    mode2 = (1 << CPOL),
+    mode3 = (1 << CPOL) | (1 << CPHA)
+};
+
+enum class spiDataOrder_t : uint8_t
+{
+    msbFisrt = 0,
+    lsbFirst = (1 << DORD)
+};
+
+enum class spiUseInterrupt_t : uint8_t
+{
+    no = 0,
+    yes = (1 << SPIE)
+};
+
+/// SPI SS pin definition
+#define _SPI_SS_PIN      PinB2
+
+/// SPI MOSI pin definition
+#define _SPI_MOSI_PIN    PinB3
+
+/// SPI MISO pin definition
+#define _SPI_MISO_PIN    PinB4
+
+/// SPI SCK pin definition
+#define _SPI_SCK_PIN     PinB5
+
+//////////////////
+/// ADC Module ///
+//////////////////
 
 /**
  * adcConfig_t
@@ -270,100 +303,7 @@ enum class adcAdmux_t : uint8_t
 
 
 
-//////////////////
-/// SPI module ///
-//////////////////
 
-struct spiClockDivideBy
-{
-    spiClockDivideBy(uint8_t rSPI2X, uint8_t rSPR1, uint8_t rSPR0)
-    {
-        SPSR = SPSR | (rSPI2X << SPI2X);
-        SPCR = SPCR | (rSPR1 << SPR1) | (rSPR0 << SPR0);
-    }
-};
-
-struct spiClockDivideBy2 : spiClockDivideBy
-{
-    spiClockDivideBy2() : spiClockDivideBy(1, 0, 0) {}
-};
-
-struct spiClockDivideBy4 : spiClockDivideBy
-{
-    spiClockDivideBy4() : spiClockDivideBy(0, 0, 0) {}
-};
-
-struct spiClockDivideBy8 : spiClockDivideBy
-{
-    spiClockDivideBy8() : spiClockDivideBy(1, 0, 1) {}
-};
-
-struct spiClockDivideBy16 : spiClockDivideBy
-{
-    spiClockDivideBy16() : spiClockDivideBy(0, 0, 1) {}
-};
-
-struct spiClockDivideBy32 : spiClockDivideBy
-{
-    spiClockDivideBy32() : spiClockDivideBy(1, 1, 0) {}
-};
-
-struct spiClockDivideBy64 : spiClockDivideBy
-{
-    spiClockDivideBy64() : spiClockDivideBy(0, 1, 0) {}
-};
-
-struct spiClockDivideBy128 : spiClockDivideBy
-{
-    spiClockDivideBy128() : spiClockDivideBy(0, 1, 1) {}
-};
-
-struct spiClockResetState
-{
-    spiClockResetState()
-    {
-        SPSR = SPSR & ~(1 << SPI2X);
-        SPCR = SPCR & ~((1 << SPR1) | (1 << SPR0));
-    }
-};
-
-enum class spiClock_t : uint8_t
-{
-    divideBy2,
-    divideBy4,
-    divideBy8,
-    divideBy16,
-    divideBy32,
-    divideBy64,
-    divideBy128
-};
-
-enum class spiConfig_t : uint8_t
-{
-    master,
-    slave,
-    off
-};
-
-enum class spiMode_t : uint8_t
-{
-    mode0 = 0,
-    mode1 = (1 << CPHA),
-    mode2 = (1 << CPOL),
-    mode3 = (1 << CPOL) | (1 << CPHA)
-};
-
-enum class spiDataOrder_t : uint8_t
-{
-    msbFisrt = 0,
-    lsbFirst = (1 << DORD)
-};
-
-enum class spiUseInterrupt_t : uint8_t
-{
-    no = 0,
-    yes = (1 << SPIE)
-};
 
 ////////////////////
 /// Timer module ///
@@ -371,19 +311,13 @@ enum class spiUseInterrupt_t : uint8_t
 
 // Timer 0
 #define OC0A_PIN            PinD6
-#define OC0A_PORT           PORTD
 #define OC0B_PIN            PinD5
-#define OC0B_PORT           PORTD
 #define T0_PIN              PinD4
-#define T0_PORT             PORTD
 
 // Timer 1
 #define OC1A_PIN            PinB1
-#define OC1A_PORT           PORTB
 #define OC1B_PIN            PinB2
-#define OC1B_PORT           PORTB
 #define T1_PIN              PinD5
-#define T1_PORT             PORTD
 
 // Timer 2
 #define OC2A_PIN            PinB3

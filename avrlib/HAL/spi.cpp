@@ -4,35 +4,16 @@
 
 bool spiBusy;
 
-void spiSetClock()
+void spiSetClock(spiClock_t spiClock)
 {
-    // Default values
-    const spiClockResetState resetClockRegisters;
+    // Clear SPI clock registers configuration
+    *spi.spiControl = *spi.spiControl & ~static_cast<uint16_t>(spiClock_t::setState);
 
-    // Configure clock
-    if (spiClock == spiClock_t::divideBy2)
-        const spiClockDivideBy2 helper;
-
-    else if (spiClock == spiClock_t::divideBy4)
-        const spiClockDivideBy4 helper;
-
-    else if (spiClock == spiClock_t::divideBy8)
-        const spiClockDivideBy8 helper;
-
-    else if (spiClock == spiClock_t::divideBy16)
-        const spiClockDivideBy16 helper;
-
-    else if (spiClock == spiClock_t::divideBy32)
-        const spiClockDivideBy32 helper;
-
-    else if (spiClock == spiClock_t::divideBy64)
-        const spiClockDivideBy64 helper;
-
-    else // i.e. spiClock == spiClock_t::divideBy128
-        spiClockDivideBy128 helper;
+    // Configure SPI clock
+    *spi.spiControl = *spi.spiControl | static_cast<uint16_t>(spiClock);
 }
 
-void spiInit()
+void spiInit(spiClock_t spiClock)
 {
     // SPI is initializing, then it is busy
     spiBusy = true;
@@ -53,13 +34,13 @@ void spiInit()
         // change automatically from master to slave
         if (spiConfig == spiConfig_t::master)
         {
-            gpioAsOutput(&_SPI_SS_PORT, _SPI_SS_PIN);
+            gpioAsOutput(&_SPI_SS_PIN);
             SPCR = (1 << SPE) | (1 << MSTR);
         }
         else
         {
-            gpioAsInput(&_SPI_SS_PORT, _SPI_SS_PIN);
-            gpioPullUpEnable(&_SPI_SS_PORT, _SPI_SS_PIN);
+            gpioAsInput(&_SPI_SS_PIN);
+            gpioPullUpEnable(& _SPI_SS_PIN);
             SPCR = (1 << SPE);
         }
 
@@ -67,7 +48,7 @@ void spiInit()
         SPCR = SPCR | static_cast<uint8_t>(spiMode);
 
         // SPI clock
-        spiSetClock();
+        spiSetClock(spiClock);
 
         if (spiUseInterrupt == spiUseInterrupt_t::yes)
         {
@@ -81,15 +62,15 @@ void spiInit()
         // Configure the MOSI, MISO and SCK SPI pins
         if (spiConfig == spiConfig_t::master)
         {
-            gpioAsOutput(&_SPI_MOSI_PORT, _SPI_MOSI_PIN);
-            gpioAsOutput(&_SPI_SCK_PORT, _SPI_SCK_PIN);
-            gpioAsInput(&_SPI_MISO_PORT, _SPI_MISO_PIN);
+            gpioAsOutput(&_SPI_MOSI_PIN);
+            gpioAsOutput(&_SPI_SCK_PIN);
+            gpioAsInput(&_SPI_MISO_PIN);
         }
         else
         {
-            gpioAsInput(&_SPI_SCK_PORT, _SPI_SCK_PIN);
-            gpioAsInput(&_SPI_MOSI_PORT, _SPI_MOSI_PIN);
-            gpioAsOutput(&_SPI_MISO_PORT, _SPI_MISO_PIN);
+            gpioAsInput(&_SPI_SCK_PIN);
+            gpioAsInput(&_SPI_MOSI_PIN);
+            gpioAsOutput(&_SPI_MISO_PIN);
         }
 
         // SPI is not busy

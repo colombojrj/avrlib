@@ -48,7 +48,7 @@
  * @param  none
  * @return none
  */
-extern void spiSetClock();
+extern void spiSetClock(spiClock_t spiClock);
 
 /**
  * @brief  This function has the purpose of initialize
@@ -59,7 +59,7 @@ extern void spiSetClock();
  * @param  none
  * @return none
  */
-extern void spiInit();
+extern void spiInit(spiClock_t spiClock);
 
 /**
  * Function to send data from SPI.
