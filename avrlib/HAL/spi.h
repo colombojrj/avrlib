@@ -28,6 +28,9 @@
  * * SCK: INPUT
  * * SS: INPUT
  *
+ * SPI polarity definitions:
+ * @image html spi_cpha_0.gif
+ *
  * @author José Roberto Colombo Junior
  */
 

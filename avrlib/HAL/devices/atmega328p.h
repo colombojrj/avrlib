@@ -17,7 +17,7 @@
 
 // Supported stuff
 #define SUPPORT_TO_GPIO
-#define SUPPORT_TO_SPI
+//#define SUPPORT_TO_SPI
 #define SUPPORT_TO_ADC
 //#define SUPPORT_TO_I2C
 //#define SUPPORT_TO_TIMER0
@@ -140,6 +140,10 @@ enum class gpioConfig_t : uint8_t
     output
 };
 
+//////////////////
+/// SPI module ///
+//////////////////
+
 /**
  * spi_t
  *
@@ -153,11 +157,6 @@ enum class gpioConfig_t : uint8_t
  *        in 0x2C (SPCR address)
  * @param data is the SPI data register (ATmega datasheet calls it as SPDR)
  */
-
-//////////////////
-/// SPI module ///
-//////////////////
-
 typedef struct Spi
 {
     /// SPCR and SPSR with address of SPCR
@@ -170,7 +169,7 @@ typedef struct Spi
 /// SPI declaration
 constexpr spi_t spi = {(uint16_t*) &SPCR, &SPDR};
 
-enum class spiClock_t : uint16_t
+typedef enum class SpiClock_t : uint16_t
 {
     divideBy2 = (1 << (SPI2X+8)),
     divideBy4 = 0,
@@ -180,21 +179,25 @@ enum class spiClock_t : uint16_t
     divideBy64 = (1 << SPR1),
     divideBy128 = (1 << SPR1) | (1 << SPR0),
     setState = (1 << SPR1) | (1 << SPR0) | (1 << (SPI2X+8))
-};
+} spiClock_t;
 
-enum class spiConfig_t : uint8_t
+typedef enum class SpiMode_t : uint8_t
 {
     master,
     slave,
     off
+} spiMode_t;
+
+enum class spiClockPolarity_t : uint8_t
+{
+    normal = 0,
+    inverted = (1 << CPOL)
 };
 
-enum class spiMode_t : uint8_t
+enum class spiClockPhase_t : uint8_t
 {
-    mode0 = 0,
-    mode1 = (1 << CPHA),
-    mode2 = (1 << CPOL),
-    mode3 = (1 << CPOL) | (1 << CPHA)
+    rising = 0,
+    falling = (1 << CPHA)
 };
 
 enum class spiDataOrder_t : uint8_t
@@ -208,6 +211,15 @@ enum class spiUseInterrupt_t : uint8_t
     no = 0,
     yes = (1 << SPIE)
 };
+
+typedef struct SpiConfig
+{
+    spiClock_t clock;
+    spiMode_t mode;
+
+    //spiDataOrder_t dataOrder;
+    //spiUseInterrupt_t useInterrupt;
+} spiConfig_t;
 
 /// SPI SS pin definition
 #define _SPI_SS_PIN      PinB2
