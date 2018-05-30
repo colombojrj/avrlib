@@ -29,8 +29,6 @@
 #define PIN(port) (*(&port - 2)) // This does not work for ATmega64 or higher
 
 /**
- * gpio_t
- *
  * @brief Basic pin structure.
  *
  * This struct holds information about an specific pin:
@@ -133,16 +131,37 @@ enum class gpioInt_t : uint8_t
     setState    = 0b11
 };
 
-enum class gpioConfig_t : uint8_t
+/**
+ * @brief Configures the GPIO as input or output
+ *
+ * @param input configures the gpio pin as input
+ * @param output configures the gpio pin as output
+ */
+enum class GpioConfig_t : uint8_t
 {
-    input,
-    inputWithPullUp,
-    output
+    input = 0,  //!< configures the gpio pin as input
+    output = 1  //!< configures the gpio pin as output
 };
 
-//////////////////
-/// SPI module ///
-//////////////////
+/// Define gpioConfig_t type
+typedef GpioConfig_t gpioConfig_t;
+
+/**
+ * @brief Controls the pull up resistor of each GPIO pin
+ *
+ * This typedef is used to control the pull up resistor of
+ * each gpio pin
+ *
+ * @param disable disables the gpio pull up resistor
+ * @param enable enables the gpio ppull up resistor
+ */
+enum class GpioPullResistor_t : uint8_t
+{
+    disable = 0, //!< disables the gpio pull up resistor
+    enable = 1   //!< enables the gpio pull up resistor
+};
+
+typedef GpioPullResistor_t gpioPullResistor_t;
 
 /**
  * spi_t
@@ -150,7 +169,7 @@ enum class gpioConfig_t : uint8_t
  * @brief SPI registers structure.
  *
  * This struct holds information about an specific pin:
- * @param spiControl is the SPI registers control. ATmega devices usually have two main
+ * @param control is the SPI registers control. ATmega devices usually have two main
  *        registers to control the SPI peripheral: SPCR and SPSR. Because these registers
  *        are aligned in the memory map (see page 425 of the datasheet) they can be used
  *        as a single 16 bits registers. With this definition, this variable is located
@@ -160,7 +179,7 @@ enum class gpioConfig_t : uint8_t
 typedef struct Spi
 {
     /// SPCR and SPSR with address of SPCR
-    volatile uint16_t* spiControl;
+    volatile uint16_t* control;
 
     /// SPDR address
     volatile uint8_t* data;
@@ -169,6 +188,18 @@ typedef struct Spi
 /// SPI declaration
 constexpr spi_t spi = {(uint16_t*) &SPCR, &SPDR};
 
+/**
+ * spiClockDivider_t
+ *
+ * @param divideBy2 SPI is driven with CPU clock divided by 2
+ * @param divideBy4 SPI is driven with CPU clock divided by 4
+ * @param divideBy8 SPI is driven with CPU clock divided by 8
+ * @param divideBy16 SPI is driven with CPU clock divided by 16
+ * @param divideBy32 SPI is driven with CPU clock divided by 32
+ * @param divideBy64 SPI is driven with CPU clock divided by 64
+ * @param divideBy128 SPI is driven with CPU clock divided by 128
+ * @param setState is only for library purposes
+ */
 typedef enum class SpiClock_t : uint16_t
 {
     divideBy2 = (1 << (SPI2X+8)),
@@ -181,44 +212,84 @@ typedef enum class SpiClock_t : uint16_t
     setState = (1 << SPR1) | (1 << SPR0) | (1 << (SPI2X+8))
 } spiClock_t;
 
+/// SPI mode
 typedef enum class SpiMode_t : uint8_t
 {
-    master,
-    slave,
-    off
+    master = (1 << MSTR),
+    slave = 0
 } spiMode_t;
 
-enum class spiClockPolarity_t : uint8_t
+/// SPI clock polarity
+typedef enum class SpiClockPolarity_t : uint8_t
 {
     normal = 0,
     inverted = (1 << CPOL)
-};
+} spiClockPolarity_t;
 
-enum class spiClockPhase_t : uint8_t
+/// SPI clock phase
+typedef enum class SpiClockPhase_t : uint8_t
 {
     rising = 0,
     falling = (1 << CPHA)
-};
+} spiClockPhase_t;
 
-enum class spiDataOrder_t : uint8_t
+/**
+ * spiDataOrder_t
+ *
+ * @param msbFirst
+ * @param lsbFirst
+ */
+typedef enum class SpiDataOrder_t : uint8_t
 {
     msbFisrt = 0,
     lsbFirst = (1 << DORD)
-};
+} spiDataOrder_t;
 
-enum class spiUseInterrupt_t : uint8_t
+/// SPI driven with interrupts?
+typedef enum class SpiUseInterrupt_t : uint8_t
 {
     no = 0,
     yes = (1 << SPIE)
-};
+} spiUseInterrupt_t;
 
+/**
+ * spiConfig_t
+ *
+ * @brief SPI configuration struct
+ *
+ * The SPI hardware configuration is done with this struct.
+ *
+ * In order to make programming easier, all the internal variables
+ * are enum classes, what allows for IDE auto completition to assist
+ * the programmer.
+ *
+ * The ATmega328P supports:
+ * @param spiClock_t clock configures the SPI clock divider
+ * @param spiMode_t mode configures the SPI as master or slave
+ * @param spiClockPhase_t spiClockPhase configures the clock phase
+ * @param spiClockPolarity_t spiClockPolarity configures the clock polarity
+ * @param spiDataOrder_t dataOrder configures data order (MSB or LSB first)
+ * @param spiUseInterrupt_t useInterrupt configures if the SPI is driven with interrupts
+ */
 typedef struct SpiConfig
 {
+    /// SPI clock divider
     spiClock_t clock;
+
+    /// SPI mode
     spiMode_t mode;
 
-    //spiDataOrder_t dataOrder;
-    //spiUseInterrupt_t useInterrupt;
+    /// SPI clock phase
+    spiClockPhase_t spiClockPhase;
+
+    /// SPI clock polarity
+    spiClockPolarity_t spiClockPolarity;
+
+    /// SPI data order
+    spiDataOrder_t dataOrder;
+
+    /// SPI driven with interrupts?
+    spiUseInterrupt_t useInterrupt;
 } spiConfig_t;
 
 /// SPI SS pin definition
