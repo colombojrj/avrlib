@@ -48,10 +48,10 @@ typedef struct Gpio
 } gpio_t;
 
 /// Pin PB0 declaration
-constexpr gpio_t PinB0 = {PB0, &PORTB, &DDRB, &PINB, &PCMSK0};
+constexpr gpio_t _PinB0 = {PB0, &PORTB, &DDRB, &PINB, &PCMSK0};
 
 /// Pin PB1 declaration
-constexpr gpio_t PinB1 = {PB1, &PORTB, &DDRB, &PINB, &PCMSK0};
+constexpr gpio_t _PinB1 = {PB1, &PORTB, &DDRB, &PINB, &PCMSK0};
 
 /// Pin PB2 declaration
 constexpr gpio_t PinB2 = {PB2, &PORTB, &DDRB, &PINB, &PCMSK0};
@@ -116,6 +116,12 @@ constexpr gpio_t PinD6 = {PD6, &PORTD, &DDRD, &PIND, &PCMSK2};
 /// Pin PD7 declaration
 constexpr gpio_t PinD7 = {PD7, &PORTD, &DDRD, &PIND, &PCMSK2};
 
+/// Friendly PinB0 definition
+#define PinB0 &_PinB0
+
+/// Friendly PinB1 definition
+#define PinB1 &_PinB1
+
 enum class gpioIntPin_t : uint8_t
 {
     int0 = PD2,
@@ -134,26 +140,23 @@ enum class gpioInt_t : uint8_t
 /**
  * @brief Configures the GPIO as input or output
  *
- * @param input configures the gpio pin as input
- * @param output configures the gpio pin as output
+ * @note The ATmega328P supports only push-pull configuration.
+ *       However, open drain configuration may be obtained through
+ *       software emulation.
+ *
+ * @todo Add support to open-drain configuration
  */
-enum class GpioConfig_t : uint8_t
+enum class GpioDir : uint8_t
 {
     input = 0,  //!< configures the gpio pin as input
     output = 1  //!< configures the gpio pin as output
 };
 
 /// Define gpioConfig_t type
-typedef GpioConfig_t gpioConfig_t;
+typedef GpioDir gpioDir_t;
 
 /**
  * @brief Controls the pull up resistor of each GPIO pin
- *
- * This typedef is used to control the pull up resistor of
- * each gpio pin
- *
- * @param disable disables the gpio pull up resistor
- * @param enable enables the gpio ppull up resistor
  */
 enum class GpioPullResistor_t : uint8_t
 {
@@ -161,6 +164,7 @@ enum class GpioPullResistor_t : uint8_t
     enable = 1   //!< enables the gpio pull up resistor
 };
 
+/// Define gpioPullResistor_t type
 typedef GpioPullResistor_t gpioPullResistor_t;
 
 /**
@@ -176,48 +180,49 @@ typedef GpioPullResistor_t gpioPullResistor_t;
  *        in 0x2C (SPCR address)
  * @param data is the SPI data register (ATmega datasheet calls it as SPDR)
  */
-typedef struct Spi
+struct SpiRegs
 {
     /// SPCR and SPSR with address of SPCR
     volatile uint16_t* control;
 
     /// SPDR address
     volatile uint8_t* data;
-} spi_t;
+};
+
+typedef SpiRegs spiRegs_t;
 
 /// SPI declaration
-constexpr spi_t spi = {(uint16_t*) &SPCR, &SPDR};
+constexpr spiRegs_t spiRegs = {(uint16_t*) &SPCR, &SPDR};
 
 /**
- * spiClockDivider_t
- *
- * @param divideBy2 SPI is driven with CPU clock divided by 2
- * @param divideBy4 SPI is driven with CPU clock divided by 4
- * @param divideBy8 SPI is driven with CPU clock divided by 8
- * @param divideBy16 SPI is driven with CPU clock divided by 16
- * @param divideBy32 SPI is driven with CPU clock divided by 32
- * @param divideBy64 SPI is driven with CPU clock divided by 64
- * @param divideBy128 SPI is driven with CPU clock divided by 128
- * @param setState is only for library purposes
+ * Available SPI clock divider configurations
  */
-typedef enum class SpiClock_t : uint16_t
+enum class SpiClock : uint16_t
 {
-    divideBy2 = (1 << (SPI2X+8)),
-    divideBy4 = 0,
-    divideBy8 = (1 << SPR0) | (1 << (SPI2X+8)),
-    divideBy16 = (1 << SPR0),
-    divideBy32 = (1 << SPR1) | (1 << (SPI2X+8)),
-    divideBy64 = (1 << SPR1),
-    divideBy128 = (1 << SPR1) | (1 << SPR0),
-    setState = (1 << SPR1) | (1 << SPR0) | (1 << (SPI2X+8))
-} spiClock_t;
+    divideBy2   = (1 << (SPI2X+8)),                            //!< SPI is driven with CPU clock divided by 2
+    divideBy4   = 0,                                           //!< SPI is driven with CPU clock divided by 4
+    divideBy8   = (1 << SPR0) | (1 << (SPI2X+8)),              //!< SPI is driven with CPU clock divided by 8
+    divideBy16  = (1 << SPR0),                                 //!< SPI is driven with CPU clock divided by 16
+    divideBy32  = (1 << SPR1) | (1 << (SPI2X+8)),              //!< SPI is driven with CPU clock divided by 32
+    divideBy64  = (1 << SPR1),                                 //!< SPI is driven with CPU clock divided by 64
+    divideBy128 = (1 << SPR1) | (1 << SPR0),                   //!< SPI is driven with CPU clock divided by 128
+    setState    = (1 << SPR1) | (1 << SPR0) | (1 << (SPI2X+8)) //!< only for library purposes
+};
 
-/// SPI mode
-typedef enum class SpiMode_t : uint8_t
+/// Define spiClock_t type
+typedef SpiClock spiClock_t;
+
+/**
+ * @brief Available SPI operation modes
+ */
+enum class SpiMode : uint8_t
 {
-    master = (1 << MSTR),
-    slave = 0
-} spiMode_t;
+    master = (1 << MSTR), //!< SPI as master
+    slave = 0             //!< SPI as slave
+};
+
+/// Define spiMode_t type
+typedef SpiMode spiMode_t;
 
 /// SPI clock polarity
 typedef enum class SpiClockPolarity_t : uint8_t

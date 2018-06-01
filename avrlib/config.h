@@ -60,12 +60,13 @@ constexpr uint8_t               timer2BInitialOcr   = 0;
 /////////
 // SPI //
 /////////
+/*
 constexpr spiConfig_t           spiConfig           = spiConfig_t::off;
 constexpr spiMode_t             spiMode             = spiMode_t::mode0;
 constexpr spiClock_t            spiClock            = spiClock_t::divideBy16;
 constexpr spiUseInterrupt_t     spiUseInterrupt     = spiUseInterrupt_t::no;
 constexpr spiDataOrder_t        spiDataOrder        = spiDataOrder_t::msbFisrt;
-
+*/
 //////////
 // UART //
 //////////
