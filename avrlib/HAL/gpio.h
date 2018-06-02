@@ -26,7 +26,7 @@ extern "C"
  * Configures the pin placed on port as output (ATmega devices support only
  * push-pull configuration)
  *
- * @param gpio is a pointer to the pin port (example: &PinB5)
+ * @param gpio is a pointer to the pin port (example: PinB5)
  *
  * @see gpio_t
  */
@@ -37,7 +37,7 @@ extern "C"
  *
  * Configures the gpio pin as input
  *
- * @param gpio is a pointer to the gpio pin (example: &PinB5)
+ * @param gpio is a pointer to the gpio pin (example: PinB5)
  *
  * @see gpio_t
  */
@@ -48,7 +48,8 @@ extern "C"
  *
  * Enable gpio pull up resistor.
  *
- * @param gpio is a pointer to gpio pin whose pull up resistor will be enabled (example: &PinB5)
+ * @param gpio is a pointer to gpio pin whose pull up
+ *        resistor will be enabled (example: PinB5)
  *
  * @see gpio_t
  */
@@ -59,7 +60,8 @@ extern "C"
  *
  * Disable gpio pull up resistor.
  *
- * @param gpio is a pointer to gpio pin whose pull up resistor will be disabled (example: &PinB5)
+ * @param gpio is a pointer to gpio pin whose pull up
+ *        resistor will be disabled (example: PinB5)
  *
  * @see gpio_t
  */
@@ -70,7 +72,7 @@ extern "C"
  *
  * Configures the gpio pin as input or output
  *
- * @param gpio is a pointer to gpio pin (example: &PinB5)
+ * @param gpio is a pointer to gpio pin (example: PinB5)
  * @param dir is the direction (0 is input and 1 is output)
  *
  * @todo migrate from const uint8_t dir to enum
@@ -87,7 +89,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  * Write high logic level on the gpio pin configured as output (ATmega devices
  * there is support only push-pull configuration)
  *
- * @param gpio is a pointer to gpio pin (example: &PinB5)
+ * @param gpio is a pointer to gpio pin (example: PinB5)
  *
  * @see gpio_t
  */
@@ -101,7 +103,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  * Write low logic level on the gpio pin configured as output (ATmega devices
  * there is support only push-pull configuration)
  *
- * @param gpio is a pointer to gpio pin (example: &PinB5)
+ * @param gpio is a pointer to gpio pin (example: PinB5)
  *
  * @see gpio_t
  */
@@ -114,7 +116,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  *
  * Toggles an output pin logic level
  *
- * @param gpio is a pointer to gpio pin (example: &PinB5)
+ * @param gpio is a pointer to gpio pin (example: PinB5)
  *
  * @see gpio_t
  */
@@ -130,7 +132,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  * \warning This macro "returns" 0 for low logic level or a
  * positive number for high logic level
  *
- * @param gpio is a pointer to gpio pin (example: &PinB5)
+ * @param gpio is a pointer to gpio pin (example: PinB5)
  * @return a non-negative number with the logic level on the pin
  *         (0 if LOW or a positive number if HIGH)
  *
@@ -144,7 +146,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  * Write logic level on the gpio pin configured as output (ATmega devices support
  * only push-pull configuration)
  *
- * @param gpio is a pointer to gpio pin (example: &PinB5)
+ * @param gpio is a pointer to gpio pin (example: PinB5)
  * @param level is the logic level to write (true or false, HIGH or LOW, 1 or 0)
  */
 extern void gpioWrite(gpio_t* gpio, const uint8_t level);
@@ -167,7 +169,7 @@ extern void gpioWrite(gpio_t* gpio, const uint8_t level);
  * @param port is a pointer to the port of the pin (example: &PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  */
-#if defined(PCMSK0)
+#if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
 extern void gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin);
 #endif
 
@@ -181,7 +183,7 @@ extern void gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin);
  * @param port is a pointer to the port of the pin (example: &PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  */
-#if defined(PCMSK0)
+#if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
 extern void gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin);
 #endif
 
@@ -203,14 +205,16 @@ extern void gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin);
 extern void gpioEnableINT(volatile uint8_t *port, const uint8_t pin, const gpioInt_t trigger);
 
 /**
- * gpioDisableINT(volatile uint8_t *port, const uint8_t pin)
+ * Disables the INT interrupt on the pin on port.
  *
- * Disables the INT interrupt on the \b pin on \b port.
+ * @param gpio is a pointer to gpio pin (example: PinD0)
  *
- * @param port is a pointer to the port of the pin (example: &PORTD)
- * @param pin is the pin number (example: PD2 or just 2)
+ * @warning If the informed gpio pin has no support to interrupt, then
+ *          nothing happens. Please consult the microcontroller datasheet
+ *          for more information about the pins with this kind of
+ *          interruption.
  */
-extern void gpioDisableINT(volatile uint8_t *port, const uint8_t pin);
+extern void gpioDisableINT(gpio_t* gpio);
 
 /**
  * gpioSetDuty(volatile uint8_t *port, const uint8_t pin, const uint16_t duty)

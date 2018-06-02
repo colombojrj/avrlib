@@ -16,10 +16,7 @@ void gpioWrite(gpio_t* gpio, const uint8_t level)
         gpioWriteHigh(gpio);
 }
 
-#if defined (__AVR_ATmega48__)  || defined(__AVR_ATmega48P__) || \
-            (__AVR_ATmega88__)  || defined(__AVR_ATmega88P__) || \
-            (__AVR_ATmega168__)  || defined(__AVR_ATmega168P__) || \
-            (__AVR_ATmega328__)  || defined(__AVR_ATmega328P__)
+#if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
 void gpioEnablePCINT(volatile uint8_t *port, uint8_t pin)
 {
     if (*port == PORTB)
@@ -70,32 +67,16 @@ void gpioDisablePCINT(volatile uint8_t *port, uint8_t pin)
 }
 #endif
 
-void gpioEnableINT(volatile uint8_t *port, uint8_t pin, gpioInt_t trigger)
+void gpioEnableINT(gpio_t* gpio, gpioInt_t trigger)
 {
-    if (pin == static_cast<uint8_t>(gpioIntPin_t::int0))
-    {
-        EICRA = EICRA & ~static_cast<uint8_t>(gpioInt_t::setState);
-        EICRA = EICRA | static_cast<uint8_t>(trigger);
-        EIMSK |= (1 << INT0);
-    }
-    else if (pin == static_cast<uint8_t>(gpioIntPin_t::int1)) // i.e. INT1
-    {
-        EICRA = EICRA & ~(static_cast<uint8_t>(gpioInt_t::setState) << 2);
-        EICRA = EICRA | (static_cast<uint8_t>(trigger) << 2);
-        EIMSK |= (1 << INT1);
-    }
+    EICRA = EICRA & ~static_cast<uint8_t>(gpioInt_t::setState);
+    EICRA = EICRA | static_cast<uint8_t>(trigger);
+    EIMSK = EIMSK | (gpio->hasInt << gpio->whatInt);
 }
 
-void gpioDisableINT(volatile uint8_t *port, uint8_t pin)
+void gpioDisableINT(gpio_t* gpio)
 {
-    if (pin == static_cast<uint8_t>(gpioIntPin_t::int0))
-    {
-        EIMSK = EIMSK & ~(1 << INT0);
-    }
-    else if (pin == static_cast<uint8_t>(gpioIntPin_t::int1))
-    {
-        EIMSK = EIMSK & ~(1 << INT1);
-    }
+	EIMSK = EIMSK & ~(gpio->hasInt << gpio->whatInt);
 }
 
 void gpioSetDuty(gpio_t* gpio, const uint16_t duty)
