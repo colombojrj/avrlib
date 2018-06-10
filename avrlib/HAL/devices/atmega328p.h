@@ -18,114 +18,116 @@
 // Supported stuff
 #define SUPPORT_TO_GPIO
 //#define SUPPORT_TO_SPI
-#define SUPPORT_TO_ADC
+//#define SUPPORT_TO_ADC
 //#define SUPPORT_TO_I2C
 //#define SUPPORT_TO_TIMER0
 //#define SUPPORT_TO_TIMER1
 //#define SUPPORT_TO_TIMER2
 //#define SUPPORT_TO_HAL
 
-#define DDR(port) (*(&port - 1)) // This does not work for ATmega64 or higher
-#define PIN(port) (*(&port - 2)) // This does not work for ATmega64 or higher
+/**
+ * @brief Basic port registers structure.
+ */
+struct GpioRegs
+{
+    volatile uint8_t* outputData; //!< It is the address of the output data register (in AVR architecture it is called usually as PORT)
+    volatile uint8_t* direction;  //!< It is the address of the direction register (in AVR architecture it is called usually as DDR)
+    volatile uint8_t* inputData;  //!< It is the address of input data register (in AVR architecture it is called usually as PIN)
+    volatile uint8_t* pcmsk;      //!< It is the address of pin change interrupt register
+    const uint8_t whatPCI;        //!< It is the Port Change Interrupt bit
+};
+
+/// Port B registers declaration
+constexpr GpioRegs RegsPortB = {&PORTB, &DDRB, &PINB, &PCMSK0, PCIE0};
+
+/// Port C registers declaration
+constexpr GpioRegs RegsPortC = {&PORTC, &DDRC, &PINC, &PCMSK1, PCIE1};
+
+/// Port D registers declaration
+constexpr GpioRegs RegsPortD = {&PORTD, &DDRD, &PIND, &PCMSK2, PCIE2};
 
 /**
- * @brief Basic pin structure.
- *
- * This struct holds information about an specific pin:
- * @param pinNumber is the pin number
- * @param port is the port address
- * @param ddr is the direction register address
- * @param pin is the pin value register address
- * @param pcmsk is the pin change interrupt register address
- * @param hasInt informs if the current pin has INT associated
- * @param whatInt informs what INT is associated (INT0 or INT1)
+ * @brief Basic gpio register structure.
  */
-typedef struct Gpio
+struct Gpio
 {
-    const uint8_t pinNumber;
-    volatile uint8_t* port;
-    volatile uint8_t* ddr;
-    volatile uint8_t* pin;
-    volatile uint8_t* pcmsk;
-    const uint8_t hasInt;
-    const uint8_t whatInt;
-} gpio_t;
+    const uint8_t pinNumber;  //!< It is the pin number
+    const GpioRegs regs;      //!< Gpio registers structure @see GpioRegs
+    const uint8_t hasInt;     //!< It informs if the current pin has INT associated
+    const uint8_t whatInt;    //!< It informs what INT is associated (INT0 or INT1)
+};
+
+/// NewGpio_t type definition
+typedef Gpio gpio_t;
 
 /// Pin PB0 declaration
-constexpr gpio_t _PinB0 = {PB0,     // pin number
-                           &PORTB,  // *port
-                           &DDRB,   // *ddr
-                           &PINB,   // *pin
-                           &PCMSK0, // *pcmsk
-                           0,       // hasInt
-                           0        // whatInt
-                          };
+constexpr gpio_t _PinB0 = {PB0, RegsPortB, 0, 0};
 
 /// Pin PB1 declaration
-constexpr gpio_t _PinB1 = {PB1, &PORTB, &DDRB, &PINB, &PCMSK0, 0, 0};
+constexpr gpio_t _PinB1 = {PB1, RegsPortB, 0, 0};
 
 /// Pin PB2 declaration
-constexpr gpio_t _PinB2 = {PB2, &PORTB, &DDRB, &PINB, &PCMSK0, 0, 0};
+constexpr gpio_t _PinB2 = {PB2, RegsPortB, 0, 0};
 
 /// Pin PB3 declaration
-constexpr gpio_t _PinB3 = {PB3, &PORTB, &DDRB, &PINB, &PCMSK0, 0, 0};
+constexpr gpio_t _PinB3 = {PB3, RegsPortB, 0, 0};
 
 /// Pin PB4 declaration
-constexpr gpio_t _PinB4 = {PB4, &PORTB, &DDRB, &PINB, &PCMSK0, 0, 0};
+constexpr gpio_t _PinB4 = {PB4, RegsPortB, 0, 0};
 
 /// Pin PB5 declaration
-constexpr gpio_t _PinB5 = {PB5, &PORTB, &DDRB, &PINB, &PCMSK0, 0, 0};
+constexpr gpio_t _PinB5 = {PB5, RegsPortB, 0, 0};
 
 /// Pin PB6 declaration
-constexpr gpio_t _PinB6 = {PB6, &PORTB, &DDRB, &PINB, &PCMSK0, 0, 0};
+constexpr gpio_t _PinB6 = {PB6, RegsPortB, 0, 0};
 
 /// Pin PB7 declaration
-constexpr gpio_t _PinB7 = {PB7, &PORTB, &DDRB, &PINB, &PCMSK0, 0, 0};
+constexpr gpio_t _PinB7 = {PB7, RegsPortB, 0, 0};
 
 /// Pin PC0 declaration
-constexpr gpio_t _PinC0 = {PC0, &PORTC, &DDRC, &PINC, &PCMSK1, 0, 0};
+constexpr gpio_t _PinC0 = {PC0, RegsPortC, 0, 0};
 
 /// Pin PC1 declaration
-constexpr gpio_t _PinC1 = {PC1, &PORTC, &DDRC, &PINC, &PCMSK1, 0, 0};
+constexpr gpio_t _PinC1 = {PC1, RegsPortC, 0, 0};
 
 /// Pin PC2 declaration
-constexpr gpio_t _PinC2 = {PC2, &PORTC, &DDRC, &PINC, &PCMSK1, 0, 0};
+constexpr gpio_t _PinC2 = {PC2, RegsPortC, 0, 0};
 
 /// Pin PC3 declaration
-constexpr gpio_t _PinC3 = {PC3, &PORTC, &DDRC, &PINC, &PCMSK1, 0, 0};
+constexpr gpio_t _PinC3 = {PC3, RegsPortC, 0, 0};
 
 /// Pin PC4 declaration
-constexpr gpio_t _PinC4 = {PC4, &PORTC, &DDRC, &PINC, &PCMSK1, 0, 0};
+constexpr gpio_t _PinC4 = {PC4, RegsPortC, 0, 0};
 
 /// Pin PC5 declaration
-constexpr gpio_t _PinC5 = {PC5, &PORTC, &DDRC, &PINC, &PCMSK1, 0, 0};
+constexpr gpio_t _PinC5 = {PC5, RegsPortC, 0, 0};
 
 /// Pin PC6 declaration
-constexpr gpio_t _PinC6 = {PC6, &PORTC, &DDRC, &PINC, &PCMSK1, 0, 0};
+constexpr gpio_t _PinC6 = {PC6, RegsPortC, 0, 0};
 
 /// Pin PD0 declaration
-constexpr gpio_t _PinD0 = {PD0, &PORTD, &DDRD, &PIND, &PCMSK2, 1, INT0};
+constexpr gpio_t _PinD0 = {PD0, RegsPortD, 1, INT0};
 
 /// Pin PD1 declaration
-constexpr gpio_t _PinD1 = {PD1, &PORTD, &DDRD, &PIND, &PCMSK2, 1, INT1};
+constexpr gpio_t _PinD1 = {PD1, RegsPortD, 1, INT1};
 
 /// Pin PD2 declaration
-constexpr gpio_t _PinD2 = {PD2, &PORTD, &DDRD, &PIND, &PCMSK2, 0, 0};
+constexpr gpio_t _PinD2 = {PD2, RegsPortD, 0, 0};
 
 /// Pin PD3 declaration
-constexpr gpio_t _PinD3 = {PD3, &PORTD, &DDRD, &PIND, &PCMSK2, 0, 0};
+constexpr gpio_t _PinD3 = {PD3, RegsPortD, 0, 0};
 
 /// Pin PD4 declaration
-constexpr gpio_t _PinD4 = {PD4, &PORTD, &DDRD, &PIND, &PCMSK2, 0, 0};
+constexpr gpio_t _PinD4 = {PD4, RegsPortD, 0, 0};
 
 /// Pin PD5 declaration
-constexpr gpio_t _PinD5 = {PD5, &PORTD, &DDRD, &PIND, &PCMSK2, 0, 0};
+constexpr gpio_t _PinD5 = {PD5, RegsPortD, 0, 0};
 
 /// Pin PD6 declaration
-constexpr gpio_t _PinD6 = {PD6, &PORTD, &DDRD, &PIND, &PCMSK2, 0, 0};
+constexpr gpio_t _PinD6 = {PD6, RegsPortD, 0, 0};
 
 /// Pin PD7 declaration
-constexpr gpio_t _PinD7 = {PD7, &PORTD, &DDRD, &PIND, &PCMSK2, 0, 0};
+constexpr gpio_t _PinD7 = {PD7, RegsPortD, 0, 0};
 
 /// Friendly PinB0 definition
 #define PinB0 &_PinB0
@@ -202,13 +204,16 @@ constexpr gpio_t _PinD7 = {PD7, &PORTD, &DDRD, &PIND, &PCMSK2, 0, 0};
 /// Interrupt INT1 definition
 #define gpioInt1 PinD3
 
-enum class gpioInt_t : uint8_t
+/**
+ * @brief Gpio interrupt trigger
+ */
+enum class gpioInt : uint8_t
 {
-    lowLevel    = 0b00,
-    anyChange   = 0b01,
-    fallingEdge = 0b10,
-    risingEdge  = 0b11,
-    setState    = 0b11
+    lowLevel    = 0b00, //!< Interrupt triggered on pin low level
+    anyChange   = 0b01, //!< Interrupt triggered on any pin change (falling or rising)
+    fallingEdge = 0b10, //!< Interrupt triggered on falling edge
+    risingEdge  = 0b11, //!< Interrupt triggered on rising edge
+    setState    = 0b11  //!< Reserved for library purposes
 };
 
 /**

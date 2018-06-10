@@ -1,14 +1,14 @@
 #include "gpio.h"
 
-void gpioDirection(gpio_t* gpio, const uint8_t dir)
+void gpioSetDir(const gpio_t* gpio, gpioDir_t dir)
 {
-    if (dir == OUTPUT)
+    if (dir == gpioDir_t::output)
         gpioAsOutput(gpio);
     else
         gpioAsInput(gpio);
 }
 
-void gpioWrite(gpio_t* gpio, const uint8_t level)
+void gpioWrite(const gpio_t* gpio, const uint8_t level)
 {
     if (level == LOW)
         gpioWriteLow(gpio);
@@ -17,59 +17,34 @@ void gpioWrite(gpio_t* gpio, const uint8_t level)
 }
 
 #if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
-void gpioEnablePCINT(volatile uint8_t *port, uint8_t pin)
+void gpioEnablePCINT(const gpio_t* gpio)
 {
-    if (*port == PORTB)
-    {
-        PCICR = PCICR | (1 << PCIE0);
-        PCMSK0 = PCMSK0 | (1 << pin);
-    }
-    else if (*port == PORTC)
-    {
-        PCICR = PCICR | (1 << PCIE1);
-        PCMSK1 = PCMSK1 | (1 << pin);
-    }
-    else if (*port == PORTD)
-    {
-        PCICR = PCICR | (1 << PCIE2);
-        PCMSK2 = PCMSK2 | (1 << pin);
-    }
+    // Enable interrupt generator
+    PCICR = PCICR | (1 << gpio->regs.whatPCI);
+
+    // Unmask pin interrupt
+    *gpio->regs.pcmsk = *gpio->regs.pcmsk | (1 << gpio->pinNumber);
 }
 
-void gpioDisablePCINT(volatile uint8_t *port, uint8_t pin)
+void gpioDisablePCINT(const gpio_t* gpio)
 {
-    if (*port == PORTB)
-    {
-        PCMSK0 = PCMSK0 & ~(1 << pin);
+    // Mask pin interrupt
+    *gpio->regs.pcmsk = *gpio->regs.pcmsk & ~(1 << gpio->pinNumber);
 
-        /* If any pin have an interrupt attached, then there is
-         * no need to keep the interrupt generator active
-         */
-        if (PCMSK0 == 0)
-            PCICR = PCICR & ~(1 << PCIE0);
-    }
-
-    else if (*port == PORTC)
-    {
-        PCMSK1 = PCMSK1 & ~(1 << pin);
-
-        if (PCMSK1 == 0)
-            PCICR = PCICR & ~(1 << PCIE1);
-    }
-
-    else if (*port == PORTD)
-    {
-        PCMSK2 = PCMSK2 & ~(1 << pin);
-
-        if (PCMSK2 == 0)
-            PCICR = PCICR & ~(1 << PCIE2);
-    }
+    /*
+     * If the pcmsk register is empty, then the interrupt generator may
+     * be disabled to save some power.
+     */
+    if (*gpio->regs.pcmsk == 0)
+        PCICR = PCICR & ~(1 << gpio->regs.whatPCI);
 }
 #endif
 
-void gpioEnableINT(gpio_t* gpio, gpioInt_t trigger)
+void gpioEnableINT(gpio_t* gpio, gpioInt trigger)
 {
-    EICRA = EICRA & ~static_cast<uint8_t>(gpioInt_t::setState);
+    // Clean old configuration
+    EICRA = EICRA & ~static_cast<uint8_t>(gpioInt::setState);
+
     EICRA = EICRA | static_cast<uint8_t>(trigger);
     EIMSK = EIMSK | (gpio->hasInt << gpio->whatInt);
 }

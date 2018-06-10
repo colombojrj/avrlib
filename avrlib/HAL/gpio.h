@@ -30,7 +30,7 @@ extern "C"
  *
  * @see gpio_t
  */
-#define gpioAsOutput(gpio) (*(*gpio).ddr=*(*gpio).ddr|(1<<(*gpio).pinNumber))
+#define gpioAsOutput(gpio) (*(*gpio).regs.direction=*(*gpio).regs.direction|(1<<(*gpio).pinNumber))
 
 /**
  * gpioAsInput(gpio)
@@ -41,7 +41,7 @@ extern "C"
  *
  * @see gpio_t
  */
-#define gpioAsInput(gpio) (*(*gpio).ddr=*(*gpio).ddr&(~(1<<(*gpio).pinNumber)))
+#define gpioAsInput(gpio) (*(*gpio).regs.direction=*(*gpio).regs.direction&(~(1<<(*gpio).pinNumber)))
 
 /**
  * gpioPullUpEnable(gpio)
@@ -53,7 +53,7 @@ extern "C"
  *
  * @see gpio_t
  */
-#define gpioPullUpEnable(gpio) (*(*gpio).port=*(*gpio).port|(1<<(*gpio).pinNumber))
+#define gpioPullUpEnable(gpio) (*(*gpio).regs.port=*(*gpio).regs.port|(1<<(*gpio).pinNumber))
 
 /**
  * gpioPullUpDisable(gpio)
@@ -65,21 +65,18 @@ extern "C"
  *
  * @see gpio_t
  */
-#define gpioPullUpDisable(gpio) (*(*gpio).port=*(*gpio).port&(~(1<<(*gpio).pinNumber)))
+#define gpioPullUpDisable(gpio) (*(*gpio).regs.port=*(*gpio).regs.port&(~(1<<(*gpio).pinNumber)))
 
 /**
- * gpioDirection(volatile uint8_t *gpio, const uint8_t dir)
- *
  * Configures the gpio pin as input or output
  *
  * @param gpio is a pointer to gpio pin (example: PinB5)
- * @param dir is the direction (0 is input and 1 is output)
+ * @param dir is the direction (input and output)
  *
- * @todo migrate from const uint8_t dir to enum
- *
+ * @see gpioDir_t
  * @see gpio_t
  */
-extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
+extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
 
 /**
  * Macro for gpio writing
@@ -93,7 +90,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  *
  * @see gpio_t
  */
-#define gpioWriteHigh(gpio) (*(*gpio).port=*(*gpio).port|(1<<(*gpio).pinNumber))
+#define gpioWriteHigh(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData|(1<<(*gpio).pinNumber))
 
 /**
  * Macro for gpio writing
@@ -107,7 +104,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  *
  * @see gpio_t
  */
-#define gpioWriteLow(gpio) (*(*gpio).port=*(*gpio).port&(~(1<<(*gpio).pinNumber)))
+#define gpioWriteLow(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData&(~(1<<(*gpio).pinNumber)))
 
 /**
  * Macro for gpio writing
@@ -120,7 +117,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  *
  * @see gpio_t
  */
-#define gpioToggle(gpio) (*(*gpio).port=*(*gpio).port^(1<<(*gpio).pinNumber))
+#define gpioToggle(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData^(1<<(*gpio).pinNumber))
 
 /**
  * Macro for gpio reading
@@ -138,7 +135,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  *
  * @see gpio_t
  */
-#define gpioRead(gpio) (*(*gpio).pin&(1<<(*gpio).pinNumber))
+#define gpioRead(gpio) (*(*gpio).regs.inputData&(1<<(*gpio).pinNumber))
 
 /**
  * gpioWrite(gpio_t* gpio, const uint8_t level)
@@ -149,7 +146,7 @@ extern void gpioDirection(gpio_t* gpio, const uint8_t dir);
  * @param gpio is a pointer to gpio pin (example: PinB5)
  * @param level is the logic level to write (true or false, HIGH or LOW, 1 or 0)
  */
-extern void gpioWrite(gpio_t* gpio, const uint8_t level);
+extern void gpioWrite(const gpio_t* gpio, const uint8_t level);
 
 /**
  * gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin)
@@ -170,8 +167,7 @@ extern void gpioWrite(gpio_t* gpio, const uint8_t level);
  * @param pin is the pin number (example: PB5 or just 5)
  */
 #if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
-extern void gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin);
-#endif
+extern void gpioEnablePCINT(const gpio_t* gpio);
 
 /**
  * gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin)
@@ -183,8 +179,7 @@ extern void gpioEnablePCINT(volatile uint8_t *port, const uint8_t pin);
  * @param port is a pointer to the port of the pin (example: &PORTB)
  * @param pin is the pin number (example: PB5 or just 5)
  */
-#if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
-extern void gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin);
+extern void gpioDisablePCINT(const gpio_t* gpio);
 #endif
 
 /**
@@ -202,7 +197,7 @@ extern void gpioDisablePCINT(volatile uint8_t *port, const uint8_t pin);
  * @param pin is the pin number (example: PD2 or just 2)
  * @param edge can be RISING_EDGE or FALLING_EDGE
  */
-extern void gpioEnableINT(volatile uint8_t *port, const uint8_t pin, const gpioInt_t trigger);
+extern void gpioEnableINT(volatile uint8_t *port, const uint8_t pin, const gpioInt trigger);
 
 /**
  * Disables the INT interrupt on the pin on port.
