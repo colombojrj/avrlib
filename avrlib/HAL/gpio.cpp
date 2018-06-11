@@ -10,35 +10,37 @@ void gpioSetDir(const gpio_t* gpio, gpioDir_t dir)
 
 void gpioWrite(const gpio_t* gpio, const uint8_t level)
 {
-    if (level == LOW)
+    if (level == 0)
         gpioWriteLow(gpio);
     else
         gpioWriteHigh(gpio);
 }
 
-#if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
 void gpioEnablePCINT(const gpio_t* gpio)
 {
-    // Enable interrupt generator
-    PCICR = PCICR | (1 << gpio->regs.whatPCI);
+    #if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
+        // Enable interrupt generator
+        PCICR = PCICR | (1 << gpio->regs.whatPCI);
 
-    // Unmask pin interrupt
-    *gpio->regs.pcmsk = *gpio->regs.pcmsk | (1 << gpio->pinNumber);
+        // Unmask pin interrupt
+        *gpio->regs.pcmsk = *gpio->regs.pcmsk | (1 << gpio->pinNumber);
+    #endif
 }
 
 void gpioDisablePCINT(const gpio_t* gpio)
 {
-    // Mask pin interrupt
-    *gpio->regs.pcmsk = *gpio->regs.pcmsk & ~(1 << gpio->pinNumber);
+    #if defined (PCMSK0) || defined(PCMSK1) || defined(PCMSK2)
+        // Mask pin interrupt
+        *gpio->regs.pcmsk = *gpio->regs.pcmsk & ~(1 << gpio->pinNumber);
 
-    /*
-     * If the pcmsk register is empty, then the interrupt generator may
-     * be disabled to save some power.
-     */
-    if (*gpio->regs.pcmsk == 0)
-        PCICR = PCICR & ~(1 << gpio->regs.whatPCI);
-}
+        /*
+         * If the pcmsk register is empty, then the interrupt generator may
+         * be disabled to save some power.
+         */
+        if (*gpio->regs.pcmsk == 0)
+            PCICR = PCICR & ~(1 << gpio->regs.whatPCI);
 #endif
+}
 
 void gpioEnableINT(gpio_t* gpio, gpioInt trigger)
 {

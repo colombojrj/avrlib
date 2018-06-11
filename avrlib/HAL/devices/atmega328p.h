@@ -247,16 +247,18 @@ enum class GpioPullResistor_t : uint8_t
 typedef GpioPullResistor_t gpioPullResistor_t;
 
 /**
- * spi_t
- *
  * @brief SPI registers structure.
  *
- * This struct holds information about an specific pin:
- * @param control is the SPI registers control. ATmega devices usually have two main
- *        registers to control the SPI peripheral: SPCR and SPSR. Because these registers
- *        are aligned in the memory map (see page 425 of the datasheet) they can be used
- *        as a single 16 bits registers. With this definition, this variable is located
- *        in 0x2C (SPCR address)
+ * This struct holds the SPI registers.
+ *
+ * @param control is the SPI registers control. ATmega devices
+ *        usually have two main registers to control the SPI
+ *        peripheral: SPCR and SPSR. Because these registers
+ *        are aligned in the memory map (see page 425 of the
+ *        datasheet) they can be used as a single 16 bits
+ *        registers. With this definition, this variable is
+ *        located in 0x2C (SPCR address)
+ *
  * @param data is the SPI data register (ATmega datasheet calls it as SPDR)
  */
 struct SpiRegs

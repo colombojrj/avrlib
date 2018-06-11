@@ -1,17 +1,6 @@
 #ifndef AVRLIB_HAL_DEFINES_H_
 #define AVRLIB_HAL_DEFINES_H_
 
-/////////////////////////
-// GENERAL DEFINITIONS //
-/////////////////////////
-#define LOW                     0
-#define HIGH                    1
-#define HIGHZ                   2
-#define RISING_EDGE             1
-#define FALLING_EDGE            0
-#define TRUE                    1
-#define FALSE                   0
-
 ////////////
 // TIMERS //
 ////////////
