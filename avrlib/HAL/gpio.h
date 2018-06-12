@@ -54,7 +54,7 @@
  *
  * @see gpio_t
  */
-#define gpioPullUpEnable(gpio) (*(*gpio).regs.port=*(*gpio).regs.port|(1<<(*gpio).pinNumber))
+#define gpioPullUpEnable(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData|(1<<(*gpio).pinNumber))
 
 /**
  * gpioPullUpDisable(gpio)
@@ -66,7 +66,7 @@
  *
  * @see gpio_t
  */
-#define gpioPullUpDisable(gpio) (*(*gpio).regs.port=*(*gpio).regs.port&(~(1<<(*gpio).pinNumber)))
+#define gpioPullUpDisable(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData&(~(1<<(*gpio).pinNumber)))
 
 /**
  * Configures the gpio pin as input or output
@@ -177,7 +177,7 @@ extern void gpioDisablePCINT(const gpio_t* gpio);
  * @see gpio_t
  * @see gpioInt
  */
-extern void gpioEnableINT(gpio_t* gpio, gpioInt trigger);
+extern void gpioEnableINT(const gpio_t* gpio, gpioTrigger trigger);
 
 /**
  * Disables the INT interrupt on the gpio pin.
@@ -186,7 +186,7 @@ extern void gpioEnableINT(gpio_t* gpio, gpioInt trigger);
  *
  * @see gpio_t
  */
-extern void gpioDisableINT(gpio_t* gpio);
+extern void gpioDisableINT(const gpio_t* gpio);
 
 /**
  * This function sets the duty cycle of a PWM channel
@@ -200,7 +200,7 @@ extern void gpioDisableINT(gpio_t* gpio);
  * @param pin is the pin number (example: PB5 or just 5)
  * @param duty is the duty cycle value
  */
-extern void gpioSetDuty(volatile uint8_t *port, const uint8_t pin, const uint16_t duty);
+extern void gpioSetDuty(const gpio_t gpio, const uint16_t duty);
 
 /**@}*/
 

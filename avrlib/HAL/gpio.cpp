@@ -42,21 +42,21 @@ void gpioDisablePCINT(const gpio_t* gpio)
 #endif
 }
 
-void gpioEnableINT(gpio_t* gpio, gpioInt trigger)
+void gpioEnableINT(const gpio_t* gpio, gpioTrigger trigger)
 {
-    // Clean old configuration
-    EICRA = EICRA & ~static_cast<uint8_t>(gpioInt::setState);
+    // Clean previous configuration
+    EICRA = EICRA & ~static_cast<uint8_t>(gpioTrigger::setState);
 
     EICRA = EICRA | static_cast<uint8_t>(trigger);
     EIMSK = EIMSK | (gpio->hasInt << gpio->whatInt);
 }
 
-void gpioDisableINT(gpio_t* gpio)
+void gpioDisableINT(const gpio_t* gpio)
 {
 	EIMSK = EIMSK & ~(gpio->hasInt << gpio->whatInt);
 }
 
-void gpioSetDuty(gpio_t* gpio, const uint16_t duty)
+void gpioSetDuty(const gpio_t* gpio, const uint16_t duty)
 {
     #if defined(SUPPORT_TO_TIMER0)
         if (*gpio->port == *OC0A_PIN.port && gpio->pinNumber == OC0A_PIN.pinNumber)

@@ -106,16 +106,16 @@ constexpr gpio_t _PinC5 = {PC5, RegsPortC, 0, 0};
 constexpr gpio_t _PinC6 = {PC6, RegsPortC, 0, 0};
 
 /// Pin PD0 declaration
-constexpr gpio_t _PinD0 = {PD0, RegsPortD, 1, INT0};
+constexpr gpio_t _PinD0 = {PD0, RegsPortD, 0, 0};
 
 /// Pin PD1 declaration
-constexpr gpio_t _PinD1 = {PD1, RegsPortD, 1, INT1};
+constexpr gpio_t _PinD1 = {PD1, RegsPortD, 0 ,0};
 
 /// Pin PD2 declaration
-constexpr gpio_t _PinD2 = {PD2, RegsPortD, 0, 0};
+constexpr gpio_t _PinD2 = {PD2, RegsPortD, 1, INT0};
 
 /// Pin PD3 declaration
-constexpr gpio_t _PinD3 = {PD3, RegsPortD, 0, 0};
+constexpr gpio_t _PinD3 = {PD3, RegsPortD, 1, INT1};
 
 /// Pin PD4 declaration
 constexpr gpio_t _PinD4 = {PD4, RegsPortD, 0, 0};
@@ -207,7 +207,7 @@ constexpr gpio_t _PinD7 = {PD7, RegsPortD, 0, 0};
 /**
  * @brief Gpio interrupt trigger
  */
-enum class gpioInt : uint8_t
+enum class gpioTrigger : uint8_t
 {
     lowLevel    = 0b00, //!< Interrupt triggered on pin low level
     anyChange   = 0b01, //!< Interrupt triggered on any pin change (falling or rising)
@@ -389,10 +389,6 @@ typedef struct SpiConfig
 
 /// SPI SCK pin definition
 #define _SPI_SCK_PIN     PinB5
-
-//////////////////
-/// ADC Module ///
-//////////////////
 
 /**
  * adcConfig_t
