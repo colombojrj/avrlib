@@ -34,6 +34,9 @@
 #include <avr/sleep.h>
 #include "defines.h"
 #include "../config.h"
+#include "../devices/device.h"
+
+#if defined(SUPPORT_TO_ADC)
 
 /**
  * @brief  This function is employed to initialize the ADC module as configured in \ref config.h
@@ -100,5 +103,7 @@ extern void adcChangeAdmux(uint8_t pin);
 extern int16_t adcReadTemperature();
 
 /**@}*/
+
+#endif /* defined(SUPPORT_TO_ADC) */
 
 #endif /* ADC_H_ */

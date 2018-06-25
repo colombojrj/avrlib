@@ -1,3 +1,5 @@
+#if defined(SUPPORT_TO_ADC)
+
 #include "adc.h"
 
 void adcSetClock()
@@ -108,3 +110,4 @@ int16_t adcReadTemperature()
     #endif
 }
 
+#endif /* defined(SUPPORT_TO_ADC) */

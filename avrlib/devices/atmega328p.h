@@ -1,5 +1,10 @@
-#ifndef AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_
-#define AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_
+#ifndef AVRLIB_AVRLIB_HAL_DEVICESLL_ATMEGA328P_H_
+#define AVRLIB_AVRLIB_HAL_DEVICESLL_ATMEGA328P_H_
+
+#include <stdlib.h>
+#include <avr/io.h>
+
+#include "../HAL/timers.h"
 
 /**
  * @defgroup hal_device_atmega328p_group ATmega88P/ATmega168P/ATmega328P
@@ -12,30 +17,26 @@
 
 /**@{*/
 
-#include <stdlib.h>
-#include <avr/io.h>
-
-// Supported stuff
+/// AVRLIB supports GPIO
 #define SUPPORT_TO_GPIO
-//#define SUPPORT_TO_SPI
-//#define SUPPORT_TO_ADC
-//#define SUPPORT_TO_I2C
-//#define SUPPORT_TO_TIMER0
-//#define SUPPORT_TO_TIMER1
-//#define SUPPORT_TO_TIMER2
-//#define SUPPORT_TO_HAL
 
-/**
- * @brief Basic port registers structure.
- */
-struct GpioRegs
-{
-    volatile uint8_t* outputData; //!< It is the address of the output data register (in AVR architecture it is called usually as PORT)
-    volatile uint8_t* direction;  //!< It is the address of the direction register (in AVR architecture it is called usually as DDR)
-    volatile uint8_t* inputData;  //!< It is the address of input data register (in AVR architecture it is called usually as PIN)
-    volatile uint8_t* pcmsk;      //!< It is the address of pin change interrupt register
-    const uint8_t whatPCI;        //!< It is the Port Change Interrupt bit
-};
+/// AVRLIB supports SPI
+//#define SUPPORT_TO_SPI
+
+/// AVRLIB supports ADC
+//#define SUPPORT_TO_ADC
+
+/// AVRLIB supports I2C
+//#define SUPPORT_TO_I2C
+
+/// AVRLIB supports TIMER 0
+//#define SUPPORT_TO_TIMER0
+
+/// AVRLIB supports TIMER 1
+//#define SUPPORT_TO_TIMER1
+
+/// AVRLIB supports TIMER 2
+//#define SUPPORT_TO_TIMER2
 
 /// Port B registers declaration
 constexpr GpioRegs RegsPortB = {&PORTB, &DDRB, &PINB, &PCMSK0, PCIE0};
@@ -45,20 +46,6 @@ constexpr GpioRegs RegsPortC = {&PORTC, &DDRC, &PINC, &PCMSK1, PCIE1};
 
 /// Port D registers declaration
 constexpr GpioRegs RegsPortD = {&PORTD, &DDRD, &PIND, &PCMSK2, PCIE2};
-
-/**
- * @brief Basic gpio register structure.
- */
-struct Gpio
-{
-    const uint8_t pinNumber;  //!< It is the pin number
-    const GpioRegs regs;      //!< Gpio registers structure @see GpioRegs
-    const uint8_t hasInt;     //!< It informs if the current pin has INT associated
-    const uint8_t whatInt;    //!< It informs what INT is associated (INT0 or INT1)
-};
-
-/// NewGpio_t type definition
-typedef Gpio gpio_t;
 
 /// Pin PB0 declaration
 constexpr gpio_t _PinB0 = {PB0, RegsPortB, 0, 0};
@@ -203,48 +190,6 @@ constexpr gpio_t _PinD7 = {PD7, RegsPortD, 0, 0};
 
 /// Interrupt INT1 definition
 #define gpioInt1 PinD3
-
-/**
- * @brief Gpio interrupt trigger
- */
-enum class gpioTrigger : uint8_t
-{
-    lowLevel    = 0b00, //!< Interrupt triggered on pin low level
-    anyChange   = 0b01, //!< Interrupt triggered on any pin change (falling or rising)
-    fallingEdge = 0b10, //!< Interrupt triggered on falling edge
-    risingEdge  = 0b11, //!< Interrupt triggered on rising edge
-    setState    = 0b11  //!< Reserved for library purposes
-};
-
-/**
- * @brief Configures the GPIO as input or output
- *
- * @note The ATmega328P supports only push-pull configuration.
- *       However, open drain configuration may be obtained through
- *       software emulation.
- *
- * @todo Add support to open-drain configuration
- */
-enum class GpioDir : uint8_t
-{
-    input = 0,  //!< configures the gpio pin as input
-    output = 1  //!< configures the gpio pin as output
-};
-
-/// Define gpioConfig_t type
-typedef GpioDir gpioDir_t;
-
-/**
- * @brief Controls the pull up resistor of each GPIO pin
- */
-enum class GpioPullResistor_t : uint8_t
-{
-    disable = 0, //!< disables the gpio pull up resistor
-    enable = 1   //!< enables the gpio pull up resistor
-};
-
-/// Define gpioPullResistor_t type
-typedef GpioPullResistor_t gpioPullResistor_t;
 
 /**
  * @brief SPI registers structure.
@@ -465,85 +410,156 @@ enum class adcAdmux_t : uint8_t
     setState = 0b1111           //!< setState
 };
 
-
-
-
-
-
-////////////////////
-/// Timer module ///
-////////////////////
-
-// Timer 0
+/// Timer 0 comparator output A pin
 #define OC0A_PIN            PinD6
+
+/// Timer 0 comparator output B pin
 #define OC0B_PIN            PinD5
+
+/// External clock input of Timer 0
 #define T0_PIN              PinD4
 
-// Timer 1
+/// Timer 1 comparator output A pin
 #define OC1A_PIN            PinB1
+
+/// Timer 1 comparator output A pin
 #define OC1B_PIN            PinB2
+
+/// External clock input of Timer 1
 #define T1_PIN              PinD5
 
-// Timer 2
+/// Timer 2 comparator output A pin
 #define OC2A_PIN            PinB3
+
+/// Timer 2 comparator output A pin
 #define OC2B_PIN            PinD3
 
-enum class timer0OutputConfig_t
-{
-    off                = 0,
-    channelAnormal     = (1 << COM0A1),
-    channelAinverted   = (1 << COM0A1) | (1 << COM0A0),
-    channelBnormal     = (1 << COM0B1),
-    channelBinverted   = (1 << COM0B1) | (1 << COM0B0),
-    channelAsetState   = (1 << COM0A1) | (1 << COM0A0),
-    channelBsetState   = (1 << COM0B1) | (1 << COM0B0),
-    channelABnormal    = channelAnormal | channelBnormal,
-    channelABinverted  = channelAinverted | channelBinverted
+/// Timer 0 registers definition
+constexpr timer8bRegs Timer0Regs = {
+        (uint16_t*) &TCCR0A,
+        &TCNT0,
+        &OCR0A,
+        &OCR0B,
+        &TIMSK0,
+        &TIFR0,
+        nullptr,
+        nullptr,
+        PinD6,
+        PinD5,
+        1,
+        PRTIM0
 };
 
-// TODO add support to select frequency automatically (ctc mode only)
-enum class timer0Config_t : uint8_t
-{
-    off = 0,
-    normal = 0,
-    ctc = (1 << WGM01),
-    pwmChannelA = (1 << WGM01) | (1 << WGM00),
-    pwmChannelB = (1 << WGM01) | (1 << WGM00),
-    pwmChannelsAB = (1 << WGM01) | (1 << WGM00),
-    pwmPhaseCorrectA = (1 << WGM00),
-    pwmPhaseCorrectB = (1 << WGM00),
-    pwmPhaseCorrectAB = (1 << WGM00)
+/// Timer 1 registers definition
+constexpr timer16bRegs Timer1Regs = {
+        (uint16_t*) &TCCR1A,
+        &TCNT1,
+        &OCR1A,
+        &OCR1B,
+        &ICR1,
+        &TIMSK1,
+        &TIFR1,
+        PinB1,
+        PinB2,
+        1,
+        PRTIM1
 };
 
-enum class timer0Clock_t : uint8_t
-{
-    off                 = 0,
-    noPreescale         = (1 << CS00),
-    divideBy8           = (1 << CS01),
-    divideBy64          = (1 << CS01) | (1 << CS00),
-    divideBy256         = (1 << CS02),
-    divideBy1024        = (1 << CS02) | (1 << CS00),
-    externT0FallingEdge = (1 << CS02) | (1 << CS01),
-    externT0RisingEdge  = (1 << CS02) | (1 << CS01) | (1 << CS00),
-    setState            = (1 << CS02) | (1 << CS01) | (1 << CS00)
+/// Timer 2 registers definition
+constexpr timer8bRegs Timer2Regs = {
+        (uint16_t*) &TCCR2A,
+        &TCNT2,
+        &OCR2A,
+        &OCR2B,
+        &TIMSK2,
+        &TIFR2,
+        &ASSR,
+        &GTCCR,
+        PinB3,
+        PinD3,
+        1,
+        PRTIM2
 };
 
-////////////////////
-// TIMER 1 MODULE //
-////////////////////
-enum class timer1Config_t : uint8_t
+/// Timer 0 config structure
+constexpr timer8b _Timer0 = {&Timer0Regs, 0, 0, 0, 0, 0};
+
+/// Timer 0 config structure
+constexpr timer16b _Timer1 = {&Timer1Regs, 0, 0, 0, 0, 0};
+
+/// Timer 0 config structure
+constexpr timer8b _Timer2 = {&Timer2Regs, 0, 0, 0, 0, 0};
+
+/// Timer 0 friendly definition
+#define Timer0 &_Timer0
+
+/// Timer 0 friendly definition
+#define Timer1 &_Timer1
+
+/// Timer 0 friendly definition
+#define Timer2 &_Timer2
+
+/**
+ * @brief Timer output configuration structure
+ */
+enum class timer0OutputConfig
 {
-    off,
-    normal,
-    ctc,
-    pwm8Bits,
-    pwm9Bits,
-    pwm10Bits,
-    pwmDefinedTop,
-    pwmPhaseCorrect8Bits,
-    pwmPhaseCorrect9Bits,
-    pwmPhaseCorrect10Bits,
-    pwmPhaseCorrectDefinedTop
+    channelAdisconnected  = 0,
+    channelAnormal        = (1 << COM0A1),
+    channelAinverted      = (1 << COM0A1) | (1 << COM0A0),
+    channelBdisconnected  = 0,
+    channelBnormal        = (1 << COM0B1),
+    channelBinverted      = (1 << COM0B1) | (1 << COM0B0),
+    channelABdisconnected = 0,
+    channelABnormal       = channelAnormal | channelBnormal,
+    channelABinverted     = channelAinverted | channelBinverted,
+};
+
+/**
+ * @brief This structure holds the available timer configuration
+ */
+enum class timer0Mode : uint8_t
+{
+    normal          = 0,                           //!< Timer operates in normal mode
+    ctc             = (1 << WGM01),                //!< Timer operates in CTC mode (clear on top)
+    pwm             = (1 << WGM01) | (1 << WGM00), //!< Timer operates as pwm generator
+    pwmPhaseCorrect = (1 << WGM00)                 //!< Timer operates in pwm phase correct mode
+};
+
+/**
+ * @brief Available timer clock source configurations
+ */
+enum class timer0Clock : uint16_t
+{
+    noPreescale       = (1 << (CS00+8)),                                     //!< CPU clock is applied directly on the timer
+    divideBy8         = (1 << (CS00+8)),                                     //!< Divides CPU clock by 8
+    divideBy64        = (1 << (CS01+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 64
+    divideBy256       = (1 << (CS02+8)),                                     //!< Divides CPU clock by 256
+    divideBy1024      = (1 << (CS02+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 1024
+    externFallingEdge = (1 << (CS02+8)) | (1 << (CS01+8)),                   //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    externRisingEdge  = (1 << (CS02+8)) | (1 << (CS01+8)) | (1 << (CS00+8)), //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+};
+
+enum class timer0Interrupt : uint8_t
+{
+    none = 0,                        //!< Does not generate any interrupt
+    onCompareMatchA = (1 << OCIE0A), //!< Generate an interrupt on compare match of channel A
+    onCompareMatchB = (1 << OCIE0B), //!< Generate an interrupt on compare match of channel B
+    onOverflow      = (1 << TOIE0)   //!< Generate an interrupt on after an overflow
+};
+
+enum class timer1Mode : uint8_t
+{
+    normal                    = 0,
+    ctc                       = (1 << WGM13) | (1 << WGM12),
+    pwm8Bits                  = (1 << WGM12) | (1 << WGM10),
+    pwm9Bits                  = (1 << WGM12) | (1 << WGM11),
+    pwm10Bits                 = (1 << WGM12) | (1 << WGM11) | (1 << WGM10),
+    pwmDefinedTop             = (1 << WGM13) | (1 << WGM12) | (1 << WGM11),
+    pwmPhaseCorrect8Bits      = (1 << WGM10),
+    pwmPhaseCorrect9Bits      = (1 << WGM11),
+    pwmPhaseCorrect10Bits     = (1 << WGM11) | (1 << WGM10),
+    pwmPhaseCorrectDefinedTop = (1 << WGM13) | (1 << WGM11)
 };
 
 enum class timer1OutputConfig_t
@@ -684,4 +700,4 @@ enum class timer2Clock_t : uint8_t
 
 /**@}*/
 
-#endif /* AVRLIB_AVRLIB_HAL_DEVICES_ATMEGA328P_H_ */
+#endif /* AVRLIB_AVRLIB_HAL_DEVICESLL_ATMEGA328P_H_ */

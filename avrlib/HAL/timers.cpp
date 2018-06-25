@@ -1,25 +1,94 @@
-/*
-  timer.cpp - Light library to manage the TIMERS of ATMEGA microcontrollers
-
-  Copyright (c) 2015 - José Roberto Colombo Junior (colombojrj [at] gmail.com)
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General
-  Public License along with this library; if not, write to the
-  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-  Boston, MA  02111-1307  USA
-*/
-
 #include "timers.h"
+
+void timerSetClockPreescaler(const timer8b* timer, uint16_t clockConf)
+{
+    *timer->regs->control = *timer->regs->control & ~0x0700;
+    *timer->regs->control = *timer->regs->control | clockConf;
+}
+
+void timerSetClockPreescaler(const timer16b* timer, uint16_t clockConf)
+{
+    *timer->regs->control = *timer->regs->control & ~0x0700;
+    *timer->regs->control = *timer->regs->control | clockConf;
+}
+
+void timerInit(const timer8b* timer,
+               uint16_t mode,
+               uint16_t clockConf,
+               uint8_t outputAConf,
+               uint8_t outputBConf,
+               uint8_t interruptConf)
+{
+    // Enables the timer module
+    #if defined (PRR)
+        PRR = PRR & ~(timer->regs->hasPRR << timer->regs->whatPRR);
+    #endif
+
+    // Configures gpio peripheral control
+    if (outputAConf != 0)
+        gpioAsOutput(timer->regs->outputPinA);
+    if (outputBConf != 0)
+        gpioAsOutput(timer->regs->outputPinB);
+
+    // Configure timer operation mode and if gpio control
+    *timer->regs->control = mode | outputAConf | outputBConf;
+
+    // Clock source configuration
+    *timer->regs->control = *timer->regs->control | clockConf;
+
+    // Configure interrupt
+    *timer->regs->interruptMask = interruptConf;
+    if (interruptConf != 0)
+        sei();
+}
+
+/*
+void timerAsNormal(Timer_t* timer, timerClock_t clockConf)
+{
+    // Enables the timer module
+    #if defined (PRR)
+        PRR = PRR & ~(timer->hasPRR << timer->whatPRR);
+    #endif
+
+    // Configure the timer in normal mode
+    *timer->control = timer;
+
+    // Configure the timer clock preescaler
+    timerSetClockPreescaler(timer, clockConf);
+
+    // Set timer0 clock source
+    TCCR0B = static_cast<uint8_t>(clockConf);
+    if (clockConf == timerClock::externFallingEdge ||
+        clockConf == timerClock::externRisingEdge)
+    {
+        gpioAsInput(T0_PIN);
+        gpioPullUpEnable(T0_PIN);
+    }
+
+    TIMSK0 = (1 << TOIE0); // overflow
+
+}
+
+void timerAsPWM(Timer8bRegs* timer, timerOutputConfig outputConfig)
+{
+    // Pin configuration
+    if (outputConfig == timerOutputConfig::channelAnormal   ||
+        outputConfig == timerOutputConfig::channelAinverted ||
+        outputConfig == timerOutputConfig::channelABnormal  ||
+        outputConfig == timerOutputConfig::channelABinverted)
+    {
+        gpioAsOutput(timer->outputPinA);
+    }
+
+    if (outputConfig == timerOutputConfig::channelBnormal   ||
+        outputConfig == timerOutputConfig::channelBinverted ||
+        outputConfig == timerOutputConfig::channelABnormal  ||
+        outputConfig == timerOutputConfig::channelABinverted)
+    {
+        gpioAsOutput(timer->outputPinA);
+    }
+}
+*/
 
 //
 ///////////////////

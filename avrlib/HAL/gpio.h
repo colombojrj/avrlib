@@ -1,11 +1,8 @@
 #ifndef HAL_GPIO_H_
 #define HAL_GPIO_H_
 
-#include "devices/device.h"
 #include <avr/interrupt.h>
 #include "defines.h"
-#include "timers.h"
-#include "adc.h"
 
 /**
  * @defgroup hal_gpio_group gpio
@@ -17,6 +14,76 @@
  */
 
 /**@{*/
+
+/**
+ * @brief Basic port registers structure.
+ */
+struct GpioRegs
+{
+    volatile uint8_t* outputData; //!< It is the address of the output data register (in AVR architecture it is called usually as PORT)
+    volatile uint8_t* direction;  //!< It is the address of the direction register (in AVR architecture it is called usually as DDR)
+    volatile uint8_t* inputData;  //!< It is the address of input data register (in AVR architecture it is called usually as PIN)
+    volatile uint8_t* pcmsk;      //!< It is the address of pin change interrupt register
+    const uint8_t whatPCI;        //!< It is the Port Change Interrupt bit
+};
+
+typedef GpioRegs GpioRegs_t;
+
+/**
+ * @brief Basic gpio register structure.
+ */
+struct Gpio
+{
+    const uint8_t pinNumber;  //!< It is the pin number
+    const GpioRegs regs;      //!< Gpio registers structure @see GpioRegs
+    const uint8_t hasInt;     //!< It informs if the current pin has INT associated
+    const uint8_t whatInt;    //!< It informs what INT is associated (INT0 or INT1)
+};
+
+/// NewGpio_t type definition
+typedef Gpio gpio_t;
+
+/**
+ * @brief Gpio interrupt trigger
+ */
+enum class gpioTrigger : uint8_t
+{
+    lowLevel    = 0b00, //!< Interrupt triggered on pin low level
+    anyChange   = 0b01, //!< Interrupt triggered on any pin change (falling or rising)
+    fallingEdge = 0b10, //!< Interrupt triggered on falling edge
+    risingEdge  = 0b11, //!< Interrupt triggered on rising edge
+    setState    = 0b11  //!< Reserved for library purposes
+};
+
+/**
+ * @brief Configures the GPIO as input or output
+ *
+ * @note The ATmega328P supports only push-pull configuration.
+ *       However, open drain configuration may be obtained through
+ *       software emulation.
+ *
+ * @todo Add support to open-drain configuration
+ */
+enum class GpioDir : uint8_t
+{
+    input = 0,  //!< configures the gpio pin as input
+    output = 1  //!< configures the gpio pin as output
+};
+
+/// Define gpioConfig_t type
+typedef GpioDir gpioDir_t;
+
+/**
+ * @brief Controls the pull up resistor of each GPIO pin
+ */
+enum class GpioPullResistor_t : uint8_t
+{
+    disable = 0, //!< disables the gpio pull up resistor
+    enable = 1   //!< enables the gpio pull up resistor
+};
+
+/// Define gpioPullResistor_t type
+typedef GpioPullResistor_t gpioPullResistor_t;
 
 /**
  * gpioAsOutput(gpio)
