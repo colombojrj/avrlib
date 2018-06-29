@@ -548,116 +548,49 @@ enum class timer0Interrupt : uint8_t
     onOverflow      = (1 << TOIE0)   //!< Generate an interrupt on after an overflow
 };
 
-enum class timer1Mode : uint8_t
+enum class timer1Mode : uint16_t
 {
     normal                    = 0,
-    ctc                       = (1 << WGM13) | (1 << WGM12),
-    pwm8Bits                  = (1 << WGM12) | (1 << WGM10),
-    pwm9Bits                  = (1 << WGM12) | (1 << WGM11),
-    pwm10Bits                 = (1 << WGM12) | (1 << WGM11) | (1 << WGM10),
-    pwmDefinedTop             = (1 << WGM13) | (1 << WGM12) | (1 << WGM11),
+    ctc                       = (1 << (WGM13+8)) | (1 << (WGM12+8)),
+    pwm8Bits                  = (1 << (WGM12+8)) | (1 << WGM10),
+    pwm9Bits                  = (1 << (WGM12+8)) | (1 << WGM11),
+    pwm10Bits                 = (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10),
+    pwmDefinedTop             = (1 << (WGM13+8)) | (1 << (WGM12+8)) | (1 << WGM11),
     pwmPhaseCorrect8Bits      = (1 << WGM10),
     pwmPhaseCorrect9Bits      = (1 << WGM11),
-    pwmPhaseCorrect10Bits     = (1 << WGM11) | (1 << WGM10),
-    pwmPhaseCorrectDefinedTop = (1 << WGM13) | (1 << WGM11)
+    pwmPhaseCorrect10Bits     = (1 << WGM11)     | (1 << WGM10),
+    pwmPhaseCorrectDefinedTop = (1 << (WGM13+8))
 };
 
-enum class timer1OutputConfig_t
+enum class timer1OutputConfig_t : uint8_t
 {
-    off                = 0,
-    channelAnormal     = (1 << COM1A1),
-    channelAinverted   = (1 << COM1A1) | (1 << COM1A0),
-    channelBnormal     = (1 << COM1B1),
-    channelBinverted   = (1 << COM1B1) | (1 << COM1B0),
-    channelAsetState   = (1 << COM1A1) | (1 << COM1A0),
-    channelBsetState   = (1 << COM1B1) | (1 << COM1B0),
-    channelABnormal    = channelAnormal | channelBnormal,
-    channelABinverted  = channelAinverted | channelBinverted
+    channelAdisconnected  = 0,
+    channelAnormal        = (1 << COM1A1),
+    channelAinverted      = (1 << COM1A1) | (1 << COM1A0),
+    channelBdisconnected  = 0,
+    channelBnormal        = (1 << COM1B1),
+    channelBinverted      = (1 << COM1B1) | (1 << COM1B0),
+    channelABdisconnected = 0,
+    channelABnormal       = channelAnormal | channelBnormal,
+    channelABinverted     = channelAinverted | channelBinverted
 };
 
-enum class timer1Clock_t : uint8_t
+enum class timer1Clock_t : uint16_t
 {
     off                 = 0,
-    noPreescale         = (1 << CS10),
-    divideBy8           = (1 << CS11),
-    divideBy64          = (1 << CS11) | (1 << CS10),
-    divideBy256         = (1 << CS12),
-    divideBy1024        = (1 << CS12) | (1 << CS10),
-    externT1FallingEdge = (1 << CS12) | (1 << CS11),
-    externT1RisingEdge  = (1 << CS12) | (1 << CS11) | (1 << CS10),
-    setState            = (1 << CS12) | (1 << CS11) | (1 << CS10)
+    noPreescale         = (1 << (CS10+8)),
+    divideBy8           = (1 << (CS11+8)),
+    divideBy64          = (1 << (CS11+8)) | (1 << (CS10+8)),
+    divideBy256         = (1 << (CS12+8)),
+    divideBy1024        = (1 << (CS12+8)) | (1 << (CS10+8)),
+    externT1FallingEdge = (1 << (CS12+8)) | (1 << (CS11+8)),
+    externT1RisingEdge  = (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8))
 };
 
-enum class timer1InputCaptureEdge_t : uint8_t
+enum class timer1InputCaptureEdge_t : uint16_t
 {
-    risingEdge  = (1 << ICNC1) | (1 << ICES1),
-    fallingEdge = (1 << ICNC1),
-    setState    = (1 << ICNC1) | (1 << ICES1)
-};
-
-struct timer1RegisterConfig
-{
-    timer1RegisterConfig(uint8_t rWGM13, uint8_t rWGM12, uint8_t rWGM11, uint8_t rWGM10, timer1OutputConfig_t output)
-    {
-        TCCR1A = (rWGM11 << WGM11) | (rWGM10 << WGM10) | static_cast<uint8_t>(output);
-        TCCR1B = (rWGM13 << WGM13) | (rWGM12 << WGM12);
-    }
-};
-
-struct timer1AsNormal : timer1RegisterConfig
-{
-    timer1AsNormal(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 0, 0, output) {}
-};
-
-struct timer1AsCTC : timer1RegisterConfig
-{
-    timer1AsCTC(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 0, 0, output) {}
-};
-
-struct timer1As8bitPwm : timer1RegisterConfig
-{
-    timer1As8bitPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 0, 1, output) {}
-};
-
-struct timer1As9bitPwm : timer1RegisterConfig
-{
-    timer1As9bitPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 1, 0, output) {}
-};
-
-struct timer1As10bitPwm : timer1RegisterConfig
-{
-    timer1As10bitPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 1, 1, 1, output) {}
-};
-
-struct timer1As16bitPwm : timer1RegisterConfig
-{
-    timer1As16bitPwm(timer1OutputConfig_t output, uint16_t rICR1) : timer1RegisterConfig(1, 1, 1, 0, output)
-    {
-        ICR1 = rICR1;
-    }
-};
-
-struct timer1As8bitPhaseCorrectPwm : timer1RegisterConfig
-{
-    timer1As8bitPhaseCorrectPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 0, 1, output) {}
-};
-
-struct timer1As9bitPhaseCorrectPwm : timer1RegisterConfig
-{
-    timer1As9bitPhaseCorrectPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 1, 0, output) {}
-};
-
-struct timer1As10bitPhaseCorrectPwm : timer1RegisterConfig
-{
-    timer1As10bitPhaseCorrectPwm(timer1OutputConfig_t output) : timer1RegisterConfig(0, 0, 1, 1, output) {}
-};
-
-struct timer1As16bitPhaseCorrectPwm : timer1RegisterConfig
-{
-    timer1As16bitPhaseCorrectPwm(timer1OutputConfig_t output, uint16_t rICR1) : timer1RegisterConfig(1, 0, 0, 0, output)
-    {
-        ICR1 = rICR1;
-    }
+    risingEdge  = (1 << (ICES1+8)),
+    fallingEdge = 0
 };
 
 ////////////////////

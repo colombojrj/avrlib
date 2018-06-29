@@ -5,7 +5,7 @@
 #include "defines.h"
 
 /**
- * @defgroup hal_gpio_group gpio
+ * @defgroup hal_gpio Gpio
  *
  * Some functions were replaced with macros. The main advantage is
  * the code size (macros use less flash memory)
@@ -26,8 +26,6 @@ struct GpioRegs
     volatile uint8_t* pcmsk;      //!< It is the address of pin change interrupt register
     const uint8_t whatPCI;        //!< It is the Port Change Interrupt bit
 };
-
-typedef GpioRegs GpioRegs_t;
 
 /**
  * @brief Basic gpio register structure.
@@ -86,9 +84,7 @@ enum class GpioPullResistor_t : uint8_t
 typedef GpioPullResistor_t gpioPullResistor_t;
 
 /**
- * gpioAsOutput(gpio)
- *
- * Configures the gpio pin as output (ATmega devices support only
+ * @brief Configures the gpio pin as output (ATmega devices support only
  * push-pull configuration)
  *
  * @param gpio is a pointer to the pin port (example: PinB5)
@@ -101,9 +97,7 @@ typedef GpioPullResistor_t gpioPullResistor_t;
 #define gpioAsOutput(gpio) (*(*gpio).regs.direction=*(*gpio).regs.direction|(1<<(*gpio).pinNumber))
 
 /**
- * gpioAsInput(gpio)
- *
- * Configures the gpio pin as input
+ * @brief Configures the gpio pin as input
  *
  * @param gpio is a pointer to the gpio pin (example: PinB5)
  *
@@ -112,9 +106,7 @@ typedef GpioPullResistor_t gpioPullResistor_t;
 #define gpioAsInput(gpio) (*(*gpio).regs.direction=*(*gpio).regs.direction&(~(1<<(*gpio).pinNumber)))
 
 /**
- * gpioPullUpEnable(gpio)
- *
- * Enable gpio pull up resistor.
+ * @brief Enable gpio pull up resistor.
  *
  * @param gpio is a pointer to gpio pin whose pull up
  *        resistor will be enabled (example: PinB5)
@@ -124,9 +116,7 @@ typedef GpioPullResistor_t gpioPullResistor_t;
 #define gpioPullUpEnable(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData|(1<<(*gpio).pinNumber))
 
 /**
- * gpioPullUpDisable(gpio)
- *
- * Disable gpio pull up resistor.
+ * @brief Disable gpio pull up resistor.
  *
  * @param gpio is a pointer to gpio pin whose pull up
  *        resistor will be disabled (example: PinB5)
@@ -136,7 +126,7 @@ typedef GpioPullResistor_t gpioPullResistor_t;
 #define gpioPullUpDisable(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData&(~(1<<(*gpio).pinNumber)))
 
 /**
- * Configures the gpio pin as input or output
+ * @brief Configures the gpio pin as input or output
  *
  * @param gpio is a pointer to gpio pin (example: PinB5)
  * @param dir is the direction (input and output)
@@ -147,8 +137,7 @@ typedef GpioPullResistor_t gpioPullResistor_t;
 extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
 
 /**
- * Write high logic level on the gpio pin configured as output (ATmega devices
- * there is support only push-pull configuration)
+ * @brief Write high logic level on the gpio pin configured as output
  *
  * @param gpio is a pointer to gpio pin (example: PinB5)
  *
@@ -157,8 +146,7 @@ extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
 #define gpioWriteHigh(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData|(1<<(*gpio).pinNumber))
 
 /**
- * Write low logic level on the gpio pin configured as output (ATmega devices
- * there is support only push-pull configuration)
+ * @brief Write low logic level on the gpio pin configured as output
  *
  * @param gpio is a pointer to gpio pin (example: PinB5)
  *
@@ -167,7 +155,7 @@ extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
 #define gpioWriteLow(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData&(~(1<<(*gpio).pinNumber)))
 
 /**
- * Toggles an output pin logic level
+ * @brief Toggles an output pin logic level
  *
  * @param gpio is a pointer to gpio pin (example: PinB5)
  *
@@ -176,7 +164,7 @@ extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
 #define gpioToggle(gpio) (*(*gpio).regs.outputData=*(*gpio).regs.outputData^(1<<(*gpio).pinNumber))
 
 /**
- * Returns the logic level on the gpio pin
+ * @brief Returns the logic level on the gpio pin
  *
  * \warning This macro "returns" 0 for low logic level and a
  *          positive number for high logic level.
@@ -190,8 +178,7 @@ extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
 #define gpioRead(gpio) (*(*gpio).regs.inputData&(1<<(*gpio).pinNumber))
 
 /**
- * Write logic level on the gpio pin configured as output (ATmega devices support
- * only push-pull configuration)
+ * @brief Write logic level on the gpio pin configured as output
  *
  * @param gpio is a pointer to gpio pin (example: PinB5)
  * @param level is the logic level to write (true or false, HIGH or LOW, 1 or 0)
@@ -201,7 +188,7 @@ extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
 extern void gpioWrite(const gpio_t* gpio, const uint8_t level);
 
 /**
- * If supported by the employed device, this function will enable
+ * @brief If supported by the employed device, this function will enable
  * the PCINT (pin change interrupt) on the pin.
  *
  * \warning This kind of interrupt raises interrupts for any logic
@@ -217,7 +204,7 @@ extern void gpioWrite(const gpio_t* gpio, const uint8_t level);
 extern void gpioEnablePCINT(const gpio_t* gpio);
 
 /**
- * If supported by the employed device, this function will disable
+ * @brief If supported by the employed device, this function will disable
  * the PCINT (pin change interrupt) on the pin.
  *
  * @param gpio is a pointer to gpio pin (example: PinB5)
