@@ -42,6 +42,36 @@ void timerInit(const timer8b* timer,
         sei();
 }
 
+void timerInit(const timer16b* timer,
+               uint16_t mode,
+               uint16_t clockConf,
+               uint8_t outputAConf,
+               uint8_t outputBConf,
+               uint8_t interruptConf)
+{
+    // Enables the timer module
+    #if defined (PRR)
+        PRR = PRR & ~(timer->regs->hasPRR << timer->regs->whatPRR);
+    #endif
+
+    // Configures gpio peripheral control
+    if (outputAConf != 0)
+        gpioAsOutput(timer->regs->outputPinA);
+    if (outputBConf != 0)
+        gpioAsOutput(timer->regs->outputPinB);
+
+    // Configure timer operation mode and if gpio control
+    *timer->regs->control = mode | outputAConf | outputBConf;
+
+    // Clock source configuration
+    *timer->regs->control = *timer->regs->control | clockConf;
+
+    // Configure interrupt
+    *timer->regs->interruptMask = interruptConf;
+    if (interruptConf != 0)
+        sei();
+}
+
 /*
 void timerAsNormal(Timer_t* timer, timerClock_t clockConf)
 {

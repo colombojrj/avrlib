@@ -562,7 +562,7 @@ enum class timer1Mode : uint16_t
     pwmPhaseCorrectDefinedTop = (1 << (WGM13+8))
 };
 
-enum class timer1OutputConfig_t : uint8_t
+enum class timer1OutputConfig : uint8_t
 {
     channelAdisconnected  = 0,
     channelAnormal        = (1 << COM1A1),
@@ -575,7 +575,7 @@ enum class timer1OutputConfig_t : uint8_t
     channelABinverted     = channelAinverted | channelBinverted
 };
 
-enum class timer1Clock_t : uint16_t
+enum class timer1Clock : uint16_t
 {
     off                 = 0,
     noPreescale         = (1 << (CS10+8)),
@@ -587,7 +587,15 @@ enum class timer1Clock_t : uint16_t
     externT1RisingEdge  = (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8))
 };
 
-enum class timer1InputCaptureEdge_t : uint16_t
+enum class timer1Interrupt : uint8_t
+{
+    none = 0,                        //!< Does not generate any interrupt
+    onCompareMatchA = (1 << OCIE1A), //!< Generate an interrupt on compare match of channel A
+    onCompareMatchB = (1 << OCIE1B), //!< Generate an interrupt on compare match of channel B
+    onOverflow      = (1 << TOIE1)   //!< Generate an interrupt on after an overflow
+};
+
+enum class timer1InputCaptureEdge : uint16_t
 {
     risingEdge  = (1 << (ICES1+8)),
     fallingEdge = 0
