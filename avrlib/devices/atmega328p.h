@@ -551,7 +551,8 @@ enum class timer0Interrupt : uint8_t
 enum class timer1Mode : uint16_t
 {
     normal                    = 0,
-    ctc                       = (1 << (WGM13+8)) | (1 << (WGM12+8)),
+    ctcTopOnICR1              = (1 << (WGM13+8)) | (1 << (WGM12+8)),
+    ctcTopOnOCR1A             = (1 << (WGM12+8)),
     pwm8Bits                  = (1 << (WGM12+8)) | (1 << WGM10),
     pwm9Bits                  = (1 << (WGM12+8)) | (1 << WGM11),
     pwm10Bits                 = (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10),
