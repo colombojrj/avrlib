@@ -6,6 +6,9 @@ uint8_t whatTimer1OutputAConfig;
 uint8_t whatTimer1OutputBConfig;
 uint8_t whatTimer2OutputAConfig;
 uint8_t whatTimer2OutputBConfig;
+uint8_t timer0MaxCount;
+uint16_t timer1MaxCount;
+uint8_t timer2MaxCount;
 
 void timerSetClockPreescaler(const timer8b* timer, uint16_t clockConf)
 {
@@ -23,28 +26,28 @@ void timerSetOutputCompareUnitA(const timer8b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocASetState;
     *timer->regs->control = *timer->regs->control | timer->ocAConfs[io8Conf(whatConf)];
-    *timer->outputConfA = whatConf;
+    *timer->outputConfA = timer->ocAConfs[io8Conf(whatConf)];
 }
 
 void timerSetOutputCompareUnitB(const timer8b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocBSetState;
     *timer->regs->control = *timer->regs->control | timer->ocBConfs[io8Conf(whatConf)];
-    *timer->outputConfB = whatConf;
+    *timer->outputConfB = timer->ocBConfs[io8Conf(whatConf)];
 }
 
 void timerSetOutputCompareUnitA(const timer16b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocASetState;
     *timer->regs->control = *timer->regs->control | timer->ocAConfs[io8Conf(whatConf)];
-    *timer->outputConfA = whatConf;
+    *timer->outputConfA = timer->ocAConfs[io8Conf(whatConf)];
 }
 
 void timerSetOutputCompareUnitB(const timer16b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocBSetState;
     *timer->regs->control = *timer->regs->control | timer->ocBConfs[io8Conf(whatConf)];
-    *timer->outputConfB = whatConf;
+    *timer->outputConfB = timer->ocBConfs[io8Conf(whatConf)];
 }
 
 void timerInit(const timer8b* timer,
@@ -66,14 +69,12 @@ void timerInit(const timer8b* timer,
         gpioAsOutput(timer->regs->outputPinB);
 
     // Configure timer operation mode and if gpio control
-    *timer->regs->control = mode ;//| timer->ocAConfs[io8Conf(outputAConf)]
-                                 //| timer->ocBConfs[io8Conf(outputBConf)];
-    timerSetOutputCompareUnitA(timer, outputAConf);
-    timerSetOutputCompareUnitB(timer, outputBConf);
+    *timer->regs->control = mode | timer->ocAConfs[io8Conf(outputAConf)]
+                                 | timer->ocBConfs[io8Conf(outputBConf)];
 
-    // Save the configured output configuration
-    //*timer->outputConfA = outputAConf;
-    *timer->outputConfB = outputBConf;
+    // Save output configuration
+    *timer->outputConfA = timer->ocAConfs[io8Conf(outputAConf)];
+    *timer->outputConfB = timer->ocBConfs[io8Conf(outputBConf)];
 
     // Clock source configuration
     *timer->regs->control = *timer->regs->control | clockConf;
@@ -82,6 +83,8 @@ void timerInit(const timer8b* timer,
     *timer->regs->interruptMask = interruptConf;
     if (interruptConf != 0)
         sei();
+
+    *timer->maxCount = 255;
 }
 
 void timerInit(const timer16b* timer,
@@ -120,7 +123,7 @@ void timerInit(const timer16b* timer,
 
 void timerSetDutyA(const timer8b* timer, uint8_t duty)
 {
-    if (duty >= 255)
+    if (duty >= *timer->maxCount)
     {
         // Disable compare match
         *timer->regs->control &= ~timer->ocASetState;
@@ -154,7 +157,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
 
 void timerSetDutyB(const timer8b* timer, uint8_t duty)
 {
-    if (duty >= 255)
+    if (duty >= *timer->maxCount)
     {
         // Disable compare match
         *timer->regs->control &= ~timer->ocBSetState;

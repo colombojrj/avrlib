@@ -543,7 +543,7 @@ constexpr timer8b _Timer0 = {
         (1 << COM0A1) | (1 << COM0A0),
         (1 << COM0B1) | (1 << COM0B0),
         0,
-        0
+        &timer0MaxCount
 };
 
 /// Timer 0 config structure
@@ -601,7 +601,7 @@ enum class timer0Clock : uint16_t
 {
     off               = 0,
     noPreescale       = (1 << (CS00+8)),                                     //!< CPU clock is applied directly on the timer
-    divideBy8         = (1 << (CS00+8)),                                     //!< Divides CPU clock by 8
+    divideBy8         = (1 << (CS01+8)),                                     //!< Divides CPU clock by 8
     divideBy64        = (1 << (CS01+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 64
     divideBy256       = (1 << (CS02+8)),                                     //!< Divides CPU clock by 256
     divideBy1024      = (1 << (CS02+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 1024

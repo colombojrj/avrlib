@@ -47,6 +47,10 @@ extern uint8_t whatTimer1OutputBConfig;
 extern uint8_t whatTimer2OutputAConfig;
 extern uint8_t whatTimer2OutputBConfig;
 
+extern uint8_t timer0MaxCount;
+extern uint16_t timer1MaxCount;
+extern uint8_t timer2MaxCount;
+
 /**
  * @brief Generic 8 bits timer
  */
@@ -96,7 +100,7 @@ struct timer8b
     uint8_t ocASetState;
     uint8_t ocBSetState;
     uint8_t interruptConf;      // Interrupt configuration
-    uint8_t maxCount;           // Max count (only if applicable)
+    uint8_t* maxCount;          // Max count (only if applicable)
 };
 
 /**
@@ -113,7 +117,7 @@ struct timer16b
     uint8_t ocASetState;
     uint8_t ocBSetState;
     uint8_t interruptConf;      // Interrupt configuration
-    uint16_t maxCount;          // Max count (only if applicable)
+    uint16_t* maxCount;         // Max count (only if applicable)
 };
 
 enum class timerOutputConfig : uint8_t
