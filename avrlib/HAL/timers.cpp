@@ -19,42 +19,32 @@ void timerSetClockPreescaler(const timer16b* timer, uint16_t clockConf)
     *timer->regs->control = *timer->regs->control | clockConf;
 }
 
-void timerEnablePwmOutputA(const timer8b* timer, uint8_t ocConf)
-{
-
-}
-
-void timerEnablePwmOutputB(const timer8b* timer, uint8_t ocConf)
-{
-
-}
-
-void timerSetOutputCompareUnitA(const timer8b* timer, uint8_t ocConf)
+void timerSetOutputCompareUnitA(const timer8b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocASetState;
-    *timer->regs->control = *timer->regs->control | ocConf;
-    *timer->outputConfA = ocConf;
+    *timer->regs->control = *timer->regs->control | timer->ocAConfs[io8Conf(whatConf)];
+    *timer->outputConfA = whatConf;
 }
 
-void timerSetOutputCompareUnitB(const timer8b* timer, uint8_t ocConf)
+void timerSetOutputCompareUnitB(const timer8b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocBSetState;
-    *timer->regs->control = *timer->regs->control | ocConf;
-    *timer->outputConfA = ocConf;
+    *timer->regs->control = *timer->regs->control | timer->ocBConfs[io8Conf(whatConf)];
+    *timer->outputConfB = whatConf;
 }
 
-void timerSetOutputCompareUnitA(const timer16b* timer, uint8_t ocConf)
+void timerSetOutputCompareUnitA(const timer16b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocASetState;
-    *timer->regs->control = *timer->regs->control | ocConf;
-    *timer->outputConfA = ocConf;
+    *timer->regs->control = *timer->regs->control | timer->ocAConfs[io8Conf(whatConf)];
+    *timer->outputConfA = whatConf;
 }
 
-void timerSetOutputCompareUnitB(const timer16b* timer, uint8_t ocConf)
+void timerSetOutputCompareUnitB(const timer16b* timer, uint8_t whatConf)
 {
     *timer->regs->control = *timer->regs->control & ~timer->ocBSetState;
-    *timer->regs->control = *timer->regs->control | ocConf;
-    *timer->outputConfB = ocConf;
+    *timer->regs->control = *timer->regs->control | timer->ocBConfs[io8Conf(whatConf)];
+    *timer->outputConfB = whatConf;
 }
 
 void timerInit(const timer8b* timer,
@@ -76,10 +66,13 @@ void timerInit(const timer8b* timer,
         gpioAsOutput(timer->regs->outputPinB);
 
     // Configure timer operation mode and if gpio control
-    *timer->regs->control = mode | outputAConf| outputBConf;
+    *timer->regs->control = mode ;//| timer->ocAConfs[io8Conf(outputAConf)]
+                                 //| timer->ocBConfs[io8Conf(outputBConf)];
+    timerSetOutputCompareUnitA(timer, outputAConf);
+    timerSetOutputCompareUnitB(timer, outputBConf);
 
     // Save the configured output configuration
-    *timer->outputConfA = outputAConf;
+    //*timer->outputConfA = outputAConf;
     *timer->outputConfB = outputBConf;
 
     // Clock source configuration
@@ -125,63 +118,72 @@ void timerInit(const timer16b* timer,
         sei();
 }
 
-void timerSetOutputAConf(timer8b timer, uint8_t outputConf)
-{
-
-}
-
-void timerSetOutputBConf(timer8b timer, uint8_t outputConf)
-{
-
-}
-
-void timerSetOutputAConf(timer16b timer, uint8_t outputConf)
-{
-
-}
-
-void timerSetOutputBConf(timer16b timer, uint8_t outputConf)
-{
-
-}
-
-void timerSetDutyA(timer8b timer, uint8_t duty)
+void timerSetDutyA(const timer8b* timer, uint8_t duty)
 {
     if (duty >= 255)
     {
         // Disable compare match
-        *timer.regs->control &= ~timer.ocASetState;
+        *timer->regs->control &= ~timer->ocASetState;
 
-        if (*timer.outputConfA == io8Conf(timerOutputAConfig::normal))
-            gpioWriteHigh(timer.regs->outputPinA);
+        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputConfig::normal)])
+            gpioWriteHigh(timer->regs->outputPinA);
         else
-            gpioWriteLow(timer.regs->outputPinA);
+            gpioWriteLow(timer->regs->outputPinA);
     }
 
     else if (duty <= 0)
     {
         // Disable compare match
-        *timer.regs->control &= ~timer.ocASetState;
+        *timer->regs->control &= ~timer->ocASetState;
 
-        if (*timer.outputConfA == io8Conf(timerOutputAConfig::normal))
-            gpioWriteLow(timer.regs->outputPinA);
+        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputConfig::normal)])
+            gpioWriteLow(timer->regs->outputPinA);
         else
-            gpioWriteHigh(timer.regs->outputPinA);
+            gpioWriteHigh(timer->regs->outputPinA);
     }
 
     else
     {
         // Enable compare match
-        *timer.regs->control |= io8Conf(*timer.outputConfA);
+        *timer->regs->control |= io8Conf(*timer->outputConfA);
 
         // Set the output compare register
-        *timer.regs->outputCompareA = duty;
+        *timer->regs->outputCompareA = duty;
     }
 }
 
-void timerSetDutyB(timer8b timer, uint8_t duty)
+void timerSetDutyB(const timer8b* timer, uint8_t duty)
 {
+    if (duty >= 255)
+    {
+        // Disable compare match
+        *timer->regs->control &= ~timer->ocBSetState;
 
+        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputConfig::normal)])
+            gpioWriteHigh(timer->regs->outputPinB);
+        else
+            gpioWriteLow(timer->regs->outputPinB);
+    }
+
+    else if (duty <= 0)
+    {
+        // Disable compare match
+        *timer->regs->control &= ~timer->ocBSetState;
+
+        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputConfig::normal)])
+            gpioWriteLow(timer->regs->outputPinB);
+        else
+            gpioWriteHigh(timer->regs->outputPinB);
+    }
+
+    else
+    {
+        // Enable compare match
+        *timer->regs->control |= io8Conf(*timer->outputConfB);
+
+        // Set the output compare register
+        *timer->regs->outputCompareB = duty;
+    }
 }
 
 

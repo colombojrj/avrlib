@@ -116,17 +116,9 @@ struct timer16b
     uint16_t maxCount;          // Max count (only if applicable)
 };
 
-enum class timerOutputAConfig : uint8_t
+enum class timerOutputConfig : uint8_t
 {
-    disconnected  = 0,
-    normal,
-    inverted,
-    setState
-};
-
-enum class timerOutputBConfig : uint8_t
-{
-    disconnected  = 0,
+    disconnected = 0,
     normal,
     inverted,
     setState
@@ -203,10 +195,17 @@ void timerSetTop(const timer8b* timer, uint8_t top);
 void timerSetTop(const timer16b* timer, uint16_t top);
 
 
-void timerSetDuty(const timer8b* timer, uint8_t duty);
+void timerSetDutyA(const timer8b* timer, uint8_t duty);
 
 
-void timerSetDuty(const timer16b* timer, uint16_t duty);
+void timerSetDutyB(const timer8b* timer, uint8_t duty);
+
+
+void timerSetDutyA(const timer16b* timer, uint16_t duty);
+
+
+void timerSetDutyB(const timer16b* timer, uint16_t duty);
+
 
 void timerInit(const timer8b* timer,
                uint16_t mode,
