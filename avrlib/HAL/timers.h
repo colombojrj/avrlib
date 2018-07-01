@@ -40,6 +40,13 @@
 
 /**@{*/
 
+extern uint8_t whatTimer0OutputAConfig;
+extern uint8_t whatTimer0OutputBConfig;
+extern uint8_t whatTimer1OutputAConfig;
+extern uint8_t whatTimer1OutputBConfig;
+extern uint8_t whatTimer2OutputAConfig;
+extern uint8_t whatTimer2OutputBConfig;
+
 /**
  * @brief Generic 8 bits timer
  */
@@ -55,7 +62,6 @@ struct timer8bRegs
     volatile uint8_t* asyncControl;    //!< Address of the interrupt asynchronous control register
     const gpio_t* outputPinA;          //!< Gpio pin controlled by output channel A of timer
     const gpio_t* outputPinB;          //!< Gpio pin controlled by output channel B of timer
-    const uint8_t hasPRR;              //!< It informs if the timer has a power enable on PRR
     const uint8_t whatPRR;             //!< It inform what bit in PRR the timer has
 };
 
@@ -73,7 +79,6 @@ struct timer16bRegs
     volatile uint8_t* interruptFlag;   //!< Address of the interrupt flag register
     const gpio_t* outputPinA;          //!< Gpio pin controlled by output channel A of timer
     const gpio_t* outputPinB;          //!< Gpio pin controlled by output channel B of timer
-    const uint8_t hasPRR;              //!< It informs if the timer has a power enable on PRR
     const uint8_t whatPRR;             //!< It inform what bit in PRR the timer has
 };
 
@@ -82,12 +87,16 @@ struct timer16bRegs
  */
 struct timer8b
 {
-    const timer8bRegs* regs;   // Low level registers
-    uint16_t timerConf;        // Timer configuration
-    uint8_t outputConfA;       // Gpio controlled by timer channel A configuration
-    uint8_t outputConfB;       // Gpio controlled by timer channel B configuration
-    uint8_t interruptConf;     // Interrupt configuration
-    uint8_t maxCount;          // Max count (only if applicable)
+    const timer8bRegs* regs;    // Low level registers
+    bool hasOoutputCompareUnit; // If the timer has an output compare unit (usually employed for PWM signal generation)
+    const uint8_t* ocAConfs;
+    const uint8_t* ocBConfs;
+    uint8_t* outputConfA;       // Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
+    uint8_t* outputConfB;       // Address of variable containing the actual output channel B configuration (@see _timer0OutputBConfig)
+    uint8_t ocASetState;
+    uint8_t ocBSetState;
+    uint8_t interruptConf;      // Interrupt configuration
+    uint8_t maxCount;           // Max count (only if applicable)
 };
 
 /**
@@ -95,12 +104,32 @@ struct timer8b
  */
 struct timer16b
 {
-    const timer16bRegs* regs;  // Low level registers
-    uint16_t timerConf;        // Clock configuration
-    uint8_t outputConfA;       // Gpio controlled by timer channel A configuration
-    uint8_t outputConfB;       // Gpio controlled by timer channel B configuration
-    uint8_t interruptConf;     // Interrupt configuration
-    uint16_t maxCount;         // Max count (only if applicable)
+    const timer16bRegs* regs;   // Low level registers
+    bool hasOoutputCompareUnit; // If the timer has an output compare unit (usually employed for PWM signal generation)
+    const uint8_t* ocAConfs;
+    const uint8_t* ocBConfs;
+    uint8_t* outputConfA;       // Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
+    uint8_t* outputConfB;       // Address of variable containing the actual output channel B configuration (@see _timer0OutputAConfig)
+    uint8_t ocASetState;
+    uint8_t ocBSetState;
+    uint8_t interruptConf;      // Interrupt configuration
+    uint16_t maxCount;          // Max count (only if applicable)
+};
+
+enum class timerOutputAConfig : uint8_t
+{
+    disconnected  = 0,
+    normal,
+    inverted,
+    setState
+};
+
+enum class timerOutputBConfig : uint8_t
+{
+    disconnected  = 0,
+    normal,
+    inverted,
+    setState
 };
 
 /**
@@ -178,7 +207,6 @@ void timerSetDuty(const timer8b* timer, uint8_t duty);
 
 
 void timerSetDuty(const timer16b* timer, uint16_t duty);
-
 
 void timerInit(const timer8b* timer,
                uint16_t mode,

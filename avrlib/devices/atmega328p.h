@@ -434,6 +434,60 @@ enum class adcAdmux_t : uint8_t
 /// Timer 2 comparator output A pin
 #define OC2B_PIN            PinD3
 
+/**
+ * @brief Timer 0 output compare unit available configurations
+ */
+constexpr uint8_t timer0OutputAConfig[] = {
+        0,
+        (1 << COM0A1),
+        (1 << COM0A1) | (1 << COM0A0)
+};
+
+/**
+ * @brief Timer 0 output compare unit available configurations
+ */
+constexpr uint8_t timer0OutputBConfig[] = {
+        0,
+        (1 << COM0B1),
+        (1 << COM0B1) | (1 << COM0B0)
+};
+
+/**
+ * @brief Timer 1 output compare unit available configurations
+ */
+constexpr uint8_t timer1OutputAConfig[] = {
+        0,
+        (1 << COM1A1),
+        (1 << COM1A1) | (1 << COM1A0)
+};
+
+/**
+ * @brief Timer 1 output compare unit available configurations
+ */
+constexpr uint8_t timer1OutputBConfig[] = {
+        0,
+        (1 << COM1B1),
+        (1 << COM1B1) | (1 << COM1B0)
+};
+
+/**
+ * @brief Timer 2 output compare unit available configurations
+ */
+constexpr uint8_t timer2OutputAConfig[] = {
+        0,
+        (1 << COM2A1),
+        (1 << COM2A1) | (1 << COM2A0)
+};
+
+/**
+ * @brief Timer 2 output compare unit available configurations
+ */
+constexpr uint8_t timer2OutputBConfig[] = {
+        0,
+        (1 << COM2B1),
+        (1 << COM2B1) | (1 << COM2B0)
+};
+
 /// Timer 0 registers definition
 constexpr timer8bRegs Timer0Regs = {
         (uint16_t*) &TCCR0A,
@@ -446,7 +500,6 @@ constexpr timer8bRegs Timer0Regs = {
         nullptr,
         PinD6,
         PinD5,
-        1,
         PRTIM0
 };
 
@@ -461,7 +514,6 @@ constexpr timer16bRegs Timer1Regs = {
         &TIFR1,
         PinB1,
         PinB2,
-        1,
         PRTIM1
 };
 
@@ -477,18 +529,50 @@ constexpr timer8bRegs Timer2Regs = {
         &GTCCR,
         PinB3,
         PinD3,
-        1,
         PRTIM2
 };
 
 /// Timer 0 config structure
-constexpr timer8b _Timer0 = {&Timer0Regs, 0, 0, 0, 0, 0};
+constexpr timer8b _Timer0 = {
+        &Timer0Regs,
+        true,
+        timer0OutputAConfig,
+        timer0OutputBConfig,
+        &whatTimer0OutputAConfig,
+        &whatTimer0OutputBConfig,
+        (1 << COM0A1) | (1 << COM0A0),
+        (1 << COM0B1) | (1 << COM0B0),
+        0,
+        0
+};
 
 /// Timer 0 config structure
-constexpr timer16b _Timer1 = {&Timer1Regs, 0, 0, 0, 0, 0};
+constexpr timer16b _Timer1 = {
+        &Timer1Regs,
+        true,
+        timer1OutputAConfig,
+        timer1OutputBConfig,
+        &whatTimer1OutputAConfig,
+        &whatTimer1OutputBConfig,
+        (1 << COM1A1) | (1 << COM1A0),
+        (1 << COM1B1) | (1 << COM1B0),
+        0,
+        0
+};
 
 /// Timer 0 config structure
-constexpr timer8b _Timer2 = {&Timer2Regs, 0, 0, 0, 0, 0};
+constexpr timer8b _Timer2 = {
+        &Timer2Regs,
+        true,
+        timer2OutputAConfig,
+        timer2OutputBConfig,
+        &whatTimer2OutputAConfig,
+        &whatTimer2OutputBConfig,
+        (1 << COM2A1) | (1 << COM2A0),
+        (1 << COM2B1) | (1 << COM2B0),
+        0,
+        0
+};
 
 /// Timer 0 friendly definition
 #define Timer0 &_Timer0
@@ -498,22 +582,6 @@ constexpr timer8b _Timer2 = {&Timer2Regs, 0, 0, 0, 0, 0};
 
 /// Timer 0 friendly definition
 #define Timer2 &_Timer2
-
-/**
- * @brief Timer output configuration structure
- */
-enum class timer0OutputConfig
-{
-    channelAdisconnected  = 0,
-    channelAnormal        = (1 << COM0A1),
-    channelAinverted      = (1 << COM0A1) | (1 << COM0A0),
-    channelBdisconnected  = 0,
-    channelBnormal        = (1 << COM0B1),
-    channelBinverted      = (1 << COM0B1) | (1 << COM0B0),
-    channelABdisconnected = 0,
-    channelABnormal       = channelAnormal | channelBnormal,
-    channelABinverted     = channelAinverted | channelBinverted,
-};
 
 /**
  * @brief This structure holds the available timer configuration
@@ -531,6 +599,7 @@ enum class timer0Mode : uint8_t
  */
 enum class timer0Clock : uint16_t
 {
+    off               = 0,
     noPreescale       = (1 << (CS00+8)),                                     //!< CPU clock is applied directly on the timer
     divideBy8         = (1 << (CS00+8)),                                     //!< Divides CPU clock by 8
     divideBy64        = (1 << (CS01+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 64
@@ -563,19 +632,6 @@ enum class timer1Mode : uint16_t
     pwmPhaseCorrectDefinedTop = (1 << (WGM13+8))
 };
 
-enum class timer1OutputConfig : uint8_t
-{
-    channelAdisconnected  = 0,
-    channelAnormal        = (1 << COM1A1),
-    channelAinverted      = (1 << COM1A1) | (1 << COM1A0),
-    channelBdisconnected  = 0,
-    channelBnormal        = (1 << COM1B1),
-    channelBinverted      = (1 << COM1B1) | (1 << COM1B0),
-    channelABdisconnected = 0,
-    channelABnormal       = channelAnormal | channelBnormal,
-    channelABinverted     = channelAinverted | channelBinverted
-};
-
 enum class timer1Clock : uint16_t
 {
     off                 = 0,
@@ -602,44 +658,42 @@ enum class timer1InputCaptureEdge : uint16_t
     fallingEdge = 0
 };
 
-////////////////////
-// TIMER 2 MODULE //
-////////////////////
-enum class timer2Config_t : uint8_t
+/**
+ * @brief Available timer 2 operation modes
+ */
+enum class timer2Mode : uint16_t
 {
-    off             = 0,
     normal          = 0,
     ctc             = (1 << WGM21),
     pwm             = (1 << WGM21) | (1 << WGM20),
     pwmPhaseCorrect = (1 << WGM20)
 };
 
-enum class timer2OutputConfig_t
+/**
+ * @brief Available timer 2 clock source configurations
+ */
+enum class timer2Clock : uint16_t
 {
     off                = 0,
-    channelAnormal     = (1 << COM2A1),
-    channelAinverted   = (1 << COM2A1) | (1 << COM2A0),
-    channelBnormal     = (1 << COM2B1),
-    channelBinverted   = (1 << COM2B1) | (1 << COM2B0),
-    channelAsetState   = (1 << COM2A1) | (1 << COM2A0),
-    channelBsetState   = (1 << COM2B1) | (1 << COM2B0),
-    channelABnormal    = channelAnormal | channelBnormal,
-    channelABinverted  = channelAinverted | channelBinverted
+    noPreescale        = (1 << (CS20+8)),                                     //!< CPU clock is applied directly on the timer
+    divideBy8          = (1 << (CS21+8)),                                     //!<
+    divideBy32         = (1 << (CS21+8)) | (1 << (CS20+8)),                   //!<
+    divideBy64         = (1 << (CS22+8)),                                     //!<
+    divideBy128        = (1 << (CS22+8)) | (1 << (CS20+8)),                   //!<
+    divideBy256        = (1 << (CS22+8)) | (1 << (CS21+8)),                   //!<
+    divideBy1024       = (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8)), //!<
+    setState           = (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8))  //!<
 };
 
-enum class timer2Clock_t : uint8_t
+enum class timer2Interrupt : uint8_t
 {
-    off                = 0,
-    noPreescale        = (1 << CS20),
-    divideBy8          = (1 << CS21),
-    divideBy32         = (1 << CS21) | (1 << CS20),
-    divideBy64         = (1 << CS22),
-    divideBy128        = (1 << CS22) | (1 << CS20),
-    divideBy256        = (1 << CS22) | (1 << CS21),
-    divideBy1024       = (1 << CS22) | (1 << CS21) | (1 << CS20),
-    setState           = (1 << CS22) | (1 << CS21) | (1 << CS20)
+    none = 0,                        //!< Does not generate any interrupt
+    onCompareMatchA = (1 << OCIE2A), //!< Generate an interrupt on compare match of channel A
+    onCompareMatchB = (1 << OCIE2B), //!< Generate an interrupt on compare match of channel B
+    onOverflow      = (1 << TOIE2)   //!< Generate an interrupt on after an overflow
 };
 
 /**@}*/
 
 #endif /* AVRLIB_AVRLIB_HAL_DEVICESLL_ATMEGA328P_H_ */
+

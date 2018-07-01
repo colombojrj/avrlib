@@ -1,5 +1,12 @@
 #include "timers.h"
 
+uint8_t whatTimer0OutputAConfig;
+uint8_t whatTimer0OutputBConfig;
+uint8_t whatTimer1OutputAConfig;
+uint8_t whatTimer1OutputBConfig;
+uint8_t whatTimer2OutputAConfig;
+uint8_t whatTimer2OutputBConfig;
+
 void timerSetClockPreescaler(const timer8b* timer, uint16_t clockConf)
 {
     *timer->regs->control = *timer->regs->control & ~0x0700;
@@ -12,6 +19,44 @@ void timerSetClockPreescaler(const timer16b* timer, uint16_t clockConf)
     *timer->regs->control = *timer->regs->control | clockConf;
 }
 
+void timerEnablePwmOutputA(const timer8b* timer, uint8_t ocConf)
+{
+
+}
+
+void timerEnablePwmOutputB(const timer8b* timer, uint8_t ocConf)
+{
+
+}
+
+void timerSetOutputCompareUnitA(const timer8b* timer, uint8_t ocConf)
+{
+    *timer->regs->control = *timer->regs->control & ~timer->ocASetState;
+    *timer->regs->control = *timer->regs->control | ocConf;
+    *timer->outputConfA = ocConf;
+}
+
+void timerSetOutputCompareUnitB(const timer8b* timer, uint8_t ocConf)
+{
+    *timer->regs->control = *timer->regs->control & ~timer->ocBSetState;
+    *timer->regs->control = *timer->regs->control | ocConf;
+    *timer->outputConfA = ocConf;
+}
+
+void timerSetOutputCompareUnitA(const timer16b* timer, uint8_t ocConf)
+{
+    *timer->regs->control = *timer->regs->control & ~timer->ocASetState;
+    *timer->regs->control = *timer->regs->control | ocConf;
+    *timer->outputConfA = ocConf;
+}
+
+void timerSetOutputCompareUnitB(const timer16b* timer, uint8_t ocConf)
+{
+    *timer->regs->control = *timer->regs->control & ~timer->ocBSetState;
+    *timer->regs->control = *timer->regs->control | ocConf;
+    *timer->outputConfB = ocConf;
+}
+
 void timerInit(const timer8b* timer,
                uint16_t mode,
                uint16_t clockConf,
@@ -21,7 +66,7 @@ void timerInit(const timer8b* timer,
 {
     // Enables the timer module
     #if defined (PRR)
-        PRR = PRR & ~(timer->regs->hasPRR << timer->regs->whatPRR);
+        PRR = PRR & ~(1 << timer->regs->whatPRR);
     #endif
 
     // Configures gpio peripheral control
@@ -31,7 +76,11 @@ void timerInit(const timer8b* timer,
         gpioAsOutput(timer->regs->outputPinB);
 
     // Configure timer operation mode and if gpio control
-    *timer->regs->control = mode | outputAConf | outputBConf;
+    *timer->regs->control = mode | outputAConf| outputBConf;
+
+    // Save the configured output configuration
+    *timer->outputConfA = outputAConf;
+    *timer->outputConfB = outputBConf;
 
     // Clock source configuration
     *timer->regs->control = *timer->regs->control | clockConf;
@@ -51,7 +100,7 @@ void timerInit(const timer16b* timer,
 {
     // Enables the timer module
     #if defined (PRR)
-        PRR = PRR & ~(timer->regs->hasPRR << timer->regs->whatPRR);
+        PRR = PRR & ~(1 << timer->regs->whatPRR);
     #endif
 
     // Configures gpio peripheral control
@@ -61,7 +110,11 @@ void timerInit(const timer16b* timer,
         gpioAsOutput(timer->regs->outputPinB);
 
     // Configure timer operation mode and if gpio control
-    *timer->regs->control = mode | outputAConf | outputBConf;
+    *timer->regs->control = mode | outputAConf| outputBConf;
+
+    // Save the configured output configuration
+    *timer->outputConfA = outputAConf;
+    *timer->outputConfB = outputBConf;
 
     // Clock source configuration
     *timer->regs->control = *timer->regs->control | clockConf;
@@ -72,59 +125,65 @@ void timerInit(const timer16b* timer,
         sei();
 }
 
-/*
-void timerAsNormal(Timer_t* timer, timerClock_t clockConf)
+void timerSetOutputAConf(timer8b timer, uint8_t outputConf)
 {
-    // Enables the timer module
-    #if defined (PRR)
-        PRR = PRR & ~(timer->hasPRR << timer->whatPRR);
-    #endif
-
-    // Configure the timer in normal mode
-    *timer->control = timer;
-
-    // Configure the timer clock preescaler
-    timerSetClockPreescaler(timer, clockConf);
-
-    // Set timer0 clock source
-    TCCR0B = static_cast<uint8_t>(clockConf);
-    if (clockConf == timerClock::externFallingEdge ||
-        clockConf == timerClock::externRisingEdge)
-    {
-        gpioAsInput(T0_PIN);
-        gpioPullUpEnable(T0_PIN);
-    }
-
-    TIMSK0 = (1 << TOIE0); // overflow
 
 }
 
-void timerAsPWM(Timer8bRegs* timer, timerOutputConfig outputConfig)
+void timerSetOutputBConf(timer8b timer, uint8_t outputConf)
 {
-    // Pin configuration
-    if (outputConfig == timerOutputConfig::channelAnormal   ||
-        outputConfig == timerOutputConfig::channelAinverted ||
-        outputConfig == timerOutputConfig::channelABnormal  ||
-        outputConfig == timerOutputConfig::channelABinverted)
+
+}
+
+void timerSetOutputAConf(timer16b timer, uint8_t outputConf)
+{
+
+}
+
+void timerSetOutputBConf(timer16b timer, uint8_t outputConf)
+{
+
+}
+
+void timerSetDutyA(timer8b timer, uint8_t duty)
+{
+    if (duty >= 255)
     {
-        gpioAsOutput(timer->outputPinA);
+        // Disable compare match
+        *timer.regs->control &= ~timer.ocASetState;
+
+        if (*timer.outputConfA == io8Conf(timerOutputAConfig::normal))
+            gpioWriteHigh(timer.regs->outputPinA);
+        else
+            gpioWriteLow(timer.regs->outputPinA);
     }
 
-    if (outputConfig == timerOutputConfig::channelBnormal   ||
-        outputConfig == timerOutputConfig::channelBinverted ||
-        outputConfig == timerOutputConfig::channelABnormal  ||
-        outputConfig == timerOutputConfig::channelABinverted)
+    else if (duty <= 0)
     {
-        gpioAsOutput(timer->outputPinA);
+        // Disable compare match
+        *timer.regs->control &= ~timer.ocASetState;
+
+        if (*timer.outputConfA == io8Conf(timerOutputAConfig::normal))
+            gpioWriteLow(timer.regs->outputPinA);
+        else
+            gpioWriteHigh(timer.regs->outputPinA);
+    }
+
+    else
+    {
+        // Enable compare match
+        *timer.regs->control |= io8Conf(*timer.outputConfA);
+
+        // Set the output compare register
+        *timer.regs->outputCompareA = duty;
     }
 }
-*/
 
-//
-///////////////////
-// TIMER0 MODULE //
-///////////////////
-//
+void timerSetDutyB(timer8b timer, uint8_t duty)
+{
+
+}
+
 
 #if defined(SUPPORT_TO_TIMER0)
 
