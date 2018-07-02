@@ -599,7 +599,7 @@ enum class timer0Mode : uint8_t
  */
 enum class timer0Clock : uint16_t
 {
-    off               = 0,
+    off               = 0,                                                   //!< Timer has no clock (saves power)
     noPreescale       = (1 << (CS00+8)),                                     //!< CPU clock is applied directly on the timer
     divideBy8         = (1 << (CS01+8)),                                     //!< Divides CPU clock by 8
     divideBy64        = (1 << (CS01+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 64
@@ -619,29 +619,29 @@ enum class timer0Interrupt : uint8_t
 
 enum class timer1Mode : uint16_t
 {
-    normal                    = 0,
-    ctcTopOnICR1              = (1 << (WGM13+8)) | (1 << (WGM12+8)),
-    ctcTopOnOCR1A             = (1 << (WGM12+8)),
-    pwm8Bits                  = (1 << (WGM12+8)) | (1 << WGM10),
-    pwm9Bits                  = (1 << (WGM12+8)) | (1 << WGM11),
-    pwm10Bits                 = (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10),
-    pwmDefinedTop             = (1 << (WGM13+8)) | (1 << (WGM12+8)) | (1 << WGM11),
-    pwmPhaseCorrect8Bits      = (1 << WGM10),
-    pwmPhaseCorrect9Bits      = (1 << WGM11),
-    pwmPhaseCorrect10Bits     = (1 << WGM11)     | (1 << WGM10),
-    pwmPhaseCorrectDefinedTop = (1 << (WGM13+8))
+    normal                    = 0,                                                  //!< Timer operates in normal mode
+    ctcTopOnICR1              = (1 << (WGM13+8)) | (1 << (WGM12+8)),                //!< Timer operates in CTC mode (clear on input capture register (ICR1))
+    ctcTopOnOCR1A             = (1 << (WGM12+8)),                                   //!< Timer operates in CTC mode (clear on output compare channel A register (OCR1A))
+    pwm8Bits                  = (1 << (WGM12+8)) | (1 << WGM10),                    //!< Timer operates as pwm generator (8 bits)
+    pwm9Bits                  = (1 << (WGM12+8)) | (1 << WGM11),                    //!< Timer operates as pwm generator (9 bits)
+    pwm10Bits                 = (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10), //!< Timer operates as pwm generator (10 bits)
+    pwmDefinedTop             = (1 << (WGM13+8)) | (1 << (WGM12+8)) | (1 << WGM11), //!< Timer operates as pwm generator (with defined top value (maximum of 16 bits))
+    pwmPhaseCorrect8Bits      = (1 << WGM10),                                       //!< Timer operates in pwm phase correct mode (8 bits)
+    pwmPhaseCorrect9Bits      = (1 << WGM11),                                       //!< Timer operates in pwm phase correct mode (9 bits)
+    pwmPhaseCorrect10Bits     = (1 << WGM11)     | (1 << WGM10),                    //!< Timer operates in pwm phase correct mode (10 bits)
+    pwmPhaseCorrectDefinedTop = (1 << (WGM13+8))                                    //!< Timer operates in pwm phase correct mode (with defined top value (maximum of 16 bits))
 };
 
 enum class timer1Clock : uint16_t
 {
-    off                 = 0,
-    noPreescale         = (1 << (CS10+8)),
-    divideBy8           = (1 << (CS11+8)),
-    divideBy64          = (1 << (CS11+8)) | (1 << (CS10+8)),
-    divideBy256         = (1 << (CS12+8)),
-    divideBy1024        = (1 << (CS12+8)) | (1 << (CS10+8)),
-    externT1FallingEdge = (1 << (CS12+8)) | (1 << (CS11+8)),
-    externT1RisingEdge  = (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8))
+    off                 = 0,                                                  //!< Timer has no clock (saves power)
+    noPreescale         = (1 << (CS10+8)),                                    //!< CPU clock is applied directly on the timer
+    divideBy8           = (1 << (CS11+8)),                                    //!< Divides CPU clock by 8
+    divideBy64          = (1 << (CS11+8)) | (1 << (CS10+8)),                  //!< Divides CPU clock by 64
+    divideBy256         = (1 << (CS12+8)),                                    //!< Divides CPU clock by 256
+    divideBy1024        = (1 << (CS12+8)) | (1 << (CS10+8)),                  //!< Divides CPU clock by 1024
+    externT1FallingEdge = (1 << (CS12+8)) | (1 << (CS11+8)),                  //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    externT1RisingEdge  = (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8)) //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
 };
 
 enum class timer1Interrupt : uint8_t
