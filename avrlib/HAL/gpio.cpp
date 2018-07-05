@@ -1,8 +1,8 @@
 #include "gpio.h"
 
-void gpioSetDir(const gpio_t* gpio, gpioDir_t dir)
+void gpioSetDir(const gpio_t* gpio, GpioDir dir)
 {
-    if (dir == gpioDir_t::output)
+    if (dir == GpioDir::output)
         gpioAsOutput(gpio);
     else
         gpioAsInput(gpio);
@@ -54,31 +54,4 @@ void gpioEnableINT(const gpio_t* gpio, gpioTrigger trigger)
 void gpioDisableINT(const gpio_t* gpio)
 {
 	EIMSK = EIMSK & ~(gpio->hasInt << gpio->whatInt);
-}
-
-void gpioSetDuty(const gpio_t* gpio, const uint16_t duty)
-{
-    #if defined(SUPPORT_TO_TIMER0)
-        if (*gpio->port == *OC0A_PIN.port && gpio->pinNumber == OC0A_PIN.pinNumber)
-            timer0ASetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
-
-        else if (*gpio->port == *OC0B_PIN.port && gpio->pinNumber == OC0B_PIN.pinNumber)
-            timer0BSetDuty((uint8_t) (duty & 0xFF), timer0OutputConfig);
-    #endif
-
-    #if defined(SUPPORT_TO_TIMER1)
-        if (*gpio.port == *OC1A_PIN.port && gpio.number == OC1A_PIN.number)
-            timer1ASetDuty(duty, timer1OutputConfig, timer1TopValue);
-
-        else if (*gpio.port == *OC1B_PIN.port && gpio.number == OC1B_PIN.number)
-            timer1BSetDuty(duty, timer1OutputConfig, timer1TopValue);
-    #endif
-
-    #if defined(SUPPORT_TO_TIMER2)
-        if (*gpio.port == *OC2A_PIN.port && gpio.number == OC2A_PIN.number)
-            timer2ASetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
-
-        else if (*gpio.port == *OC2B_PIN.port && gpio.number == OC2B_PIN.number)
-            timer2BSetDuty((uint8_t) (duty & 0xFF), timer2OutputConfig);
-    #endif
 }

@@ -38,7 +38,6 @@
 
 #include "gpio.h"
 #include "defines.h"
-#include "../config.h"
 
 #if defined(SUPPORT_TO_SPI)
 

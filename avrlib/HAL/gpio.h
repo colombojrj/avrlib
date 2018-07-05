@@ -68,20 +68,14 @@ enum class GpioDir : uint8_t
     output = 1  //!< configures the gpio pin as output
 };
 
-/// Define gpioConfig_t type
-typedef GpioDir gpioDir_t;
-
 /**
  * @brief Controls the pull up resistor of each GPIO pin
  */
-enum class GpioPullResistor_t : uint8_t
+enum class GpioPullResistor : uint8_t
 {
     disable = 0, //!< disables the gpio pull up resistor
     enable = 1   //!< enables the gpio pull up resistor
 };
-
-/// Define gpioPullResistor_t type
-typedef GpioPullResistor_t gpioPullResistor_t;
 
 /**
  * @brief Configures the gpio pin as output (ATmega devices support only
@@ -134,7 +128,7 @@ typedef GpioPullResistor_t gpioPullResistor_t;
  * @see gpioDir_t
  * @see gpio_t
  */
-extern void gpioSetDir(const gpio_t* gpio, gpioDir_t dir);
+extern void gpioSetDir(const gpio_t* gpio, GpioDir dir);
 
 /**
  * @brief Write high logic level on the gpio pin configured as output
@@ -218,7 +212,7 @@ extern void gpioDisablePCINT(const gpio_t* gpio);
  * the gpio pin.
  *
  * The trigger source of the employed device is specified through the
- * @ref gpioInt enum. Use the auto completion of your favorite IDE to show
+ * @ref gpioTrigger enum. Use the auto completion of your favorite IDE to show
  * you the available options.
  *
  * @warning The raised interrupt will call ISR(INTx_vect), where x is
@@ -226,10 +220,10 @@ extern void gpioDisablePCINT(const gpio_t* gpio);
  * that avrlib does nothing inside INTx_vect.
  *
  * @param gpio is a pointer to gpio pin (example: PinD0)
- * @param trigger is from gpioInt enum specifying the trigger source
+ * @param trigger is from gpioTrigger enum specifying the trigger source
  *
  * @see gpio_t
- * @see gpioInt
+ * @see gpioTrigger
  */
 extern void gpioEnableINT(const gpio_t* gpio, gpioTrigger trigger);
 
@@ -241,20 +235,6 @@ extern void gpioEnableINT(const gpio_t* gpio, gpioTrigger trigger);
  * @see gpio_t
  */
 extern void gpioDisableINT(const gpio_t* gpio);
-
-/**
- * This function sets the duty cycle of a PWM channel
- *
- * \todo Add support to software PWM to increase PWM channels on microcontroller
- *
- * \warning The \b duty variable is of type uint16_t. However, if the hardware
- *          supports only 8 bits, then it won't work as 16 bits PWM.
- *
- * @param port is a pointer to the port of the pin (example: &PORTB)
- * @param pin is the pin number (example: PB5 or just 5)
- * @param duty is the duty cycle value
- */
-extern void gpioSetDuty(const gpio_t gpio, const uint16_t duty);
 
 /**@}*/
 

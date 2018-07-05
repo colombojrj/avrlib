@@ -538,11 +538,10 @@ constexpr timer8b _Timer0 = {
         true,
         timer0OutputAConfig,
         timer0OutputBConfig,
-        &whatTimer0OutputAConfig,
-        &whatTimer0OutputBConfig,
+        &timer0WhatOutputAConfig,
+        &timer0WhatOutputBConfig,
         (1 << COM0A1) | (1 << COM0A0),
         (1 << COM0B1) | (1 << COM0B0),
-        0,
         &timer0MaxCount
 };
 
@@ -552,12 +551,11 @@ constexpr timer16b _Timer1 = {
         true,
         timer1OutputAConfig,
         timer1OutputBConfig,
-        &whatTimer1OutputAConfig,
-        &whatTimer1OutputBConfig,
+        &timer1WhatOutputAConfig,
+        &timer1WhatOutputBConfig,
         (1 << COM1A1) | (1 << COM1A0),
         (1 << COM1B1) | (1 << COM1B0),
-        0,
-        0
+        &timer1MaxCount
 };
 
 /// Timer 0 config structure
@@ -566,12 +564,11 @@ constexpr timer8b _Timer2 = {
         true,
         timer2OutputAConfig,
         timer2OutputBConfig,
-        &whatTimer2OutputAConfig,
-        &whatTimer2OutputBConfig,
+        &timer2WhatOutputAConfig,
+        &timer2WhatOutputBConfig,
         (1 << COM2A1) | (1 << COM2A0),
         (1 << COM2B1) | (1 << COM2B0),
-        0,
-        0
+        &timer2MaxCount
 };
 
 /// Timer 0 friendly definition
@@ -584,7 +581,7 @@ constexpr timer8b _Timer2 = {
 #define Timer2 &_Timer2
 
 /**
- * @brief This structure holds the available timer configuration
+ * @brief Timer 0 available operations mode
  */
 enum class timer0Mode : uint8_t
 {
@@ -595,7 +592,7 @@ enum class timer0Mode : uint8_t
 };
 
 /**
- * @brief Available timer clock source configurations
+ * @brief Available timer 0 clock source configurations
  */
 enum class timer0Clock : uint16_t
 {
@@ -609,6 +606,9 @@ enum class timer0Clock : uint16_t
     externRisingEdge  = (1 << (CS02+8)) | (1 << (CS01+8)) | (1 << (CS00+8)), //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
 };
 
+/**
+ * @brief Timer 0 available interrupt configurations
+ */
 enum class timer0Interrupt : uint8_t
 {
     none = 0,                        //!< Does not generate any interrupt
@@ -617,6 +617,9 @@ enum class timer0Interrupt : uint8_t
     onOverflow      = (1 << TOIE0)   //!< Generate an interrupt on after an overflow
 };
 
+/**
+ * @brief Timer 1 available operations mode
+ */
 enum class timer1Mode : uint16_t
 {
     normal                    = 0,                                                  //!< Timer operates in normal mode
@@ -632,6 +635,9 @@ enum class timer1Mode : uint16_t
     pwmPhaseCorrectDefinedTop = (1 << (WGM13+8))                                    //!< Timer operates in pwm phase correct mode (with defined top value (maximum of 16 bits))
 };
 
+/**
+ * @brief Available timer 1 clock source configurations
+ */
 enum class timer1Clock : uint16_t
 {
     off                 = 0,                                                  //!< Timer has no clock (saves power)
@@ -644,6 +650,9 @@ enum class timer1Clock : uint16_t
     externT1RisingEdge  = (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8)) //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
 };
 
+/**
+ * @brief Timer 1 available interrupt configurations
+ */
 enum class timer1Interrupt : uint8_t
 {
     none = 0,                        //!< Does not generate any interrupt
@@ -652,10 +661,16 @@ enum class timer1Interrupt : uint8_t
     onOverflow      = (1 << TOIE1)   //!< Generate an interrupt on after an overflow
 };
 
+/**
+ * This enum selects which edge on the Input Capture pin (ICP1) is used
+ * to trigger a capture event. When the ICES1 bit is written to zero, a falling (negative) edge is used as trigger, and
+when the ICES1 bit is written to one, a rising (positive) edge will trigger the capture.
+ *
+ */
 enum class timer1InputCaptureEdge : uint16_t
 {
-    risingEdge  = (1 << (ICES1+8)),
-    fallingEdge = 0
+    risingEdge  = (1 << (ICES1+8)), //!< A rising edge will trigger the capture
+    fallingEdge = 0                 //!< A falling edge will trigger the capture
 };
 
 /**
@@ -675,16 +690,18 @@ enum class timer2Mode : uint16_t
 enum class timer2Clock : uint16_t
 {
     off                = 0,
-    noPreescale        = (1 << (CS20+8)),                                     //!< CPU clock is applied directly on the timer
-    divideBy8          = (1 << (CS21+8)),                                     //!<
-    divideBy32         = (1 << (CS21+8)) | (1 << (CS20+8)),                   //!<
-    divideBy64         = (1 << (CS22+8)),                                     //!<
-    divideBy128        = (1 << (CS22+8)) | (1 << (CS20+8)),                   //!<
-    divideBy256        = (1 << (CS22+8)) | (1 << (CS21+8)),                   //!<
-    divideBy1024       = (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8)), //!<
-    setState           = (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8))  //!<
+    noPreescale        = (1 << (CS20+8)),                                    //!< CPU clock is applied directly on the timer
+    divideBy8          = (1 << (CS21+8)),                                    //!< Divides CPU clock by 8
+    divideBy32         = (1 << (CS21+8)) | (1 << (CS20+8)),                  //!< Divides CPU clock by 32
+    divideBy64         = (1 << (CS22+8)),                                    //!< Divides CPU clock by 64
+    divideBy128        = (1 << (CS22+8)) | (1 << (CS20+8)),                  //!< Divides CPU clock by 128
+    divideBy256        = (1 << (CS22+8)) | (1 << (CS21+8)),                  //!< Divides CPU clock by 256
+    divideBy1024       = (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8)) //!< Divides CPU clock by 1024
 };
 
+/**
+ * @brief Timer 2 available interrupt configurations
+ */
 enum class timer2Interrupt : uint8_t
 {
     none = 0,                        //!< Does not generate any interrupt

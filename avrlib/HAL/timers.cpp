@@ -1,11 +1,11 @@
 #include "timers.h"
 
-uint8_t whatTimer0OutputAConfig;
-uint8_t whatTimer0OutputBConfig;
-uint8_t whatTimer1OutputAConfig;
-uint8_t whatTimer1OutputBConfig;
-uint8_t whatTimer2OutputAConfig;
-uint8_t whatTimer2OutputBConfig;
+uint8_t timer0WhatOutputAConfig;
+uint8_t timer0WhatOutputBConfig;
+uint8_t timer1WhatOutputAConfig;
+uint8_t timer1WhatOutputBConfig;
+uint8_t timer2WhatOutputAConfig;
+uint8_t timer2WhatOutputBConfig;
 uint8_t timer0MaxCount;
 uint16_t timer1MaxCount;
 uint8_t timer2MaxCount;

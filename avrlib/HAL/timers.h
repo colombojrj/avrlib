@@ -40,15 +40,31 @@
 
 /**@{*/
 
-extern uint8_t whatTimer0OutputAConfig;
-extern uint8_t whatTimer0OutputBConfig;
-extern uint8_t whatTimer1OutputAConfig;
-extern uint8_t whatTimer1OutputBConfig;
-extern uint8_t whatTimer2OutputAConfig;
-extern uint8_t whatTimer2OutputBConfig;
+/// What is the output compare channel A of timer 0 configuration
+extern uint8_t timer0WhatOutputAConfig;
 
+/// What is the output compare channel B of timer 0 configuration
+extern uint8_t timer0WhatOutputBConfig;
+
+/// What is the output compare channel A of timer 1 configuration
+extern uint8_t timer1WhatOutputAConfig;
+
+/// What is the output compare channel B of timer 1 configuration
+extern uint8_t timer1WhatOutputBConfig;
+
+/// What is the output compare channel A of timer 2 configuration
+extern uint8_t timer2WhatOutputAConfig;
+
+/// What is the output compare channel B of timer 2 configuration
+extern uint8_t timer2WhatOutputBConfig;
+
+/// Timer 0 max count value
 extern uint8_t timer0MaxCount;
+
+/// Timer 1 max count value
 extern uint16_t timer1MaxCount;
+
+/// Timer 2 max count value
 extern uint8_t timer2MaxCount;
 
 /**
@@ -91,16 +107,15 @@ struct timer16bRegs
  */
 struct timer8b
 {
-    const timer8bRegs* regs;    // Low level registers
-    bool hasOoutputCompareUnit; // If the timer has an output compare unit (usually employed for PWM signal generation)
-    const uint8_t* ocAConfs;
-    const uint8_t* ocBConfs;
-    uint8_t* outputConfA;       // Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
-    uint8_t* outputConfB;       // Address of variable containing the actual output channel B configuration (@see _timer0OutputBConfig)
-    uint8_t ocASetState;
-    uint8_t ocBSetState;
-    uint8_t interruptConf;      // Interrupt configuration
-    uint8_t* maxCount;          // Max count (only if applicable)
+    const timer8bRegs* regs;    //!< Low level registers
+    bool hasOoutputCompareUnit; //!< If the timer has an output compare unit (usually employed for PWM signal generation)
+    const uint8_t* ocAConfs;    //!< Available output compare channel A configurations
+    const uint8_t* ocBConfs;    //!< Available output compare channel B configurations
+    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
+    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration (@see _timer0OutputBConfig)
+    uint8_t ocASetState;        //!< Output compare channel A set state (for library use only)
+    uint8_t ocBSetState;        //!< Output compare channel B set state (for library use only)
+    uint8_t* maxCount;          //!< Max count (only if applicable)
 };
 
 /**
@@ -108,24 +123,27 @@ struct timer8b
  */
 struct timer16b
 {
-    const timer16bRegs* regs;   // Low level registers
-    bool hasOoutputCompareUnit; // If the timer has an output compare unit (usually employed for PWM signal generation)
-    const uint8_t* ocAConfs;
-    const uint8_t* ocBConfs;
-    uint8_t* outputConfA;       // Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
-    uint8_t* outputConfB;       // Address of variable containing the actual output channel B configuration (@see _timer0OutputAConfig)
-    uint8_t ocASetState;
-    uint8_t ocBSetState;
-    uint8_t interruptConf;      // Interrupt configuration
-    uint16_t* maxCount;         // Max count (only if applicable)
+    const timer16bRegs* regs;   //!< Low level registers
+    bool hasOoutputCompareUnit; //!< If the timer has an output compare unit (usually employed for PWM signal generation)
+    const uint8_t* ocAConfs;    //!< Available output compare channel A configurations
+    const uint8_t* ocBConfs;    //!< Available output compare channel B configurations
+    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
+    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration (@see _timer0OutputAConfig)
+    uint8_t ocASetState;        //!< Output compare channel A set state (for library use only)
+    uint8_t ocBSetState;        //!< Output compare channel B set state (for library use only)
+    uint16_t* maxCount;         //!< Max count (only if applicable)
 };
 
+/**
+ * The ATmega timers share an output compare match unit. This enumerator defines
+ * the available possible output configurations.
+ */
 enum class timerOutputConfig : uint8_t
 {
-    disconnected = 0,
-    normal,
-    inverted,
-    setState
+    disconnected = 0, //!< Output compare unit does not control the gpio pin
+    normal,           //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
+    inverted,         //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
+    setState          //!< For library purposes
 };
 
 /**
@@ -142,7 +160,7 @@ enum class timerOutputConfig : uint8_t
  * Programming example on ATmega328P:
  *
  * @code
- *        timerSetClockPreescaler(&Timer0, io8Conf(timer0Clock::divideBy64))
+ *        timerSetClockPreescaler(Timer0, io8Conf(timerClock::divideBy64))
  * @endcode
  *
  * @see io8Conf
@@ -165,7 +183,7 @@ void timerSetClockPreescaler(const timer8b* timer, uint16_t clockConf);
  * Programming example on ATmega328P:
  *
  * @code
- *        timerSetClockPreescaler(&Timer1, io16Conf(timer0Clock::divideBy64))
+ *        timerSetClockPreescaler(Timer1, io16Conf(timerClock::divideBy64))
  * @endcode
  *
  * @see io16Conf
@@ -181,16 +199,16 @@ void timerSetMode(const timer8b* timer, uint16_t mode);
 void timerSetMode(const timer16b* timer, uint16_t mode);
 
 
-void timerSetOutputA(const timer8b* timer, uint8_t outputConfig);
+void timerSetOutputCompareUnitA(const timer8b* timer, uint8_t outputConfig);
 
 
-void timerSetOutputA(const timer16b* timer, uint8_t outputConfig);
+void timerSetOutputCompareUnitA(const timer16b* timer, uint8_t outputConfig);
 
 
-void timerSetOutputB(const timer8b* timer, uint8_t outputConfig);
+void timerSetOutputCompareUnitB(const timer8b* timer, uint8_t outputConfig);
 
 
-void timerSetOutputB(const timer16b* timer, uint8_t outputConfig);
+void timerSetOutputCompareUnitB(const timer16b* timer, uint8_t outputConfig);
 
 
 void timerSetTop(const timer8b* timer, uint8_t top);

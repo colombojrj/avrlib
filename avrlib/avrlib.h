@@ -9,28 +9,42 @@
  *  functions, data structures (and more) from this library will be available
  *  on your code.
  *
- *  To use avrlib you need to configure the file config.h (do not worry,
- *  an examples is shipped with this library :-)
- *
  *  AVRLIB is written in C/C++ and is divided in three layers:
  *  - Device: microcontroller registers have funny names and change from device
  *            to device. This layer defines standard names and data structures
  *            for these registers
  *  - HAL: initializes and work with hardware. This layer accesses the data
  *         structures defined on device (raw registers are accessed directly)
- *  - High-end: most abstract layer. Everything is a class
  *
  *  @author José Roberto Colombo Junior colombojrj@gmail.com
  */
 
 /**@{*/
 
-#include <util/delay.h>
+/*!
+ *
+ * \mainpage avrlib
+ *
+ * @section welcome AVRLIB a high level library for AVR micro-controllers
+ *
+ * @subsection supported_hardware Supported micro-controllers
+ *
+ * Actually the following microcontrollers are supported:
+ * * ATmega328P (recall that I develop this library for free)
+ *
+ * @subsection recommendations General recomendations
+ *
+ * It is worth noting that this documentation has the purpose of guiding
+ * the developer only. It doesn't replace the original AVR micro-controller
+ * datasheet.
+ *
+ */
 
 #define AVRLIB
 
-#include "config.h"
-#include "HAL/HAL.h"
+#include <util/delay.h>
+#include "devices/device.h"
 
+/**@}*/
 
 #endif /* AVRLIB_H_ */
