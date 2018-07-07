@@ -2,7 +2,6 @@
 #define TIMERS_H_
 
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include "gpio.h"
 #include "defines.h"
 
@@ -68,7 +67,7 @@ extern uint16_t timer1MaxCount;
 extern uint8_t timer2MaxCount;
 
 /**
- * @brief Generic 8 bits timer
+ * @brief Generic 8 bits timer registers
  */
 struct timer8bRegs
 {
@@ -86,7 +85,7 @@ struct timer8bRegs
 };
 
 /**
- * @brief Generic 16 bits timer
+ * @brief Generic 16 bits timer registers
  */
 struct timer16bRegs
 {
@@ -103,7 +102,7 @@ struct timer16bRegs
 };
 
 /**
- * An abstract 8 bits timer configuration struct
+ * @brief An abstract 8 bits timer configuration struct
  */
 struct timer8b
 {
@@ -119,7 +118,7 @@ struct timer8b
 };
 
 /**
- * An abstract 16 bits timer configuration struct
+ * @brief An abstract 16 bits timer configuration struct
  */
 struct timer16b
 {
@@ -152,7 +151,7 @@ enum class timerOutputConfig : uint8_t
  * @param timer8b is a pointer to a 8 bits timer register descriptor
  *        @see timer8b
  * @param clockConf is the clock configuration defined with enum. Although
- *        this parameter type is uint8_t, the values that can be used depend on
+ *        this parameter type is uint16_t, the values that can be used depend on
  *        microcontroller and the employed timer. The enums have the following
  *        name: timerxClock.
  *        @see timer0Clock, for example
@@ -160,61 +159,38 @@ enum class timerOutputConfig : uint8_t
  * Programming example on ATmega328P:
  *
  * @code
- *        timerSetClockPreescaler(Timer0, io8Conf(timerClock::divideBy64))
- * @endcode
- *
- * @see io8Conf
- *
- * @todo add support to select frequency automatically (ctc mode only)
- */
-void timerSetClockPreescaler(const timer8b* timer, uint16_t clockConf);
-
-/**
- * Configures the clock preescaler of a 16 bits timer
- *
- * @param timer16b is a pointer to a 16 bits timer register descriptor
- *        @see timer16b
- * @param clockConf is the clock configuration defined with enum. Although
- *        this parameter type is uint8_t, the values that can be used depend on
- *        microcontroller and the employed timer. The enums have the following
- *        name: timerxClock.
- *        @see timer1Clock, for example
- *
- * Programming example on ATmega328P:
- *
- * @code
- *        timerSetClockPreescaler(Timer1, io16Conf(timerClock::divideBy64))
+ *        timerSetClockPreescaler(Timer0, io16Conf(timer0Clock::divideBy64))
  * @endcode
  *
  * @see io16Conf
- *
- * @todo add support to select frequency automatically (ctc mode only)
  */
-void timerSetClockPreescaler(const timer16b* timer, uint16_t clockConf);
+#define timerSetClockPreescaler(timer, clockConf) { \
+    *(*timer).regs->control |= clockConf;           \
+}
 
+#define timerSetMode(timer, modeConf) {             \
+    *(*timer).regs->control |= modeConf;            \
+}
 
-void timerSetMode(const timer8b* timer, uint16_t mode);
+#define timerSetOutputCompareUnitA(timer, outputConf) {                 \
+    *(*timer).outputConfA = (*timer).ocAConfs[io8Conf(outputConf)];     \
+    *(*timer).regs->control &= ~(*timer).ocASetState;                   \
+    *(*timer).regs->control |= *(*timer).outputConfA;                   \
+}
 
+#define timerSetOutputCompareUnitB(timer, outputConf) {                 \
+    *(*timer).outputConfB = (*timer).ocBConfs[io8Conf(outputConf)];     \
+    *(*timer).regs->control &= ~(*timer).ocBSetState;                   \
+    *(*timer).regs->control |= *(*timer).outputConfB;                   \
+}
 
-void timerSetMode(const timer16b* timer, uint16_t mode);
-
-
-void timerSetOutputCompareUnitA(const timer8b* timer, uint8_t outputConfig);
-
-
-void timerSetOutputCompareUnitA(const timer16b* timer, uint8_t outputConfig);
-
-
-void timerSetOutputCompareUnitB(const timer8b* timer, uint8_t outputConfig);
-
-
-void timerSetOutputCompareUnitB(const timer16b* timer, uint8_t outputConfig);
-
-
-void timerSetTop(const timer8b* timer, uint8_t top);
-
-
-void timerSetTop(const timer16b* timer, uint16_t top);
+/**
+ * Found solution: I am defining that 16 bits timer will always employ
+ * ICR register as top register for PWMs and CTC modes
+ */
+#define timerSetTop(timer, top) {  \
+    *(*timer).maxCount = top; \
+}
 
 
 void timerSetDutyA(const timer8b* timer, uint8_t duty);
