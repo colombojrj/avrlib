@@ -44,6 +44,7 @@ void timerInit(const timer8b* timer,
     if (interruptConf != 0)
         sei();
 
+    // Sets timer max count
     *timer->maxCount = 255;
 }
 
@@ -80,6 +81,7 @@ void timerInit(const timer16b* timer,
     if (interruptConf != 0)
         sei();
 
+    // @todo Finish the maxCount initialization
     *timer->maxCount = 0xFFFF;
     if (mode != 0)
     {
@@ -94,7 +96,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
         // Disable compare match
         *timer->regs->control &= ~timer->ocASetState;
 
-        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputConfig::normal)])
+        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputCompareMode::normal)])
             gpioWriteHigh(timer->regs->outputPinA);
         else
             gpioWriteLow(timer->regs->outputPinA);
@@ -105,7 +107,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
         // Disable compare match
         *timer->regs->control &= ~timer->ocASetState;
 
-        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputConfig::normal)])
+        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputCompareMode::normal)])
             gpioWriteLow(timer->regs->outputPinA);
         else
             gpioWriteHigh(timer->regs->outputPinA);
@@ -128,7 +130,7 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
         // Disable compare match
         *timer->regs->control &= ~timer->ocBSetState;
 
-        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputConfig::normal)])
+        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputCompareMode::normal)])
             gpioWriteHigh(timer->regs->outputPinB);
         else
             gpioWriteLow(timer->regs->outputPinB);
@@ -139,7 +141,7 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
         // Disable compare match
         *timer->regs->control &= ~timer->ocBSetState;
 
-        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputConfig::normal)])
+        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputCompareMode::normal)])
             gpioWriteLow(timer->regs->outputPinB);
         else
             gpioWriteHigh(timer->regs->outputPinB);

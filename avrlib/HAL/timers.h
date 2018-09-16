@@ -11,30 +11,11 @@
  * Definitions:
  * - BOTTOM: The counter reaches the BOTTOM when it becomes 0x00
  * - MAX: The counter reaches its MAXimum when it becomes 0xFF (decimal 255)
- * - TOP: The counter reaches the TOP when it becomes equal to the highest value in the
- *        count sequence. The TOP value can be assigned to be the fixed value 0xFF
- *        (MAX) or the value stored in the OCR0A Register. The assignment is depen-
- *        dent on the mode of operation.
+ * - TOP: The counter reaches the TOP when it becomes equal to the highest value
+ *        in the count sequence. The TOP value can be assigned to be the fixed
+ *        value 0xFF (MAX) or the value stored in the OCR0A Register. The
+ *        assignment is dependent on the mode of operation.
  *
- *
- * Organizational idea of this library:
- *
- * - The file defines.h keeps the definitions of the actual
- *   microcontroller timers (such as what pin and port the
- *   PWM is connected to)
- *
- * - This library uses those definitions to map the PWM
- *   pins. If a new microcontroller needs to be added, then
- *   it remains to add the port definition on defines.h
- *
- * - It is assumed that a timer has a single configuration
- *   during production. With this, defines were inserted
- *   to allow the compiler to select what configuration is
- *   needed and then, generate code only for that
- *   application. The main concern here is to keep the code
- *   size smallest as possible. If "dynamic" functions were
- *   used the compiler would have to build all unused code,
- *   occupying memory of the microcontroller
  */
 
 /**@{*/
@@ -102,34 +83,60 @@ struct timer16bRegs
 };
 
 /**
- * @brief An abstract 8 bits timer configuration struct
+ * @brief This structure models the output compare unit of an 8bits timer
+ */
+struct timer8bOutputCompare
+{
+    volatile uint8_t* control;       //!< Control register of the output compare unit
+    volatile uint8_t* compareValueA; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    volatile uint8_t* compareValueB; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    const uint8_t* ocAConfs;         //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* ocBConfs;         //!< This is a pointer to a list of all available output compare channel B configurations.
+    const gpio_t* pinA;              //!< The output compare unit channel A controls this gpio pin
+    const gpio_t* pinB;              //!< The output compare unit channel B controls this gpio pin
+};
+
+/**
+ * @brief This structure models the output compare unit of an 16bits timer
+ */
+struct timer16bOutputCompare
+{
+    volatile uint8_t* control;        //!< Control register of the output compare unit
+    volatile uint16_t* compareValueA; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    volatile uint16_t* compareValueB; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    const uint8_t* ocAConfs;          //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* ocBConfs;          //!< This is a pointer to a list of all available output compare channel B configurations.
+    const gpio_t* pinA;               //!< The output compare unit channel A controls this gpio pin
+    const gpio_t* pinB;               //!< The output compare unit channel B controls this gpio pin
+};
+
+/**
+ * @brief An abstract 8 bits timer configuration structure
  */
 struct timer8b
 {
     const timer8bRegs* regs;    //!< Low level registers
-    bool hasOoutputCompareUnit; //!< If the timer has an output compare unit (usually employed for PWM signal generation)
-    const uint8_t* ocAConfs;    //!< Available output compare channel A configurations
-    const uint8_t* ocBConfs;    //!< Available output compare channel B configurations
-    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
-    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration (@see _timer0OutputBConfig)
-    uint8_t ocASetState;        //!< Output compare channel A set state (for library use only)
-    uint8_t ocBSetState;        //!< Output compare channel B set state (for library use only)
+    const uint8_t* ocAConfs;    //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* ocBConfs;    //!< This is a pointer to a list of all available output compare channel B configurations.
+    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration
+    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration
+    const uint8_t ocASetState;  //!< Output compare channel A set state (for library use only)
+    const uint8_t ocBSetState;  //!< Output compare channel B set state (for library use only)
     uint8_t* maxCount;          //!< Max count (only if applicable)
 };
 
 /**
- * @brief An abstract 16 bits timer configuration struct
+ * @brief An abstract 16 bits timer configuration structure
  */
 struct timer16b
 {
     const timer16bRegs* regs;   //!< Low level registers
-    bool hasOoutputCompareUnit; //!< If the timer has an output compare unit (usually employed for PWM signal generation)
-    const uint8_t* ocAConfs;    //!< Available output compare channel A configurations
-    const uint8_t* ocBConfs;    //!< Available output compare channel B configurations
-    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration (@see _timer0OutputAConfig)
-    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration (@see _timer0OutputAConfig)
-    uint8_t ocASetState;        //!< Output compare channel A set state (for library use only)
-    uint8_t ocBSetState;        //!< Output compare channel B set state (for library use only)
+    const uint8_t* ocAConfs;    //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* ocBConfs;    //!< This is a pointer to a list of all available output compare channel B configurations.
+    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration
+    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration
+    const uint8_t ocASetState;  //!< Output compare channel A set state (for library use only)
+    const uint8_t ocBSetState;  //!< Output compare channel B set state (for library use only)
     uint16_t* maxCount;         //!< Max count (only if applicable)
 };
 
@@ -137,7 +144,7 @@ struct timer16b
  * The ATmega timers share an output compare match unit. This enumerator defines
  * the available possible output configurations.
  */
-enum class timerOutputConfig : uint8_t
+enum class timerOutputCompareMode : uint8_t
 {
     disconnected = 0, //!< Output compare unit does not control the gpio pin
     normal,           //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
@@ -167,6 +174,7 @@ enum class timerOutputConfig : uint8_t
 #define timerSetClockPreescaler(timer, clockConf) { \
     *(*timer).regs->control |= clockConf;           \
 }
+
 
 #define timerSetMode(timer, modeConf) {             \
     *(*timer).regs->control |= modeConf;            \
@@ -204,7 +212,32 @@ void timerSetDutyA(const timer16b* timer, uint16_t duty);
 
 void timerSetDutyB(const timer16b* timer, uint16_t duty);
 
-
+/**
+ * This function has the purpose of initialize an ATmega timer peripheral.
+ * The user has to provide:
+ * @param timer is the timer which will be configured
+ * @param mode is the desired timer mode
+ * @param clockConf is the desired clock source configuration
+ * @param outputAConf is the configuration of the output compare unit A
+ * @param outputAConf is the configuration of the output compare unit B
+ * @param interruptConf is the interrupt configuration
+ *
+ * Here is an example of how to configure the Timer0 of the ATmega328P
+ * to run in CTC mode generating an interrupt on a compare match:
+ *
+ * \code
+ *  timerInit(Timer0,
+ *            io16Conf(timer0Mode::ctc),
+ *            io16Conf(timer0Clock::divideBy64),
+ *            io8Conf(timerOutputConfig::off),
+ *            io8Conf(timerOutputConfig::off),
+ *            io8Conf(timer0Interrupt::onCompareMatchA));
+ *  timer
+ * \endcode
+ *
+ * @see timer8b
+ *
+ */
 void timerInit(const timer8b* timer,
                uint16_t mode,
                uint16_t clockConf,
@@ -219,7 +252,6 @@ void timerInit(const timer16b* timer,
                uint8_t outputAConf,
                uint8_t outputBConf,
                uint8_t interruptConf);
-
 
 
 
