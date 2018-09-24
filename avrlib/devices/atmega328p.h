@@ -488,18 +488,51 @@ constexpr uint8_t timer2OutputBConfig[] = {
         (1 << COM2B1) | (1 << COM2B0)
 };
 
+/// Timer 0 output compare unit configuration
+constexpr timer8bOC _Timer0_OC = {
+        timer0OutputAConfig,
+        timer0OutputBConfig,
+        PinD6,
+        PinD5,
+        &OCR0A,
+        &OCR0B,
+        (1 << COM0A1) | (1 << COM0A0),
+        (1 << COM0B1) | (1 << COM0B0)
+};
+
+/// Timer 1 output compare unit configuration
+constexpr timer16bOC _Timer1_OC = {
+        timer1OutputAConfig,
+        timer1OutputBConfig,
+        PinB1,
+        PinB2,
+        &OCR1A,
+        &OCR1B,
+        (1 << COM1A1) | (1 << COM1A0),
+        (1 << COM1B1) | (1 << COM1B0)
+};
+
+/// Timer 2 output compare unit configuration
+constexpr timer8bOC _Timer2_OC = {
+        timer2OutputAConfig,
+        timer2OutputBConfig,
+        PinB3,
+        PinD3,
+        &OCR2A,
+        &OCR2B,
+        (1 << COM2A1) | (1 << COM2A0),
+        (1 << COM2B1) | (1 << COM2B0)
+};
+
 /// Timer 0 registers definition
 constexpr timer8bRegs Timer0Regs = {
         (uint16_t*) &TCCR0A,
         &TCNT0,
-        &OCR0A,
-        &OCR0B,
+        &_Timer0_OC,
         &TIMSK0,
         &TIFR0,
         nullptr,
         nullptr,
-        PinD6,
-        PinD5,
         PRTIM0
 };
 
@@ -521,47 +554,13 @@ constexpr timer16bRegs Timer1Regs = {
 constexpr timer8bRegs Timer2Regs = {
         (uint16_t*) &TCCR2A,
         &TCNT2,
-        &OCR2A,
-        &OCR2B,
+        &_Timer2_OC,
         &TIMSK2,
         &TIFR2,
         &ASSR,
         &GTCCR,
-        PinB3,
-        PinD3,
         PRTIM2
 };
-
-/// Timer 0 output compare unit configuration
-constexpr timer8bOutputCompare _Timer0_OC = {
-        &TCCR0A,
-        &OCR0A,
-        &OCR0B,
-        timer0OutputAConfig,
-        timer0OutputBConfig,
-        PinD6,
-        PinD5
-};
-
-/// Timer 1 output compare unit configuration
-//constexpr timerOC _Timer1OC = {
-//        timer1OutputAConfig,
-//        timer1OutputBConfig,
-//        &timer1WhatOutputAConfig,
-//        &timer1WhatOutputBConfig,
-//        (1 << COM1A1) | (1 << COM1A0),
-//        (1 << COM1B1) | (1 << COM1B0)
-//};
-
-/// Timer 2 output compare unit configuration
-//constexpr timerOC _Timer2OC = {
-//        timer2OutputAConfig,
-//        timer2OutputBConfig,
-//        &timer2WhatOutputAConfig,
-//        &timer2WhatOutputBConfig,
-//        (1 << COM2A1) | (1 << COM2A0),
-//        (1 << COM2B1) | (1 << COM2B0)
-//};
 
 /// Timer 0 config structure
 constexpr timer8b _Timer0 = {

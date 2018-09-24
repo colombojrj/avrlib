@@ -24,9 +24,9 @@ void timerInit(const timer8b* timer,
 
     // Configures gpio peripheral control
     if (outputAConf != 0)
-        gpioAsOutput(timer->regs->outputPinA);
+        gpioAsOutput(timer->regs->ocRegs->pinA);
     if (outputBConf != 0)
-        gpioAsOutput(timer->regs->outputPinB);
+        gpioAsOutput(timer->regs->ocRegs->pinB);
 
     // Configure timer operation mode and if gpio control
     *timer->regs->control = mode | timer->ocAConfs[io8Conf(outputAConf)]
@@ -97,9 +97,9 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
         *timer->regs->control &= ~timer->ocASetState;
 
         if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputCompareMode::normal)])
-            gpioWriteHigh(timer->regs->outputPinA);
+            gpioWriteHigh(timer->regs->ocRegs->pinA);
         else
-            gpioWriteLow(timer->regs->outputPinA);
+            gpioWriteLow(timer->regs->ocRegs->pinA);
     }
 
     else if (duty <= 0)
@@ -108,9 +108,9 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
         *timer->regs->control &= ~timer->ocASetState;
 
         if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputCompareMode::normal)])
-            gpioWriteLow(timer->regs->outputPinA);
+            gpioWriteLow(timer->regs->ocRegs->pinA);
         else
-            gpioWriteHigh(timer->regs->outputPinA);
+            gpioWriteHigh(timer->regs->ocRegs->pinA);
     }
 
     else
@@ -119,7 +119,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
         *timer->regs->control |= io8Conf(*timer->outputConfA);
 
         // Set the output compare register
-        *timer->regs->outputCompareA = duty;
+        *timer->regs->ocRegs->compareValueA = duty;
     }
 }
 
@@ -131,9 +131,9 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
         *timer->regs->control &= ~timer->ocBSetState;
 
         if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputCompareMode::normal)])
-            gpioWriteHigh(timer->regs->outputPinB);
+            gpioWriteHigh(timer->regs->ocRegs->pinB);
         else
-            gpioWriteLow(timer->regs->outputPinB);
+            gpioWriteLow(timer->regs->ocRegs->pinB);
     }
 
     else if (duty <= 0)
@@ -142,9 +142,9 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
         *timer->regs->control &= ~timer->ocBSetState;
 
         if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputCompareMode::normal)])
-            gpioWriteLow(timer->regs->outputPinB);
+            gpioWriteLow(timer->regs->ocRegs->pinB);
         else
-            gpioWriteHigh(timer->regs->outputPinB);
+            gpioWriteHigh(timer->regs->ocRegs->pinB);
     }
 
     else
@@ -153,7 +153,8 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
         *timer->regs->control |= io8Conf(*timer->outputConfB);
 
         // Set the output compare register
-        *timer->regs->outputCompareB = duty;
+        *timer->regs->ocRegs->compareValueB = duty;
+
     }
 }
 

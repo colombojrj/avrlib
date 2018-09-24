@@ -8,7 +8,23 @@
 /**
  * @defgroup hal_timer_group Timer
  *
- * Definitions:
+ * @brief
+ *
+ * Timers. These very peripherals are very simple and versatile. For sure,
+ * they are one of the most important peripherals in the microcontroller. If
+ * well used, they can save lots of processing power, freeing the CPU to
+ * work on other tasks.
+ *
+ * Despite their simplicity, it was true nightmare to add support to it.
+ * The ATmega microcontrollers may have 8 bits and 16 bits timers. In
+ * addition, some timers may work in input capture mode or even with
+ * asynchronous events.
+ *
+ * Therefore, the following design definitions were made:
+ * - A timer is a device that counts. Just it.
+ * - The ATmega devices have an output compare unit (OC). This peripheral
+ *   is attached to some timer and a gpio pin. This unit has the ability
+ *   of controlling the gpio unit through the timer events
  * - BOTTOM: The counter reaches the BOTTOM when it becomes 0x00
  * - MAX: The counter reaches its MAXimum when it becomes 0xFF (decimal 255)
  * - TOP: The counter reaches the TOP when it becomes equal to the highest value
@@ -48,20 +64,47 @@ extern uint16_t timer1MaxCount;
 extern uint8_t timer2MaxCount;
 
 /**
- * @brief Generic 8 bits timer registers
+ * @brief This structure models the output compare unit of an 8 bits timer
+ */
+struct timer8bOC
+{
+    const uint8_t* ocAConfs;         //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* ocBConfs;           //!< This is a pointer to a list of all available output compare channel B configurations.
+    const gpio_t* pinA;                //!< The output compare unit channel A controls this gpio pin
+    const gpio_t* pinB;                //!< The output compare unit channel B controls this gpio pin
+    volatile uint8_t* compareValueA;   //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    volatile uint8_t* compareValueB;   //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    const uint8_t setStateA;           //!< Output compare channel A set state (for library use only)
+    const uint8_t setStateB;           //!< Output compare channel B set state (for library use only)
+};
+
+/**
+ * @brief This structure models the output compare unit of an 16 bits timer
+ */
+struct timer16bOC
+{
+    const uint8_t* ocAConfs;           //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* ocBConfs;           //!< This is a pointer to a list of all available output compare channel B configurations.
+    const gpio_t* pinA;                //!< The output compare unit channel A controls this gpio pin
+    const gpio_t* pinB;                //!< The output compare unit channel B controls this gpio pin
+    volatile uint16_t* compareValueA;  //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    volatile uint16_t* compareValueB;  //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    const uint8_t setStateA;           //!< Output compare channel A set state (for library use only)
+    const uint8_t setStateB;           //!< Output compare channel B set state (for library use only)
+};
+
+/**
+ * @brief A structure to hold the 8 bits timer registers
  */
 struct timer8bRegs
 {
     volatile uint16_t* control;        //!< Address of the timer control register. Because in AVR architecture the two control registers are aligned in memory map, these registers are treated as a single 16bit register
     volatile uint8_t* counter;         //!< Address of the timer counter register
-    volatile uint8_t* outputCompareA;  //!< Address of the output compare A register
-    volatile uint8_t* outputCompareB;  //!< Address of the output compare B register
+    const timer8bOC* ocRegs;           //!< Output compare unit of the respective timer
     volatile uint8_t* interruptMask;   //!< Address of the interrupt mask register
     volatile uint8_t* interruptFlag;   //!< Address of the interrupt flag register
     volatile uint8_t* asyncStatus;     //!< Address of the interrupt asynchronous status register
     volatile uint8_t* asyncControl;    //!< Address of the interrupt asynchronous control register
-    const gpio_t* outputPinA;          //!< Gpio pin controlled by output channel A of timer
-    const gpio_t* outputPinB;          //!< Gpio pin controlled by output channel B of timer
     const uint8_t whatPRR;             //!< It inform what bit in PRR the timer has
 };
 
@@ -82,33 +125,7 @@ struct timer16bRegs
     const uint8_t whatPRR;             //!< It inform what bit in PRR the timer has
 };
 
-/**
- * @brief This structure models the output compare unit of an 8bits timer
- */
-struct timer8bOutputCompare
-{
-    volatile uint8_t* control;       //!< Control register of the output compare unit
-    volatile uint8_t* compareValueA; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    volatile uint8_t* compareValueB; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    const uint8_t* ocAConfs;         //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* ocBConfs;         //!< This is a pointer to a list of all available output compare channel B configurations.
-    const gpio_t* pinA;              //!< The output compare unit channel A controls this gpio pin
-    const gpio_t* pinB;              //!< The output compare unit channel B controls this gpio pin
-};
 
-/**
- * @brief This structure models the output compare unit of an 16bits timer
- */
-struct timer16bOutputCompare
-{
-    volatile uint8_t* control;        //!< Control register of the output compare unit
-    volatile uint16_t* compareValueA; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    volatile uint16_t* compareValueB; //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    const uint8_t* ocAConfs;          //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* ocBConfs;          //!< This is a pointer to a list of all available output compare channel B configurations.
-    const gpio_t* pinA;               //!< The output compare unit channel A controls this gpio pin
-    const gpio_t* pinB;               //!< The output compare unit channel B controls this gpio pin
-};
 
 /**
  * @brief An abstract 8 bits timer configuration structure
