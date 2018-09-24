@@ -93,29 +93,14 @@ enum supportedOutputCompareModes
 };
 
 /**
- * The ATmega timers share an output compare match unit. This enumerator defines
- * the available possible output configurations.
- */
-enum class timerOutputCompareMode : uint8_t
-{
-    disconnected = 0, //!< Output compare unit does not control the gpio pin
-    normal,           //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
-    inverted          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
-};
-
-/**
  * @brief This structure models the output compare unit of an 8 bits timer
  */
 struct timer8bOC
 {
-    const uint8_t* availableConfsChA;  //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* availableConfsChB;  //!< This is a pointer to a list of all available output compare channel B configurations.
-    const gpio_t* pinA;                //!< The output compare unit channel A controls this gpio pin
-    const gpio_t* pinB;                //!< The output compare unit channel B controls this gpio pin
-    volatile uint8_t* compareValueA;   //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    volatile uint8_t* compareValueB;   //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    const uint8_t setStateA;           //!< Output compare channel A set state (for library use only)
-    const uint8_t setStateB;           //!< Output compare channel B set state (for library use only)
+    const uint8_t* availableConfs;    //!< This is a pointer to a list of all available output compare configurations.
+    const gpio_t* pin;                //!< The output compare unit controls this gpio pin
+    volatile uint8_t* compareValue;   //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    uint8_t* actualOutputConf;        //!< Address of variable containing the actual output channel A configuration
 };
 
 /**
@@ -123,14 +108,10 @@ struct timer8bOC
  */
 struct timer16bOC
 {
-    const uint8_t* availableConfsChA;  //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* availableConfsChB;  //!< This is a pointer to a list of all available output compare channel B configurations.
-    const gpio_t* pinA;                //!< The output compare unit channel A controls this gpio pin
-    const gpio_t* pinB;                //!< The output compare unit channel B controls this gpio pin
-    volatile uint16_t* compareValueA;  //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    volatile uint16_t* compareValueB;  //!< The value stored in this register may trigger an interrupt or change the gpio pin state
-    const uint8_t setStateA;           //!< Output compare channel A set state (for library use only)
-    const uint8_t setStateB;           //!< Output compare channel B set state (for library use only)
+    const uint8_t* availableConfs;    //!< This is a pointer to a list of all available output compare configurations.
+    const gpio_t* pin;                //!< The output compare unit controls this gpio pin
+    volatile uint16_t* compareValue;  //!< The value stored in this register may trigger an interrupt or change the gpio pin state
+    uint8_t* actualOutputConf;        //!< Address of variable containing the actual output channel A configuration
 };
 
 /**
@@ -140,7 +121,6 @@ struct timer8bRegs
 {
     volatile uint16_t* control;        //!< Address of the timer control register. Because in AVR architecture the two control registers are aligned in memory map, these registers are treated as a single 16bit register
     volatile uint8_t* counter;         //!< Address of the timer counter register
-    const timer8bOC* ocRegs;           //!< Output compare unit of the respective timer
     volatile uint8_t* interruptMask;   //!< Address of the interrupt mask register
     volatile uint8_t* interruptFlag;   //!< Address of the interrupt flag register
     volatile uint8_t* asyncStatus;     //!< Address of the interrupt asynchronous status register
@@ -155,7 +135,6 @@ struct timer16bRegs
 {
     volatile uint16_t* control;        //!< Address of the timer control register. Because in AVR architecture the two control registers are aligned in memory map, these registers are treated as a single 16bit register
     volatile uint16_t* counter;        //!< Address of the timer counter register
-    const timer16bOC* ocRegs;
     volatile uint16_t* inputCapture;   //!< Address of the input capture register
     volatile uint8_t* interruptMask;   //!< Address of the interrupt mask register
     volatile uint8_t* interruptFlag;   //!< Address of the interrupt flag register
@@ -169,12 +148,10 @@ struct timer16bRegs
  */
 struct timer8b
 {
-    const timer8bRegs* regs;    //!< Low level registers
-    const uint8_t* ocAConfs;    //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* ocBConfs;    //!< This is a pointer to a list of all available output compare channel B configurations.
-    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration
-    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration
-    uint8_t* maxCount;          //!< Max count
+    const timer8bRegs* regs;   //!< Low level registers
+    const timer8bOC* ocA;      //!< Output compare unit A of the respective timer
+    const timer8bOC* ocB;      //!< Output compare unit B of the respective timer
+    uint8_t* maxCount;         //!< Max count
 };
 
 /**
@@ -182,15 +159,11 @@ struct timer8b
  */
 struct timer16b
 {
-    const timer16bRegs* regs;   //!< Low level registers
-    const uint8_t* ocAConfs;    //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* ocBConfs;    //!< This is a pointer to a list of all available output compare channel B configurations.
-    uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration
-    uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration
-    uint16_t* maxCount;         //!< Max count (only if applicable)
+    const timer16bRegs* regs;  //!< Low level registers
+    const timer16bOC* ocA;     //!< Output compare unit A of the respective timer
+    const timer16bOC* ocB;     //!< Output compare unit B of the respective timer
+    uint16_t* maxCount;        //!< Max count
 };
-
-
 
 /**
  * Configures the clock preescaler of a 8 bits timer
@@ -231,14 +204,6 @@ struct timer16b
     *(*timer).regs->control &= ~(*timer).ocBSetState;                   \
     *(*timer).regs->control |= *(*timer).outputConfB;                   \
 }
-
-/**
- * Found solution: I am defining that 16 bits timer will always employ
- * ICR register as top register for PWMs and CTC modes
- */
-//#define timerSetTop(timer, top) {  \
-//    *(*timer).maxCount = top; \
-//}
 
 /**
  * @brief Configures the timer pwm duty cycle of channel A
