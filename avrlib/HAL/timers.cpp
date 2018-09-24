@@ -95,7 +95,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
     if (duty >= *timer->maxCount)
     {
         // Disable compare match
-        *timer->regs->control &= ~timer->ocASetState;
+        *timer->regs->control &= ~timer->regs->ocRegs->setStateA;
 
         if (*timer->outputConfA == ocNormalConf)
             gpioWriteHigh(timer->regs->ocRegs->pinA);
@@ -106,7 +106,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
     else if (duty <= 0)
     {
         // Disable compare match
-        *timer->regs->control &= ~timer->ocASetState;
+        *timer->regs->control &= ~timer->regs->ocRegs->setStateA;
 
         if (*timer->outputConfA == ocNormalConf)
             gpioWriteLow(timer->regs->ocRegs->pinA);
@@ -130,7 +130,7 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
     if (duty >= *timer->maxCount)
     {
         // Disable compare match
-        *timer->regs->control &= ~timer->ocBSetState;
+        *timer->regs->control &= ~timer->regs->ocRegs->setStateB;
 
         if (*timer->outputConfB == ocNormalConf)
             gpioWriteHigh(timer->regs->ocRegs->pinB);
@@ -141,7 +141,7 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
     else if (duty <= 0)
     {
         // Disable compare match
-        *timer->regs->control &= ~timer->ocBSetState;
+        *timer->regs->control &= ~timer->regs->ocRegs->setStateB;
 
         if (*timer->outputConfB == ocNormalConf)
             gpioWriteLow(timer->regs->ocRegs->pinB);
@@ -158,6 +158,18 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
         *timer->regs->ocRegs->compareValueB = duty;
 
     }
+}
+
+void timerSetTop(const timer8b* timer, uint8_t top)
+{
+    *timer->maxCount = top;
+    *timer->regs->counter = top;
+}
+
+void timerSetTop(const timer16b* timer, uint8_t top)
+{
+    *timer->maxCount = top;
+    *timer->regs->counter = top;
 }
 
 

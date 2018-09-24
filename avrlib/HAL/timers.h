@@ -63,13 +63,53 @@ extern uint16_t timer1MaxCount;
 /// Timer 2 max count value
 extern uint8_t timer2MaxCount;
 
+enum supportedTimerModes
+{
+    TIMER_OFF = 0,
+    TIMER_AS_NORMAL,
+    TIMER_AS_CTC,
+    TIMER_AS_CTC_TOP_ICR,
+    TIMER_AS_CTC_TOP_OCR,
+    TIMER_AS_PWM,
+    TIMER_AS_PWM_8B,
+    TIMER_AS_PWM_9B,
+    TIMER_AS_PWM_10B,
+    TIMER_AS_PWM_DEFINED_TOP,
+    TIMER_AS_PWM_PHASE_CORRECT,
+    TIMER_AS_PWM_PHASE_CORRECT_8B,
+    TIMER_AS_PWM_PHASE_CORRECT_9B,
+    TIMER_AS_PWM_PHASE_CORRECT_10B,
+    TIMER_AS_PWM_PHASE_CORRECT_DEFINED_TOP,
+    TIMER_MODE_SIZE
+};
+
+enum supportedOutputCompareModes
+{
+    TIMER_OC_DISCONNECTED,  //!< Output compare unit does not control the gpio pin
+    TIMER_OC_NORMAL,        //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
+    TIMER_OC_INVERTED,      //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
+    TIMER_OC_SET_STATE,     //!< For internal library use only
+    TIMER_OC_SIZE           //!< For internal library use only
+};
+
+/**
+ * The ATmega timers share an output compare match unit. This enumerator defines
+ * the available possible output configurations.
+ */
+enum class timerOutputCompareMode : uint8_t
+{
+    disconnected = 0, //!< Output compare unit does not control the gpio pin
+    normal,           //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
+    inverted          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
+};
+
 /**
  * @brief This structure models the output compare unit of an 8 bits timer
  */
 struct timer8bOC
 {
-    const uint8_t* ocAConfs;         //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* ocBConfs;           //!< This is a pointer to a list of all available output compare channel B configurations.
+    const uint8_t* availableConfsChA;  //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* availableConfsChB;  //!< This is a pointer to a list of all available output compare channel B configurations.
     const gpio_t* pinA;                //!< The output compare unit channel A controls this gpio pin
     const gpio_t* pinB;                //!< The output compare unit channel B controls this gpio pin
     volatile uint8_t* compareValueA;   //!< The value stored in this register may trigger an interrupt or change the gpio pin state
@@ -83,8 +123,8 @@ struct timer8bOC
  */
 struct timer16bOC
 {
-    const uint8_t* ocAConfs;           //!< This is a pointer to a list of all available output compare channel A configurations.
-    const uint8_t* ocBConfs;           //!< This is a pointer to a list of all available output compare channel B configurations.
+    const uint8_t* availableConfsChA;  //!< This is a pointer to a list of all available output compare channel A configurations.
+    const uint8_t* availableConfsChB;  //!< This is a pointer to a list of all available output compare channel B configurations.
     const gpio_t* pinA;                //!< The output compare unit channel A controls this gpio pin
     const gpio_t* pinB;                //!< The output compare unit channel B controls this gpio pin
     volatile uint16_t* compareValueA;  //!< The value stored in this register may trigger an interrupt or change the gpio pin state
@@ -134,9 +174,7 @@ struct timer8b
     const uint8_t* ocBConfs;    //!< This is a pointer to a list of all available output compare channel B configurations.
     uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration
     uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration
-    const uint8_t ocASetState;  //!< Output compare channel A set state (for library use only)
-    const uint8_t ocBSetState;  //!< Output compare channel B set state (for library use only)
-    uint8_t* maxCount;          //!< Max count (only if applicable)
+    uint8_t* maxCount;          //!< Max count
 };
 
 /**
@@ -149,21 +187,10 @@ struct timer16b
     const uint8_t* ocBConfs;    //!< This is a pointer to a list of all available output compare channel B configurations.
     uint8_t* outputConfA;       //!< Address of variable containing the actual output channel A configuration
     uint8_t* outputConfB;       //!< Address of variable containing the actual output channel B configuration
-    const uint8_t ocASetState;  //!< Output compare channel A set state (for library use only)
-    const uint8_t ocBSetState;  //!< Output compare channel B set state (for library use only)
     uint16_t* maxCount;         //!< Max count (only if applicable)
 };
 
-/**
- * The ATmega timers share an output compare match unit. This enumerator defines
- * the available possible output configurations.
- */
-enum class timerOutputCompareMode : uint8_t
-{
-    disconnected = 0, //!< Output compare unit does not control the gpio pin
-    normal,           //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
-    inverted          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
-};
+
 
 /**
  * Configures the clock preescaler of a 8 bits timer
@@ -209,9 +236,9 @@ enum class timerOutputCompareMode : uint8_t
  * Found solution: I am defining that 16 bits timer will always employ
  * ICR register as top register for PWMs and CTC modes
  */
-#define timerSetTop(timer, top) {  \
-    *(*timer).maxCount = top; \
-}
+//#define timerSetTop(timer, top) {  \
+//    *(*timer).maxCount = top; \
+//}
 
 /**
  * @brief Configures the timer pwm duty cycle of channel A
@@ -292,7 +319,9 @@ void timerInit(const timer16b* timer,
                uint8_t outputBConf,
                uint8_t interruptConf);
 
+void timerSetTop(const timer8b* timer, uint8_t top);
 
+void timerSetTop(const timer16b* timer, uint8_t top);
 
 
 

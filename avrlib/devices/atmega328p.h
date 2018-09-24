@@ -435,11 +435,100 @@ enum class adcAdmux_t : uint8_t
 #define OC2B_PIN            PinD3
 
 /**
+ * @brief This list stores the configuration of each mode of Timer 0
+ */
+constexpr uint16_t timer0AvailableModes [] = {
+        0,                           //!< Timer operates in normal mode
+        (1 << WGM01),                //!< Timer operates in ctc mode
+        (1 << WGM01) | (1 << WGM00), //!< Timer operates as pwm generator
+        (1 << WGM00)                 //!< Timer operates as pwm phase correct
+};
+
+/**
+ * @brief The developer may configure Timer 0 in one of these modes
+ */
+enum class timer0Mode : uint8_t
+{
+    normal          = TIMER_AS_NORMAL,               //!< Timer operates in normal mode
+    ctc             = TIMER_AS_CTC,                  //!< Timer operates in CTC mode (clear on top)
+    pwm             = TIMER_AS_PWM_8B,               //!< Timer operates as pwm generator
+    pwmPhaseCorrect = TIMER_AS_PWM_PHASE_CORRECT_8B  //!< Timer operates in pwm phase correct mode
+};
+
+/**
+ * @brief This list stores the configuration of each mode of Timer 0
+ */
+constexpr uint16_t timer1AvailableModes [] = {
+    0,                           //!< Timer operates in normal mode
+    (1 << (WGM13+8)) | (1 << (WGM12+8)),                //!< Timer operates in ctc mode
+    (1 << (WGM12+8)), //!< Timer operates as pwm generator
+    (1 << (WGM12+8)) | (1 << WGM10),                 //!< Timer operates as pwm phase correct
+    (1 << (WGM12+8)) | (1 << WGM11),
+    (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10),
+    (1 << (WGM13+8)) | (1 << (WGM12+8)) | (1 << WGM11),
+    (1 << WGM10),
+    (1 << WGM11),
+    (1 << WGM11)     | (1 << WGM10),
+    (1 << (WGM13+8))
+};
+
+/**
+ * @brief The developer may configure Timer 1 in one of these modes
+ */
+enum class timer1Mode : uint16_t
+{
+    normal                    = TIMER_AS_NORMAL,                                                  //!< Timer operates in normal mode
+    ctcTopOnICR1              = TIMER_AS_CTC_TOP_ICR,                   //!< Timer operates in CTC mode (clear on input capture register (ICR1))
+    ctcTopOnOCR1A             = TIMER_AS_CTC_TOP_OCR,                   //!< Timer operates in CTC mode (clear on output compare channel A register (OCR1A))
+    pwm8Bits                  = TIMER_AS_PWM_8B,                        //!< Timer operates as pwm generator (8 bits)
+    pwm9Bits                  = TIMER_AS_PWM_9B,                        //!< Timer operates as pwm generator (9 bits)
+    pwm10Bits                 = TIMER_AS_PWM_10B,                       //!< Timer operates as pwm generator (10 bits)
+    pwmDefinedTop             = TIMER_AS_PWM_DEFINED_TOP,               //!< Timer operates as pwm generator (with defined top value (maximum of 16 bits))
+    pwmPhaseCorrect8Bits      = TIMER_AS_PWM_PHASE_CORRECT_8B,          //!< Timer operates in pwm phase correct mode (8 bits)
+    pwmPhaseCorrect9Bits      = TIMER_AS_PWM_PHASE_CORRECT_9B,          //!< Timer operates in pwm phase correct mode (9 bits)
+    pwmPhaseCorrect10Bits     = TIMER_AS_PWM_PHASE_CORRECT_10B,         //!< Timer operates in pwm phase correct mode (10 bits)
+    pwmPhaseCorrectDefinedTop = TIMER_AS_PWM_PHASE_CORRECT_DEFINED_TOP  //!< Timer operates in pwm phase correct mode (with defined top value (maximum of 16 bits))
+};
+
+/**
+ * @brief Timer 2 available operations mode
+ */
+constexpr uint16_t timer2AvailableModes [] = {
+        0,                           //!< Timer operates in normal mode
+        (1 << WGM21),                //!< Timer operates in ctc mode
+        (1 << WGM21) | (1 << WGM20), //!< Timer operates as pwm generator
+                       (1 << WGM20)  //!< Timer operates as pwm phase correct
+};
+
+/**
+ * @brief The developer may configure Timer 2 in one of these modes
+ */
+enum class timer2Mode : uint16_t
+{
+    normal          = TIMER_AS_NORMAL,               //!< Timer operates in normal mode
+    ctc             = TIMER_AS_CTC,                  //!< Timer operates in ctc mode
+    pwm             = TIMER_AS_PWM_8B,               //!< Timer operates as pwm generator
+    pwmPhaseCorrect = TIMER_AS_PWM_PHASE_CORRECT_8B  //!< Timer operates as pwm phase correct
+};
+
+/**
+ * The ATmega timers share an output compare match unit. This enumerator defines
+ * the available possible output configurations for Timer 0
+ */
+enum class timer0OutputCompareMode : uint8_t
+{
+    disconnected = TIMER_OC_DISCONNECTED, //!< Output compare unit does not control the gpio pin
+    normal = TIMER_OC_NORMAL,             //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
+    inverted = TIMER_OC_INVERTED          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
+};
+
+/**
  * @brief Timer 0 output compare unit available configurations
  */
 constexpr uint8_t timer0OutputAConfig[] = {
         0,
         (1 << COM0A1),
+        (1 << COM0A1) | (1 << COM0A0),
         (1 << COM0A1) | (1 << COM0A0)
 };
 
@@ -449,7 +538,19 @@ constexpr uint8_t timer0OutputAConfig[] = {
 constexpr uint8_t timer0OutputBConfig[] = {
         0,
         (1 << COM0B1),
+        (1 << COM0B1) | (1 << COM0B0),
         (1 << COM0B1) | (1 << COM0B0)
+};
+
+/**
+ * The ATmega timers share an output compare match unit. This enumerator defines
+ * the available possible output configurations for Timer 1
+ */
+enum class timer1OutputCompareMode : uint8_t
+{
+    disconnected = TIMER_OC_DISCONNECTED, //!< Output compare unit does not control the gpio pin
+    normal = TIMER_OC_NORMAL,             //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
+    inverted = TIMER_OC_INVERTED          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
 };
 
 /**
@@ -458,6 +559,7 @@ constexpr uint8_t timer0OutputBConfig[] = {
 constexpr uint8_t timer1OutputAConfig[] = {
         0,
         (1 << COM1A1),
+        (1 << COM1A1) | (1 << COM1A0),
         (1 << COM1A1) | (1 << COM1A0)
 };
 
@@ -467,7 +569,19 @@ constexpr uint8_t timer1OutputAConfig[] = {
 constexpr uint8_t timer1OutputBConfig[] = {
         0,
         (1 << COM1B1),
+        (1 << COM1B1) | (1 << COM1B0),
         (1 << COM1B1) | (1 << COM1B0)
+};
+
+/**
+ * The ATmega timers share an output compare match unit. This enumerator defines
+ * the available possible output configurations for Timer 2
+ */
+enum class timer2OutputCompareMode : uint8_t
+{
+    disconnected = TIMER_OC_DISCONNECTED, //!< Output compare unit does not control the gpio pin
+    normal = TIMER_OC_NORMAL,             //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
+    inverted = TIMER_OC_INVERTED          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
 };
 
 /**
@@ -476,6 +590,7 @@ constexpr uint8_t timer1OutputBConfig[] = {
 constexpr uint8_t timer2OutputAConfig[] = {
         0,
         (1 << COM2A1),
+        (1 << COM2A1) | (1 << COM2A0),
         (1 << COM2A1) | (1 << COM2A0)
 };
 
@@ -485,6 +600,7 @@ constexpr uint8_t timer2OutputAConfig[] = {
 constexpr uint8_t timer2OutputBConfig[] = {
         0,
         (1 << COM2B1),
+        (1 << COM2B1) | (1 << COM2B0),
         (1 << COM2B1) | (1 << COM2B0)
 };
 
@@ -566,8 +682,6 @@ constexpr timer8b _Timer0 = {
         timer0OutputBConfig,
         &timer0WhatOutputAConfig,
         &timer0WhatOutputBConfig,
-        (1 << COM0A1) | (1 << COM0A0),
-        (1 << COM0B1) | (1 << COM0B0),
         &timer0MaxCount
 };
 
@@ -578,8 +692,6 @@ constexpr timer16b _Timer1 = {
         timer1OutputBConfig,
         &timer1WhatOutputAConfig,
         &timer1WhatOutputBConfig,
-        (1 << COM1A1) | (1 << COM1A0),
-        (1 << COM1B1) | (1 << COM1B0),
         &timer1MaxCount
 };
 
@@ -590,8 +702,6 @@ constexpr timer8b _Timer2 = {
         timer2OutputBConfig,
         &timer2WhatOutputAConfig,
         &timer2WhatOutputBConfig,
-        (1 << COM2A1) | (1 << COM2A0),
-        (1 << COM2B1) | (1 << COM2B0),
         &timer2MaxCount
 };
 
@@ -603,17 +713,6 @@ constexpr timer8b _Timer2 = {
 
 /// Timer 0 friendly definition
 #define Timer2 &_Timer2
-
-/**
- * @brief Timer 0 available operations mode
- */
-enum class timer0Mode : uint8_t
-{
-    normal          = 0,                           //!< Timer operates in normal mode
-    ctc             = (1 << WGM01),                //!< Timer operates in CTC mode (clear on top)
-    pwm             = (1 << WGM01) | (1 << WGM00), //!< Timer operates as pwm generator
-    pwmPhaseCorrect = (1 << WGM00)                 //!< Timer operates in pwm phase correct mode
-};
 
 /**
  * @brief Available timer 0 clock source configurations
@@ -639,24 +738,6 @@ enum class timer0Interrupt : uint8_t
     onCompareMatchA = (1 << OCIE0A), //!< Generate an interrupt on compare match of channel A
     onCompareMatchB = (1 << OCIE0B), //!< Generate an interrupt on compare match of channel B
     onOverflow      = (1 << TOIE0)   //!< Generate an interrupt on after an overflow
-};
-
-/**
- * @brief Timer 1 available operations mode
- */
-enum class timer1Mode : uint16_t
-{
-    normal                    = 0,                                                  //!< Timer operates in normal mode
-    ctcTopOnICR1              = (1 << (WGM13+8)) | (1 << (WGM12+8)),                //!< Timer operates in CTC mode (clear on input capture register (ICR1))
-    ctcTopOnOCR1A             = (1 << (WGM12+8)),                                   //!< Timer operates in CTC mode (clear on output compare channel A register (OCR1A))
-    pwm8Bits                  = (1 << (WGM12+8)) | (1 << WGM10),                    //!< Timer operates as pwm generator (8 bits)
-    pwm9Bits                  = (1 << (WGM12+8)) | (1 << WGM11),                    //!< Timer operates as pwm generator (9 bits)
-    pwm10Bits                 = (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10), //!< Timer operates as pwm generator (10 bits)
-    pwmDefinedTop             = (1 << (WGM13+8)) | (1 << (WGM12+8)) | (1 << WGM11), //!< Timer operates as pwm generator (with defined top value (maximum of 16 bits))
-    pwmPhaseCorrect8Bits      = (1 << WGM10),                                       //!< Timer operates in pwm phase correct mode (8 bits)
-    pwmPhaseCorrect9Bits      = (1 << WGM11),                                       //!< Timer operates in pwm phase correct mode (9 bits)
-    pwmPhaseCorrect10Bits     = (1 << WGM11)     | (1 << WGM10),                    //!< Timer operates in pwm phase correct mode (10 bits)
-    pwmPhaseCorrectDefinedTop = (1 << (WGM13+8))                                    //!< Timer operates in pwm phase correct mode (with defined top value (maximum of 16 bits))
 };
 
 /**
@@ -695,17 +776,6 @@ enum class timer1InputCaptureEdge : uint16_t
 {
     risingEdge  = (1 << (ICES1+8)), //!< A rising edge will trigger the capture
     fallingEdge = 0                 //!< A falling edge will trigger the capture
-};
-
-/**
- * @brief Available timer 2 operation modes
- */
-enum class timer2Mode : uint16_t
-{
-    normal          = 0,
-    ctc             = (1 << WGM21),
-    pwm             = (1 << WGM21) | (1 << WGM20),
-    pwmPhaseCorrect = (1 << WGM20)
 };
 
 /**
