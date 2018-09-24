@@ -29,12 +29,12 @@ void timerInit(const timer8b* timer,
         gpioAsOutput(timer->regs->ocRegs->pinB);
 
     // Configure timer operation mode and if gpio control
-    *timer->regs->control = mode | timer->ocAConfs[io8Conf(outputAConf)]
-                                 | timer->ocBConfs[io8Conf(outputBConf)];
+    *timer->regs->control = mode | timer->ocAConfs[io8(outputAConf)]
+                                 | timer->ocBConfs[io8(outputBConf)];
 
     // Save output configuration
-    *timer->outputConfA = timer->ocAConfs[io8Conf(outputAConf)];
-    *timer->outputConfB = timer->ocBConfs[io8Conf(outputBConf)];
+    *timer->outputConfA = timer->ocAConfs[io8(outputAConf)];
+    *timer->outputConfB = timer->ocBConfs[io8(outputBConf)];
 
     // Clock source configuration
     *timer->regs->control = *timer->regs->control | clockConf;
@@ -62,9 +62,9 @@ void timerInit(const timer16b* timer,
 
     // Configures gpio peripheral control
     if (outputAConf != 0)
-        gpioAsOutput(timer->regs->outputPinA);
+        gpioAsOutput(timer->regs->ocRegs->pinA);
     if (outputBConf != 0)
-        gpioAsOutput(timer->regs->outputPinB);
+        gpioAsOutput(timer->regs->ocRegs->pinB);
 
     // Configure timer operation mode and if gpio control
     *timer->regs->control = mode | outputAConf | outputBConf;
@@ -91,12 +91,13 @@ void timerInit(const timer16b* timer,
 
 void timerSetDutyA(const timer8b* timer, uint8_t duty)
 {
+    uint8_t ocNormalConf = timer->ocAConfs[io8(timerOutputCompareMode::normal)];
     if (duty >= *timer->maxCount)
     {
         // Disable compare match
         *timer->regs->control &= ~timer->ocASetState;
 
-        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputCompareMode::normal)])
+        if (*timer->outputConfA == ocNormalConf)
             gpioWriteHigh(timer->regs->ocRegs->pinA);
         else
             gpioWriteLow(timer->regs->ocRegs->pinA);
@@ -107,7 +108,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
         // Disable compare match
         *timer->regs->control &= ~timer->ocASetState;
 
-        if (*timer->outputConfA == timer->ocAConfs[io8Conf(timerOutputCompareMode::normal)])
+        if (*timer->outputConfA == ocNormalConf)
             gpioWriteLow(timer->regs->ocRegs->pinA);
         else
             gpioWriteHigh(timer->regs->ocRegs->pinA);
@@ -116,7 +117,7 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
     else
     {
         // Enable compare match
-        *timer->regs->control |= io8Conf(*timer->outputConfA);
+        *timer->regs->control |= io8(*timer->outputConfA);
 
         // Set the output compare register
         *timer->regs->ocRegs->compareValueA = duty;
@@ -125,12 +126,13 @@ void timerSetDutyA(const timer8b* timer, uint8_t duty)
 
 void timerSetDutyB(const timer8b* timer, uint8_t duty)
 {
+    uint8_t ocNormalConf = timer->ocBConfs[io8(timerOutputCompareMode::normal)];
     if (duty >= *timer->maxCount)
     {
         // Disable compare match
         *timer->regs->control &= ~timer->ocBSetState;
 
-        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputCompareMode::normal)])
+        if (*timer->outputConfB == ocNormalConf)
             gpioWriteHigh(timer->regs->ocRegs->pinB);
         else
             gpioWriteLow(timer->regs->ocRegs->pinB);
@@ -141,7 +143,7 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
         // Disable compare match
         *timer->regs->control &= ~timer->ocBSetState;
 
-        if (*timer->outputConfB == timer->ocBConfs[io8Conf(timerOutputCompareMode::normal)])
+        if (*timer->outputConfB == ocNormalConf)
             gpioWriteLow(timer->regs->ocRegs->pinB);
         else
             gpioWriteHigh(timer->regs->ocRegs->pinB);
@@ -150,7 +152,7 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
     else
     {
         // Enable compare match
-        *timer->regs->control |= io8Conf(*timer->outputConfB);
+        *timer->regs->control |= io8(*timer->outputConfB);
 
         // Set the output compare register
         *timer->regs->ocRegs->compareValueB = duty;

@@ -10,10 +10,10 @@
 /**@{*/
 
 /// Decodes from 8 bits enum hardware configuration
-#define io8Conf(x)              static_cast<uint8_t>(x)
+#define io8(x)              static_cast<uint8_t>(x)
 
 /// Decodes from 16 bits enum hardware configuration
-#define io16Conf(x)             static_cast<uint16_t>(x)
+#define io16(x)             static_cast<uint16_t>(x)
 
 
 

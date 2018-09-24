@@ -115,13 +115,10 @@ struct timer16bRegs
 {
     volatile uint16_t* control;        //!< Address of the timer control register. Because in AVR architecture the two control registers are aligned in memory map, these registers are treated as a single 16bit register
     volatile uint16_t* counter;        //!< Address of the timer counter register
-    volatile uint16_t* outputCompareA; //!< Address of the output compare A register
-    volatile uint16_t* outputCompareB; //!< Address of the output compare B register
+    const timer16bOC* ocRegs;
     volatile uint16_t* inputCapture;   //!< Address of the input capture register
     volatile uint8_t* interruptMask;   //!< Address of the interrupt mask register
     volatile uint8_t* interruptFlag;   //!< Address of the interrupt flag register
-    const gpio_t* outputPinA;          //!< Gpio pin controlled by output channel A of timer
-    const gpio_t* outputPinB;          //!< Gpio pin controlled by output channel B of timer
     const uint8_t whatPRR;             //!< It inform what bit in PRR the timer has
 };
 
@@ -165,8 +162,7 @@ enum class timerOutputCompareMode : uint8_t
 {
     disconnected = 0, //!< Output compare unit does not control the gpio pin
     normal,           //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
-    inverted,         //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
-    setState          //!< For library purposes
+    inverted          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
 };
 
 /**
@@ -198,13 +194,13 @@ enum class timerOutputCompareMode : uint8_t
 }
 
 #define timerSetOutputCompareUnitA(timer, outputConf) {                 \
-    *(*timer).outputConfA = (*timer).ocAConfs[io8Conf(outputConf)];     \
+    *(*timer).outputConfA = (*timer).ocAConfs[io8(outputConf)];     \
     *(*timer).regs->control &= ~(*timer).ocASetState;                   \
     *(*timer).regs->control |= *(*timer).outputConfA;                   \
 }
 
 #define timerSetOutputCompareUnitB(timer, outputConf) {                 \
-    *(*timer).outputConfB = (*timer).ocBConfs[io8Conf(outputConf)];     \
+    *(*timer).outputConfB = (*timer).ocBConfs[io8(outputConf)];     \
     *(*timer).regs->control &= ~(*timer).ocBSetState;                   \
     *(*timer).regs->control |= *(*timer).outputConfB;                   \
 }
@@ -217,10 +213,36 @@ enum class timerOutputCompareMode : uint8_t
     *(*timer).maxCount = top; \
 }
 
-
+/**
+ * @brief Configures the timer pwm duty cycle of channel A
+ *
+ * This function configures the channel A of the timer's compare unit
+ * to match a given value.
+ *
+ * The ATmega devices have a hardware problem relating the PWM generation
+ * signal. The 0% and 100% duty cycle is not achieved due presence of a
+ * glitch. This function provides a software correction for this problem.
+ *
+ * @param timer is the employed timer
+ * @param duty is the desired duty cycle (raw value, i.e., 0 to 255)
+ *
+ */
 void timerSetDutyA(const timer8b* timer, uint8_t duty);
 
-
+/**
+ * @brief Configures the timer pwm duty cycle of channel B
+ *
+ * This function configures the channel B of the timer's compare unit
+ * to match a given value.
+ *
+ * The ATmega devices have a hardware problem relating the PWM generation
+ * signal. The 0% and 100% duty cycle is not achieved due presence of a
+ * glitch. This function provides a software correction for this problem.
+ *
+ * @param timer is the employed timer
+ * @param duty is the desired duty cycle (raw value, i.e., 0 to 255)
+ *
+ */
 void timerSetDutyB(const timer8b* timer, uint8_t duty);
 
 
@@ -244,11 +266,11 @@ void timerSetDutyB(const timer16b* timer, uint16_t duty);
  *
  * \code
  *  timerInit(Timer0,
- *            io16Conf(timer0Mode::ctc),
- *            io16Conf(timer0Clock::divideBy64),
- *            io8Conf(timerOutputConfig::off),
- *            io8Conf(timerOutputConfig::off),
- *            io8Conf(timer0Interrupt::onCompareMatchA));
+ *            io16(timer0Mode::ctc),
+ *            io16(timer0Clock::divideBy64),
+ *            io8(timerOutputConfig::off),
+ *            io8(timerOutputConfig::off),
+ *            io8(timer0Interrupt::onCompareMatchA));
  *  timer
  * \endcode
  *

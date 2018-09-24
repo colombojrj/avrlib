@@ -540,13 +540,10 @@ constexpr timer8bRegs Timer0Regs = {
 constexpr timer16bRegs Timer1Regs = {
         (uint16_t*) &TCCR1A,
         &TCNT1,
-        &OCR1A,
-        &OCR1B,
+        &_Timer1_OC,
         &ICR1,
         &TIMSK1,
         &TIFR1,
-        PinB1,
-        PinB2,
         PRTIM1
 };
 
