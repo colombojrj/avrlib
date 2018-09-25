@@ -36,24 +36,6 @@
 
 /**@{*/
 
-/// What is the output compare channel A of timer 0 configuration
-extern uint8_t timer0WhatOutputAConfig;
-
-/// What is the output compare channel B of timer 0 configuration
-extern uint8_t timer0WhatOutputBConfig;
-
-/// What is the output compare channel A of timer 1 configuration
-extern uint8_t timer1WhatOutputAConfig;
-
-/// What is the output compare channel B of timer 1 configuration
-extern uint8_t timer1WhatOutputBConfig;
-
-/// What is the output compare channel A of timer 2 configuration
-extern uint8_t timer2WhatOutputAConfig;
-
-/// What is the output compare channel B of timer 2 configuration
-extern uint8_t timer2WhatOutputBConfig;
-
 /// Timer 0 max count value
 extern uint8_t timer0MaxCount;
 
@@ -63,33 +45,68 @@ extern uint16_t timer1MaxCount;
 /// Timer 2 max count value
 extern uint8_t timer2MaxCount;
 
+/// Timers actual mode
+extern uint8_t timerActualMode[3];
+
+/**
+ * Timer supported configuration modes
+ */
 enum supportedTimerModes
 {
     TIMER_OFF = 0,
-    TIMER_AS_NORMAL,
-    TIMER_AS_CTC,
-    TIMER_AS_CTC_TOP_ICR,
-    TIMER_AS_CTC_TOP_OCR,
-    TIMER_AS_PWM,
-    TIMER_AS_PWM_8B,
-    TIMER_AS_PWM_9B,
-    TIMER_AS_PWM_10B,
-    TIMER_AS_PWM_DEFINED_TOP,
-    TIMER_AS_PWM_PHASE_CORRECT,
-    TIMER_AS_PWM_PHASE_CORRECT_8B,
-    TIMER_AS_PWM_PHASE_CORRECT_9B,
-    TIMER_AS_PWM_PHASE_CORRECT_10B,
-    TIMER_AS_PWM_PHASE_CORRECT_DEFINED_TOP,
-    TIMER_MODE_SIZE
+    TIMER_AS_NORMAL,                        //!< Timer operates in normal mode
+    TIMER_AS_CTC_TOP_ICR,                   //!< Timer operates in CTC mode (clear on input capture register (ICR1))
+    TIMER_AS_CTC_TOP_OCR,                   //!< Timer operates in CTC mode (clear on output compare channel A register (OCRxA))
+    TIMER_AS_PWM_8B,                        //!< Timer operates as pwm generator (8 bits)
+    TIMER_AS_PWM_9B,                        //!< Timer operates as pwm generator (9 bits)
+    TIMER_AS_PWM_10B,                       //!< Timer operates as pwm generator (10 bits)
+    TIMER_AS_PWM_DEFINED_TOP,               //!< Timer operates as pwm generator (with defined top value (maximum of 16 bits))
+    TIMER_AS_PWM_PHASE_CORRECT_8B,          //!< Timer operates in pwm phase correct mode (8 bits)
+    TIMER_AS_PWM_PHASE_CORRECT_9B,          //!< Timer operates in pwm phase correct mode (9 bits)
+    TIMER_AS_PWM_PHASE_CORRECT_10B,         //!< Timer operates in pwm phase correct mode (10 bits)
+    TIMER_AS_PWM_PHASE_CORRECT_DEFINED_TOP, //!< Timer operates in pwm phase correct mode (with defined top value (maximum of 16 bits))
+    TIMER_MODE_SIZE                         //!< For internal library use only
 };
 
+/**
+ * Timer supported output compare unit configuration
+ */
 enum supportedOutputCompareModes
 {
-    TIMER_OC_DISCONNECTED,  //!< Output compare unit does not control the gpio pin
-    TIMER_OC_NORMAL,        //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
-    TIMER_OC_INVERTED,      //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
-    TIMER_OC_SET_STATE,     //!< For internal library use only
-    TIMER_OC_SIZE           //!< For internal library use only
+    TIMER_OC_DISCONNECTED,             //!< Output compare unit does not control the gpio pin
+    TIMER_OC_NORMAL,                   //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
+    TIMER_OC_INVERTED,                 //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
+    TIMER_OC_SET_STATE,                //!< For internal library use only
+    TIMER_OC_SIZE                      //!< For internal library use only
+};
+
+/**
+ * @brief Timer supported clock source configurations
+ */
+enum supportedClockModes
+{
+    TIMER_CLOCK_OFF,                   //!< Timer has no clock (saves power)
+    TIMER_CLOCK_DIVIDE_BY_1,           //!< CPU clock is applied directly on the timer
+    TIMER_CLOCK_DIVIDE_BY_8,           //!< Divides CPU clock by 8
+    TIMER_CLOCK_DIVIDE_BY_32,          //!< Divides CPU clock by 32
+    TIMER_CLOCK_DIVIDE_BY_64,          //!< Divides CPU clock by 64
+    TIMER_CLOCK_DIVIDE_BY_128,         //!< Divides CPU clock by 128
+    TIMER_CLOCK_DIVIDE_BY_256,         //!< Divides CPU clock by 256
+    TIMER_CLOCK_DIVIDE_BY_1024,        //!< Divides CPU clock by 1024
+    TIMER_CLOCK_EXTERN_FALLING_EDGE,   //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    TIMER_CLOCK_EXTERN_RISING_EDGE,    //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+    TIMER_CLOCK_SIZE                   //!< For internal library use only
+};
+
+/**
+ * @brief Timer supported interrupt configurations
+ */
+enum supportedInterruptModes
+{
+    TIMER_INTERRUPT_NONE,              //!< Does not generate any interrupt
+    TIMER_INTERRUPT_ON_MATCH_A,        //!< Trigger an interrupt on compare match of channel A
+    TIMER_INTERRUPT_ON_MATCH_B,        //!< Trigger an interrupt on compare match of channel B
+    TIMER_INTERRUPT_OVERFLOW           //!< Trigger an interrupt on after an overflow
 };
 
 /**
@@ -141,17 +158,17 @@ struct timer16bRegs
     const uint8_t whatPRR;             //!< It inform what bit in PRR the timer has
 };
 
-
-
 /**
  * @brief An abstract 8 bits timer configuration structure
  */
 struct timer8b
 {
-    const timer8bRegs* regs;   //!< Low level registers
-    const timer8bOC* ocA;      //!< Output compare unit A of the respective timer
-    const timer8bOC* ocB;      //!< Output compare unit B of the respective timer
-    uint8_t* maxCount;         //!< Max count
+    const timer8bRegs* regs;         //!< Low level registers
+    const timer8bOC* ocA;            //!< Output compare unit A of the respective timer
+    const timer8bOC* ocB;            //!< Output compare unit B of the respective timer
+    uint8_t* maxCount;               //!< Max count
+    uint8_t* actualMode;             //!< Timer actual mode
+    const uint16_t* availableModes;  //!< Pointer to list of available timer operation modes
 };
 
 /**
@@ -159,16 +176,34 @@ struct timer8b
  */
 struct timer16b
 {
-    const timer16bRegs* regs;  //!< Low level registers
-    const timer16bOC* ocA;     //!< Output compare unit A of the respective timer
-    const timer16bOC* ocB;     //!< Output compare unit B of the respective timer
-    uint16_t* maxCount;        //!< Max count
+    const timer16bRegs* regs;        //!< Low level registers
+    const timer16bOC* ocA;           //!< Output compare unit A of the respective timer
+    const timer16bOC* ocB;           //!< Output compare unit B of the respective timer
+    uint16_t* maxCount;              //!< Max count
+    const uint8_t* actualMode;       //!< Timer actual mode
+    const uint16_t* availableModes;  //!< Pointer to list of available timer operation modes
 };
+
+/**
+ * @brief This function disables a timer. More specifically, it will reset the
+ * timer configuration and, if available, also turn the power off
+ *
+ * @param timer is the timer to be turned off.
+ */
+void timerDisable(timer8b* timer);
+
+/**
+ * @brief This function disables a timer. More specifically, it will reset the
+ * timer configuration and, if available, also turn the power off
+ *
+ * @param timer is the timer to be turned off.
+ */
+void timerDisable(timer16b* timer);
 
 /**
  * Configures the clock preescaler of a 8 bits timer
  *
- * @param timer8b is a pointer to a 8 bits timer register descriptor
+ * @param timer is a pointer to a 8 bits timer register descriptor
  *        @see timer8b
  * @param clockConf is the clock configuration defined with enum. Although
  *        this parameter type is uint16_t, the values that can be used depend on

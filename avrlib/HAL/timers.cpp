@@ -1,14 +1,9 @@
 #include "timers.h"
 
-uint8_t timer0WhatOutputAConfig;
-uint8_t timer0WhatOutputBConfig;
-uint8_t timer1WhatOutputAConfig;
-uint8_t timer1WhatOutputBConfig;
-uint8_t timer2WhatOutputAConfig;
-uint8_t timer2WhatOutputBConfig;
 uint8_t timer0MaxCount;
 uint16_t timer1MaxCount;
 uint8_t timer2MaxCount;
+uint8_t timerActualMode[3];
 
 void timerInit(const timer8b* timer,
                uint16_t mode,
@@ -23,17 +18,18 @@ void timerInit(const timer8b* timer,
     #endif
 
     // Configures gpio peripheral control
-    if (outputAConf != 0)
+    if (outputAConf != TIMER_OC_DISCONNECTED)
         gpioAsOutput(timer->ocA->pin);
-    if (outputBConf != 0)
+    if (outputBConf != TIMER_OC_DISCONNECTED)
         gpioAsOutput(timer->ocB->pin);
 
     // Save output configuration
     *timer->ocA->actualOutputConf = outputAConf;
     *timer->ocB->actualOutputConf = outputBConf;
 
-    // Configure timer operation mode and if gpio control
-    *timer->regs->control = mode                                    |
+    // Configure timer operation mode and the gpio control
+    *timer->actualMode = mode;
+    *timer->regs->control = timer->availableModes[mode]             |
                             timer->ocA->availableConfs[outputAConf] |
                             timer->ocB->availableConfs[outputBConf];
 
@@ -166,13 +162,25 @@ void timerSetDutyB(const timer8b* timer, uint8_t duty)
 void timerSetTop(const timer8b* timer, uint8_t top)
 {
     *timer->maxCount = top;
-    *timer->regs->counter = top;
+    *timer->ocA->compareValue = top;
 }
 
 void timerSetTop(const timer16b* timer, uint8_t top)
 {
     *timer->maxCount = top;
-    *timer->regs->counter = top;
+
+    if ((*timer->actualMode == TIMER_AS_CTC_TOP_ICR)     ||
+        (*timer->actualMode == TIMER_AS_PWM_DEFINED_TOP) ||
+        (*timer->actualMode == TIMER_AS_PWM_PHASE_CORRECT_DEFINED_TOP))
+    {
+        *timer->regs->inputCapture = top;
+    }
+    else
+    {
+        *timer->ocA->compareValue = top;
+    }
+
+
 }
 
 

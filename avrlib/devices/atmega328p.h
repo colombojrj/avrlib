@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <avr/io.h>
 
+#include "../HAL/gpio.h"
 #include "../HAL/timers.h"
 
 /**
@@ -435,22 +436,12 @@ enum class adcAdmux_t : uint8_t
 #define OC2B_PIN            PinD3
 
 /**
- * @brief This list stores the configuration of each mode of Timer 0
- */
-constexpr uint16_t timer0AvailableModes [] = {
-        0,                           //!< Timer operates in normal mode
-        (1 << WGM01),                //!< Timer operates in ctc mode
-        (1 << WGM01) | (1 << WGM00), //!< Timer operates as pwm generator
-        (1 << WGM00)                 //!< Timer operates as pwm phase correct
-};
-
-/**
  * @brief The developer may configure Timer 0 in one of these modes
  */
 enum class timer0Mode : uint8_t
 {
     normal          = TIMER_AS_NORMAL,               //!< Timer operates in normal mode
-    ctc             = TIMER_AS_CTC,                  //!< Timer operates in CTC mode (clear on top)
+    ctc             = TIMER_AS_CTC_TOP_OCR,          //!< Timer operates in CTC mode (clear on top)
     pwm             = TIMER_AS_PWM_8B,               //!< Timer operates as pwm generator
     pwmPhaseCorrect = TIMER_AS_PWM_PHASE_CORRECT_8B  //!< Timer operates in pwm phase correct mode
 };
@@ -458,18 +449,11 @@ enum class timer0Mode : uint8_t
 /**
  * @brief This list stores the configuration of each mode of Timer 0
  */
-constexpr uint16_t timer1AvailableModes [] = {
-    0,                           //!< Timer operates in normal mode
-    (1 << (WGM13+8)) | (1 << (WGM12+8)),                //!< Timer operates in ctc mode
-    (1 << (WGM12+8)), //!< Timer operates as pwm generator
-    (1 << (WGM12+8)) | (1 << WGM10),                 //!< Timer operates as pwm phase correct
-    (1 << (WGM12+8)) | (1 << WGM11),
-    (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10),
-    (1 << (WGM13+8)) | (1 << (WGM12+8)) | (1 << WGM11),
-    (1 << WGM10),
-    (1 << WGM11),
-    (1 << WGM11)     | (1 << WGM10),
-    (1 << (WGM13+8))
+constexpr uint16_t timer0AvailableModes [] = {
+        0,                           //!< Timer operates in normal mode
+        (1 << WGM01),                //!< Timer operates in ctc mode
+        (1 << WGM01) | (1 << WGM00), //!< Timer operates as pwm generator
+        (1 << WGM00)                 //!< Timer operates as pwm phase correct
 };
 
 /**
@@ -491,13 +475,20 @@ enum class timer1Mode : uint16_t
 };
 
 /**
- * @brief Timer 2 available operations mode
+ * @brief This list stores the configuration of each mode of Timer 1
  */
-constexpr uint16_t timer2AvailableModes [] = {
-        0,                           //!< Timer operates in normal mode
-        (1 << WGM21),                //!< Timer operates in ctc mode
-        (1 << WGM21) | (1 << WGM20), //!< Timer operates as pwm generator
-                       (1 << WGM20)  //!< Timer operates as pwm phase correct
+constexpr uint16_t timer1AvailableModes [] = {
+    0,
+    (1 << (WGM13+8)) | (1 << (WGM12+8)),
+    (1 << (WGM12+8)),
+    (1 << (WGM12+8)) | (1 << WGM10),
+    (1 << (WGM12+8)) | (1 << WGM11),
+    (1 << (WGM12+8)) | (1 << WGM11)     | (1 << WGM10),
+    (1 << (WGM13+8)) | (1 << (WGM12+8)) | (1 << WGM11),
+    (1 << WGM10),
+    (1 << WGM11),
+    (1 << WGM11)     | (1 << WGM10),
+    (1 << (WGM13+8))
 };
 
 /**
@@ -506,9 +497,19 @@ constexpr uint16_t timer2AvailableModes [] = {
 enum class timer2Mode : uint16_t
 {
     normal          = TIMER_AS_NORMAL,               //!< Timer operates in normal mode
-    ctc             = TIMER_AS_CTC,                  //!< Timer operates in ctc mode
+    ctc             = TIMER_AS_CTC_TOP_OCR,          //!< Timer operates in ctc mode
     pwm             = TIMER_AS_PWM_8B,               //!< Timer operates as pwm generator
     pwmPhaseCorrect = TIMER_AS_PWM_PHASE_CORRECT_8B  //!< Timer operates as pwm phase correct
+};
+
+/**
+ * @brief Timer 2 available operations mode
+ */
+constexpr uint16_t timer2AvailableModes [] = {
+        0,                           //!< Timer operates in normal mode
+        (1 << WGM21),                //!< Timer operates in ctc mode
+        (1 << WGM21) | (1 << WGM20), //!< Timer operates as pwm generator
+                       (1 << WGM20)  //!< Timer operates as pwm phase correct
 };
 
 /**
@@ -604,6 +605,94 @@ constexpr uint8_t timer2OutputBConfig[] = {
         (1 << COM2B1) | (1 << COM2B0)
 };
 
+/**
+ * @brief This enumerator defines the available possible clock configurations
+ *        for Timer 0
+ */
+enum class timer0Clock : uint8_t
+{
+    off               = TIMER_CLOCK_OFF,                  //!< Timer has no clock (saves power)
+    noPreescale       = TIMER_CLOCK_DIVIDE_BY_1,          //!< CPU clock is applied directly on the timer
+    divideBy8         = TIMER_CLOCK_DIVIDE_BY_8,          //!< Divides CPU clock by 8
+    divideBy64        = TIMER_CLOCK_DIVIDE_BY_64,         //!< Divides CPU clock by 64
+    divideBy256       = TIMER_CLOCK_DIVIDE_BY_256,        //!< Divides CPU clock by 256
+    divideBy1024      = TIMER_CLOCK_DIVIDE_BY_1024,       //!< Divides CPU clock by 1024
+    externFallingEdge = TIMER_CLOCK_EXTERN_FALLING_EDGE,  //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    externRisingEdge  = TIMER_CLOCK_EXTERN_RISING_EDGE,   //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+};
+
+/**
+ * @brief Timer 0 available clock configurations
+ */
+constexpr uint16_t timer0AvailableClockConfig[] = {
+    0,                                                    //!< Timer has no clock (saves power)
+                                        (1 << (CS00+8)),  //!< CPU clock is applied directly on the timer
+                      (1 << (CS01+8)),                    //!< Divides CPU clock by 8
+                      (1 << (CS01+8)) | (1 << (CS00+8)),  //!< Divides CPU clock by 64
+    (1 << (CS02+8)),                                      //!< Divides CPU clock by 256
+    (1 << (CS02+8)) |                   (1 << (CS00+8)),  //!< Divides CPU clock by 1024
+    (1 << (CS02+8)) | (1 << (CS01+8)),                    //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    (1 << (CS02+8)) | (1 << (CS01+8)) | (1 << (CS00+8))   //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+};
+
+/**
+ * @brief Available timer 1 clock source configurations
+ */
+enum class timer1Clock : uint16_t
+{
+    off               = TIMER_CLOCK_OFF,                  //!< Timer has no clock (saves power)
+    divideBy1         = TIMER_CLOCK_DIVIDE_BY_1,          //!< CPU clock is applied directly on the timer
+    divideBy8         = TIMER_CLOCK_DIVIDE_BY_8,          //!< Divides CPU clock by 8
+    divideBy64        = TIMER_CLOCK_DIVIDE_BY_64,         //!< Divides CPU clock by 64
+    divideBy256       = TIMER_CLOCK_DIVIDE_BY_256,        //!< Divides CPU clock by 256
+    divideBy1024      = TIMER_CLOCK_DIVIDE_BY_1024,       //!< Divides CPU clock by 1024
+    externFallingEdge = TIMER_CLOCK_EXTERN_FALLING_EDGE,  //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    externRisingEdge  = TIMER_CLOCK_EXTERN_RISING_EDGE    //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+};
+
+/**
+ * @brief Timer 1 available clock configurations
+ */
+constexpr uint16_t timer1AvailableClockConfig[] = {
+    0,                                                    //!< Timer has no clock (saves power)
+                                        (1 << (CS10+8)),  //!< CPU clock is applied directly on the timer
+                      (1 << (CS11+8)),                    //!< Divides CPU clock by 8
+                      (1 << (CS11+8)) | (1 << (CS10+8)),  //!< Divides CPU clock by 64
+    (1 << (CS12+8)),                                      //!< Divides CPU clock by 256
+    (1 << (CS12+8)) |                   (1 << (CS10+8)),  //!< Divides CPU clock by 1024
+    (1 << (CS12+8)) | (1 << (CS11+8)),                    //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8))   //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+};
+
+/**
+ * @brief Available timer 2 clock source configurations
+ */
+enum class timer2Clock : uint16_t
+{
+    off                = TIMER_CLOCK_OFF,                 //!< Timer has no clock (saves power)
+    noPreescale        = TIMER_CLOCK_DIVIDE_BY_1,         //!< CPU clock is applied directly on the timer
+    divideBy8          = TIMER_CLOCK_DIVIDE_BY_8,         //!< Divides CPU clock by 8
+    divideBy32         = TIMER_CLOCK_DIVIDE_BY_32,        //!< Divides CPU clock by 32
+    divideBy64         = TIMER_CLOCK_DIVIDE_BY_64,        //!< Divides CPU clock by 64
+    divideBy128        = TIMER_CLOCK_DIVIDE_BY_128,       //!< Divides CPU clock by 128
+    divideBy256        = TIMER_CLOCK_DIVIDE_BY_256,       //!< Divides CPU clock by 256
+    divideBy1024       = TIMER_CLOCK_DIVIDE_BY_1024       //!< Divides CPU clock by 1024
+};
+
+/**
+ * @brief Timer 2 available clock configurations
+ */
+constexpr uint16_t timer2AvailableClockConfig[] = {
+    0,                                                    //!< Timer has no clock (saves power)
+                                        (1 << (CS20+8)),  //!< CPU clock is applied directly on the timer
+                      (1 << (CS21+8)),                    //!< Divides CPU clock by 8
+                      (1 << (CS21+8)) | (1 << (CS20+8)),  //!< Divides CPU clock by 64
+    (1 << (CS22+8)),                                      //!< Divides CPU clock by 256
+    (1 << (CS22+8)) |                   (1 << (CS20+8)),  //!< Divides CPU clock by 1024
+    (1 << (CS22+8)) | (1 << (CS21+8)),                    //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
+    (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8))   //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+};
+
 /// Timer 0 output compare unit A configuration
 constexpr timer8bOC Timer0_OC_A = {
         timer0OutputAConfig,
@@ -683,7 +772,9 @@ constexpr timer8b _Timer0 = {
         &Timer0Regs,
         &Timer0_OC_A,
         &Timer0_OC_B,
-        &timer0MaxCount
+        &timer0MaxCount,
+        &timerActualMode[0],
+        timer0AvailableModes
 };
 
 /// Timer 1 config structure
@@ -691,7 +782,9 @@ constexpr timer16b _Timer1 = {
         &Timer1Regs,
         &Timer1_OC_A,
         &Timer1_OC_B,
-        &timer1MaxCount
+        &timer1MaxCount,
+        &timerActualMode[1],
+        timer1AvailableModes
 };
 
 /// Timer 2 config structure
@@ -699,7 +792,9 @@ constexpr timer8b _Timer2 = {
         &Timer2Regs,
         &Timer2_OC_A,
         &Timer2_OC_B,
-        &timer2MaxCount
+        &timer2MaxCount,
+        &timerActualMode[2],
+        timer2AvailableModes
 };
 
 /// Timer 0 friendly definition
@@ -712,21 +807,6 @@ constexpr timer8b _Timer2 = {
 #define Timer2 &_Timer2
 
 /**
- * @brief Available timer 0 clock source configurations
- */
-enum class timer0Clock : uint16_t
-{
-    off               = 0,                                                   //!< Timer has no clock (saves power)
-    noPreescale       = (1 << (CS00+8)),                                     //!< CPU clock is applied directly on the timer
-    divideBy8         = (1 << (CS01+8)),                                     //!< Divides CPU clock by 8
-    divideBy64        = (1 << (CS01+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 64
-    divideBy256       = (1 << (CS02+8)),                                     //!< Divides CPU clock by 256
-    divideBy1024      = (1 << (CS02+8)) | (1 << (CS00+8)),                   //!< Divides CPU clock by 1024
-    externFallingEdge = (1 << (CS02+8)) | (1 << (CS01+8)),                   //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
-    externRisingEdge  = (1 << (CS02+8)) | (1 << (CS01+8)) | (1 << (CS00+8)), //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
-};
-
-/**
  * @brief Timer 0 available interrupt configurations
  */
 enum class timer0Interrupt : uint8_t
@@ -737,20 +817,7 @@ enum class timer0Interrupt : uint8_t
     onOverflow      = (1 << TOIE0)   //!< Generate an interrupt on after an overflow
 };
 
-/**
- * @brief Available timer 1 clock source configurations
- */
-enum class timer1Clock : uint16_t
-{
-    off                 = 0,                                                  //!< Timer has no clock (saves power)
-    noPreescale         = (1 << (CS10+8)),                                    //!< CPU clock is applied directly on the timer
-    divideBy8           = (1 << (CS11+8)),                                    //!< Divides CPU clock by 8
-    divideBy64          = (1 << (CS11+8)) | (1 << (CS10+8)),                  //!< Divides CPU clock by 64
-    divideBy256         = (1 << (CS12+8)),                                    //!< Divides CPU clock by 256
-    divideBy1024        = (1 << (CS12+8)) | (1 << (CS10+8)),                  //!< Divides CPU clock by 1024
-    externT1FallingEdge = (1 << (CS12+8)) | (1 << (CS11+8)),                  //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
-    externT1RisingEdge  = (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8)) //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
-};
+
 
 /**
  * @brief Timer 1 available interrupt configurations
@@ -773,21 +840,6 @@ enum class timer1InputCaptureEdge : uint16_t
 {
     risingEdge  = (1 << (ICES1+8)), //!< A rising edge will trigger the capture
     fallingEdge = 0                 //!< A falling edge will trigger the capture
-};
-
-/**
- * @brief Available timer 2 clock source configurations
- */
-enum class timer2Clock : uint16_t
-{
-    off                = 0,
-    noPreescale        = (1 << (CS20+8)),                                    //!< CPU clock is applied directly on the timer
-    divideBy8          = (1 << (CS21+8)),                                    //!< Divides CPU clock by 8
-    divideBy32         = (1 << (CS21+8)) | (1 << (CS20+8)),                  //!< Divides CPU clock by 32
-    divideBy64         = (1 << (CS22+8)),                                    //!< Divides CPU clock by 64
-    divideBy128        = (1 << (CS22+8)) | (1 << (CS20+8)),                  //!< Divides CPU clock by 128
-    divideBy256        = (1 << (CS22+8)) | (1 << (CS21+8)),                  //!< Divides CPU clock by 256
-    divideBy1024       = (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8)) //!< Divides CPU clock by 1024
 };
 
 /**
