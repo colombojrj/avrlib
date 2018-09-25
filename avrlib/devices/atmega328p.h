@@ -411,30 +411,6 @@ enum class adcAdmux_t : uint8_t
     setState = 0b1111           //!< setState
 };
 
-/// Timer 0 comparator output A pin
-#define OC0A_PIN            PinD6
-
-/// Timer 0 comparator output B pin
-#define OC0B_PIN            PinD5
-
-/// External clock input of Timer 0
-#define T0_PIN              PinD4
-
-/// Timer 1 comparator output A pin
-#define OC1A_PIN            PinB1
-
-/// Timer 1 comparator output A pin
-#define OC1B_PIN            PinB2
-
-/// External clock input of Timer 1
-#define T1_PIN              PinD5
-
-/// Timer 2 comparator output A pin
-#define OC2A_PIN            PinB3
-
-/// Timer 2 comparator output A pin
-#define OC2B_PIN            PinD3
-
 /**
  * @brief The developer may configure Timer 0 in one of these modes
  */
@@ -450,10 +426,10 @@ enum class timer0Mode : uint8_t
  * @brief This list stores the configuration of each mode of Timer 0
  */
 constexpr uint16_t timer0AvailableModes [] = {
-        0,                           //!< Timer operates in normal mode
-        (1 << WGM01),                //!< Timer operates in ctc mode
-        (1 << WGM01) | (1 << WGM00), //!< Timer operates as pwm generator
-        (1 << WGM00)                 //!< Timer operates as pwm phase correct
+    0,                           //!< Timer operates in normal mode
+    (1 << WGM01),                //!< Timer operates in ctc mode
+    (1 << WGM01) | (1 << WGM00), //!< Timer operates as pwm generator
+    (1 << WGM00)                 //!< Timer operates as pwm phase correct
 };
 
 /**
@@ -506,10 +482,10 @@ enum class timer2Mode : uint16_t
  * @brief Timer 2 available operations mode
  */
 constexpr uint16_t timer2AvailableModes [] = {
-        0,                           //!< Timer operates in normal mode
-        (1 << WGM21),                //!< Timer operates in ctc mode
-        (1 << WGM21) | (1 << WGM20), //!< Timer operates as pwm generator
-                       (1 << WGM20)  //!< Timer operates as pwm phase correct
+    0,                           //!< Timer operates in normal mode
+    (1 << WGM21),                //!< Timer operates in ctc mode
+    (1 << WGM21) | (1 << WGM20), //!< Timer operates as pwm generator
+                   (1 << WGM20)  //!< Timer operates as pwm phase correct
 };
 
 /**
@@ -524,26 +500,6 @@ enum class timer0OutputCompareMode : uint8_t
 };
 
 /**
- * @brief Timer 0 output compare unit available configurations
- */
-constexpr uint8_t timer0OutputAConfig[] = {
-        0,
-        (1 << COM0A1),
-        (1 << COM0A1) | (1 << COM0A0),
-        (1 << COM0A1) | (1 << COM0A0)
-};
-
-/**
- * @brief Timer 0 output compare unit available configurations
- */
-constexpr uint8_t timer0OutputBConfig[] = {
-        0,
-        (1 << COM0B1),
-        (1 << COM0B1) | (1 << COM0B0),
-        (1 << COM0B1) | (1 << COM0B0)
-};
-
-/**
  * The ATmega timers share an output compare match unit. This enumerator defines
  * the available possible output configurations for Timer 1
  */
@@ -552,26 +508,6 @@ enum class timer1OutputCompareMode : uint8_t
     disconnected = TIMER_OC_DISCONNECTED, //!< Output compare unit does not control the gpio pin
     normal = TIMER_OC_NORMAL,             //!< Output compare unit controls the gpio pin in normal mode, i.e., the output signal is cleared after a compare match
     inverted = TIMER_OC_INVERTED          //!< Output compare unit controls the gpio pin in inverted mode, i.e., the output signal is set after a compare match
-};
-
-/**
- * @brief Timer 1 output compare unit available configurations
- */
-constexpr uint8_t timer1OutputAConfig[] = {
-        0,
-        (1 << COM1A1),
-        (1 << COM1A1) | (1 << COM1A0),
-        (1 << COM1A1) | (1 << COM1A0)
-};
-
-/**
- * @brief Timer 1 output compare unit available configurations
- */
-constexpr uint8_t timer1OutputBConfig[] = {
-        0,
-        (1 << COM1B1),
-        (1 << COM1B1) | (1 << COM1B0),
-        (1 << COM1B1) | (1 << COM1B0)
 };
 
 /**
@@ -586,23 +522,23 @@ enum class timer2OutputCompareMode : uint8_t
 };
 
 /**
- * @brief Timer 2 output compare unit available configurations
+ * @brief Timer output compare unit available configurations
  */
-constexpr uint8_t timer2OutputAConfig[] = {
+constexpr uint8_t timerOutputAConfig[] = {
         0,
-        (1 << COM2A1),
-        (1 << COM2A1) | (1 << COM2A0),
-        (1 << COM2A1) | (1 << COM2A0)
+        (1 << COM0A1),
+        (1 << COM0A1) | (1 << COM0A0),
+        (1 << COM0A1) | (1 << COM0A0)
 };
 
 /**
- * @brief Timer 2 output compare unit available configurations
+ * @brief Timer output compare unit available configurations
  */
-constexpr uint8_t timer2OutputBConfig[] = {
+constexpr uint8_t timerOutputBConfig[] = {
         0,
-        (1 << COM2B1),
-        (1 << COM2B1) | (1 << COM2B0),
-        (1 << COM2B1) | (1 << COM2B0)
+        (1 << COM0B1),
+        (1 << COM0B1) | (1 << COM0B0),
+        (1 << COM0B1) | (1 << COM0B0)
 };
 
 /**
@@ -611,7 +547,6 @@ constexpr uint8_t timer2OutputBConfig[] = {
  */
 enum class timer0Clock : uint8_t
 {
-    off               = TIMER_CLOCK_OFF,                  //!< Timer has no clock (saves power)
     noPreescale       = TIMER_CLOCK_DIVIDE_BY_1,          //!< CPU clock is applied directly on the timer
     divideBy8         = TIMER_CLOCK_DIVIDE_BY_8,          //!< Divides CPU clock by 8
     divideBy64        = TIMER_CLOCK_DIVIDE_BY_64,         //!< Divides CPU clock by 64
@@ -622,25 +557,10 @@ enum class timer0Clock : uint8_t
 };
 
 /**
- * @brief Timer 0 available clock configurations
- */
-constexpr uint16_t timer0AvailableClockConfig[] = {
-    0,                                                    //!< Timer has no clock (saves power)
-                                        (1 << (CS00+8)),  //!< CPU clock is applied directly on the timer
-                      (1 << (CS01+8)),                    //!< Divides CPU clock by 8
-                      (1 << (CS01+8)) | (1 << (CS00+8)),  //!< Divides CPU clock by 64
-    (1 << (CS02+8)),                                      //!< Divides CPU clock by 256
-    (1 << (CS02+8)) |                   (1 << (CS00+8)),  //!< Divides CPU clock by 1024
-    (1 << (CS02+8)) | (1 << (CS01+8)),                    //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
-    (1 << (CS02+8)) | (1 << (CS01+8)) | (1 << (CS00+8))   //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
-};
-
-/**
  * @brief Available timer 1 clock source configurations
  */
 enum class timer1Clock : uint16_t
 {
-    off               = TIMER_CLOCK_OFF,                  //!< Timer has no clock (saves power)
     divideBy1         = TIMER_CLOCK_DIVIDE_BY_1,          //!< CPU clock is applied directly on the timer
     divideBy8         = TIMER_CLOCK_DIVIDE_BY_8,          //!< Divides CPU clock by 8
     divideBy64        = TIMER_CLOCK_DIVIDE_BY_64,         //!< Divides CPU clock by 64
@@ -651,25 +571,10 @@ enum class timer1Clock : uint16_t
 };
 
 /**
- * @brief Timer 1 available clock configurations
- */
-constexpr uint16_t timer1AvailableClockConfig[] = {
-    0,                                                    //!< Timer has no clock (saves power)
-                                        (1 << (CS10+8)),  //!< CPU clock is applied directly on the timer
-                      (1 << (CS11+8)),                    //!< Divides CPU clock by 8
-                      (1 << (CS11+8)) | (1 << (CS10+8)),  //!< Divides CPU clock by 64
-    (1 << (CS12+8)),                                      //!< Divides CPU clock by 256
-    (1 << (CS12+8)) |                   (1 << (CS10+8)),  //!< Divides CPU clock by 1024
-    (1 << (CS12+8)) | (1 << (CS11+8)),                    //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
-    (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8))   //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
-};
-
-/**
  * @brief Available timer 2 clock source configurations
  */
 enum class timer2Clock : uint16_t
 {
-    off                = TIMER_CLOCK_OFF,                 //!< Timer has no clock (saves power)
     noPreescale        = TIMER_CLOCK_DIVIDE_BY_1,         //!< CPU clock is applied directly on the timer
     divideBy8          = TIMER_CLOCK_DIVIDE_BY_8,         //!< Divides CPU clock by 8
     divideBy32         = TIMER_CLOCK_DIVIDE_BY_32,        //!< Divides CPU clock by 32
@@ -680,57 +585,88 @@ enum class timer2Clock : uint16_t
 };
 
 /**
+ * @brief Timer 0 available clock configurations
+ */
+constexpr uint16_t timer0AvailableClockConfig[] = {
+    [TIMER_CLOCK_DIVIDE_BY_1]         =                                     (1 << (CS00+8)),
+    [TIMER_CLOCK_DIVIDE_BY_8]         =                   (1 << (CS01+8)),
+    [TIMER_CLOCK_DIVIDE_BY_32]        = 0,
+    [TIMER_CLOCK_DIVIDE_BY_64]        =                   (1 << (CS01+8)) | (1 << (CS00+8)),
+    [TIMER_CLOCK_DIVIDE_BY_128]       = 0,
+    [TIMER_CLOCK_DIVIDE_BY_256]       = (1 << (CS02+8)),
+    [TIMER_CLOCK_DIVIDE_BY_1024]      = (1 << (CS02+8)) |                   (1 << (CS00+8)),
+    [TIMER_CLOCK_EXTERN_FALLING_EDGE] = (1 << (CS02+8)) | (1 << (CS01+8)),
+    [TIMER_CLOCK_EXTERN_RISING_EDGE]  = (1 << (CS02+8)) | (1 << (CS01+8)) | (1 << (CS00+8))
+};
+
+/**
+ * @brief Timer 1 available clock configurations
+ */
+constexpr uint16_t timer1AvailableClockConfig[] = {
+    [TIMER_CLOCK_DIVIDE_BY_1]         =                                     (1 << (CS10+8)),
+    [TIMER_CLOCK_DIVIDE_BY_8]         =                   (1 << (CS11+8)),
+    [TIMER_CLOCK_DIVIDE_BY_32]        = 0,
+    [TIMER_CLOCK_DIVIDE_BY_64]        =                   (1 << (CS11+8)) | (1 << (CS10+8)),
+    [TIMER_CLOCK_DIVIDE_BY_128]       = 0,
+    [TIMER_CLOCK_DIVIDE_BY_256]       = (1 << (CS12+8)),
+    [TIMER_CLOCK_DIVIDE_BY_1024]      = (1 << (CS12+8)) |                   (1 << (CS10+8)),
+    [TIMER_CLOCK_EXTERN_FALLING_EDGE] = (1 << (CS12+8)) | (1 << (CS11+8)),
+    [TIMER_CLOCK_EXTERN_RISING_EDGE]  = (1 << (CS12+8)) | (1 << (CS11+8)) | (1 << (CS10+8))
+};
+
+/**
  * @brief Timer 2 available clock configurations
  */
 constexpr uint16_t timer2AvailableClockConfig[] = {
-    0,                                                    //!< Timer has no clock (saves power)
-                                        (1 << (CS20+8)),  //!< CPU clock is applied directly on the timer
-                      (1 << (CS21+8)),                    //!< Divides CPU clock by 8
-                      (1 << (CS21+8)) | (1 << (CS20+8)),  //!< Divides CPU clock by 64
-    (1 << (CS22+8)),                                      //!< Divides CPU clock by 256
-    (1 << (CS22+8)) |                   (1 << (CS20+8)),  //!< Divides CPU clock by 1024
-    (1 << (CS22+8)) | (1 << (CS21+8)),                    //!< Timer clock is driven from external source connected on pin but it is only sensible to falling edges
-    (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8))   //!< Timer clock is driven from external source connected on pin but it is only sensible to rising edges
+    [TIMER_CLOCK_DIVIDE_BY_1]         =                                     (1 << (CS20+8)),
+    [TIMER_CLOCK_DIVIDE_BY_8]         =                   (1 << (CS21+8)),
+    [TIMER_CLOCK_DIVIDE_BY_32]        =                   (1 << (CS21+8)) | (1 << (CS20+8)),
+    [TIMER_CLOCK_DIVIDE_BY_64]        = (1 << (CS22+8)),
+    [TIMER_CLOCK_DIVIDE_BY_128]       = (1 << (CS22+8)) |                   (1 << (CS20+8)),
+    [TIMER_CLOCK_DIVIDE_BY_256]       = (1 << (CS22+8)) | (1 << (CS21+8)),
+    [TIMER_CLOCK_DIVIDE_BY_1024]      = (1 << (CS22+8)) | (1 << (CS21+8)) | (1 << (CS20+8)),
+    [TIMER_CLOCK_EXTERN_FALLING_EDGE] = 0,
+    [TIMER_CLOCK_EXTERN_RISING_EDGE]  = 0
 };
 
 /// Timer 0 output compare unit A configuration
 constexpr timer8bOC Timer0_OC_A = {
-        timer0OutputAConfig,
+        timerOutputAConfig,
         PinD6,
         &OCR0A
 };
 
 /// Timer 0 output compare unit B configuration
 constexpr timer8bOC Timer0_OC_B = {
-        timer0OutputBConfig,
+        timerOutputBConfig,
         PinD5,
         &OCR0B
 };
 
 /// Timer 1 output compare unit A configuration
 constexpr timer16bOC Timer1_OC_A = {
-        timer1OutputAConfig,
+        timerOutputAConfig,
         PinB1,
         &OCR1A
 };
 
 /// Timer 1 output compare unit B configuration
 constexpr timer16bOC Timer1_OC_B = {
-        timer1OutputBConfig,
+        timerOutputBConfig,
         PinB2,
         &OCR1B
 };
 
 /// Timer 2 output compare unit configuration
 constexpr timer8bOC Timer2_OC_A = {
-        timer2OutputAConfig,
+        timerOutputAConfig,
         PinB3,
         &OCR2A
 };
 
 /// Timer 2 output compare unit configuration
 constexpr timer8bOC Timer2_OC_B = {
-        timer2OutputBConfig,
+        timerOutputBConfig,
         PinD3,
         &OCR2B
 };
@@ -774,7 +710,8 @@ constexpr timer8b _Timer0 = {
         &Timer0_OC_B,
         &timer0MaxCount,
         &timerActualMode[0],
-        timer0AvailableModes
+        timer0AvailableModes,
+        timer0AvailableClockConfig
 };
 
 /// Timer 1 config structure
@@ -784,7 +721,8 @@ constexpr timer16b _Timer1 = {
         &Timer1_OC_B,
         &timer1MaxCount,
         &timerActualMode[1],
-        timer1AvailableModes
+        timer1AvailableModes,
+        timer1AvailableClockConfig
 };
 
 /// Timer 2 config structure
@@ -794,7 +732,8 @@ constexpr timer8b _Timer2 = {
         &Timer2_OC_B,
         &timer2MaxCount,
         &timerActualMode[2],
-        timer2AvailableModes
+        timer2AvailableModes,
+        timer2AvailableClockConfig
 };
 
 /// Timer 0 friendly definition
@@ -817,8 +756,6 @@ enum class timer0Interrupt : uint8_t
     onOverflow      = (1 << TOIE0)   //!< Generate an interrupt on after an overflow
 };
 
-
-
 /**
  * @brief Timer 1 available interrupt configurations
  */
@@ -831,6 +768,17 @@ enum class timer1Interrupt : uint8_t
 };
 
 /**
+ * @brief Timer 2 available interrupt configurations
+ */
+enum class timer2Interrupt : uint8_t
+{
+    none = 0,                        //!< Does not generate any interrupt
+    onCompareMatchA = (1 << OCIE2A), //!< Generate an interrupt on compare match of channel A
+    onCompareMatchB = (1 << OCIE2B), //!< Generate an interrupt on compare match of channel B
+    onOverflow      = (1 << TOIE2)   //!< Generate an interrupt on after an overflow
+};
+
+/**
  * This enum selects which edge on the Input Capture pin (ICP1) is used
  * to trigger a capture event. When the ICES1 bit is written to zero, a falling (negative) edge is used as trigger, and
 when the ICES1 bit is written to one, a rising (positive) edge will trigger the capture.
@@ -840,17 +788,6 @@ enum class timer1InputCaptureEdge : uint16_t
 {
     risingEdge  = (1 << (ICES1+8)), //!< A rising edge will trigger the capture
     fallingEdge = 0                 //!< A falling edge will trigger the capture
-};
-
-/**
- * @brief Timer 2 available interrupt configurations
- */
-enum class timer2Interrupt : uint8_t
-{
-    none = 0,                        //!< Does not generate any interrupt
-    onCompareMatchA = (1 << OCIE2A), //!< Generate an interrupt on compare match of channel A
-    onCompareMatchB = (1 << OCIE2B), //!< Generate an interrupt on compare match of channel B
-    onOverflow      = (1 << TOIE2)   //!< Generate an interrupt on after an overflow
 };
 
 /**@}*/

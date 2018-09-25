@@ -85,7 +85,6 @@ enum supportedOutputCompareModes
  */
 enum supportedClockModes
 {
-    TIMER_CLOCK_OFF,                   //!< Timer has no clock (saves power)
     TIMER_CLOCK_DIVIDE_BY_1,           //!< CPU clock is applied directly on the timer
     TIMER_CLOCK_DIVIDE_BY_8,           //!< Divides CPU clock by 8
     TIMER_CLOCK_DIVIDE_BY_32,          //!< Divides CPU clock by 32
@@ -103,7 +102,6 @@ enum supportedClockModes
  */
 enum supportedInterruptModes
 {
-    TIMER_INTERRUPT_NONE,              //!< Does not generate any interrupt
     TIMER_INTERRUPT_ON_MATCH_A,        //!< Trigger an interrupt on compare match of channel A
     TIMER_INTERRUPT_ON_MATCH_B,        //!< Trigger an interrupt on compare match of channel B
     TIMER_INTERRUPT_OVERFLOW           //!< Trigger an interrupt on after an overflow
@@ -169,6 +167,7 @@ struct timer8b
     uint8_t* maxCount;               //!< Max count
     uint8_t* actualMode;             //!< Timer actual mode
     const uint16_t* availableModes;  //!< Pointer to list of available timer operation modes
+    const uint16_t* availableClocks; //!< Pointer to list of available timer clock modes
 };
 
 /**
@@ -182,6 +181,7 @@ struct timer16b
     uint16_t* maxCount;              //!< Max count
     const uint8_t* actualMode;       //!< Timer actual mode
     const uint16_t* availableModes;  //!< Pointer to list of available timer operation modes
+    const uint16_t* availableClocks; //!< Pointer to list of available timer clock modes
 };
 
 /**
